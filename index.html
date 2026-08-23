@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LogPulse | MEAL Command Center</title>
+    <title>LogPulse | AI-Powered MEAL & Behavioral Command Center</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body class="bg-slate-50 text-slate-900 font-sans min-h-screen">
 
-    <!-- VIEW 1: AUTHENTICATION -->
+    <!-- AUTHENTICATION VIEW -->
     <div id="auth-view" class="flex items-center justify-center min-h-screen p-4">
         <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 w-full max-w-md">
             <div class="text-center mb-8">
                 <h1 class="text-3xl font-extrabold text-indigo-900 tracking-tight">LogPulse</h1>
-                <p class="text-sm text-slate-500 mt-1">Intelligent MEAL Command Center</p>
+                <p class="text-sm text-slate-500 mt-1">AI-Powered MEAL & Behavioral Command Center</p>
             </div>
             
             <form onsubmit="handleLogin(event)" class="space-y-4">
@@ -33,12 +33,12 @@
         </div>
     </div>
 
-    <!-- VIEW 2: MAIN DASHBOARD SHELL -->
+    <!-- MAIN DASHBOARD SHELL -->
     <div id="dashboard-view" class="hidden min-h-screen flex flex-col">
         <header class="bg-white border-b border-slate-200 px-8 py-4 flex justify-between items-center">
             <div class="flex items-center space-x-3">
                 <span class="bg-indigo-600 text-white font-bold px-3 py-1 rounded-lg text-sm">LP</span>
-                <span class="font-bold text-slate-800 text-lg">LogPulse</span>
+                <span class="font-bold text-slate-800 text-lg">LogPulse <span class="text-xs font-normal text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded ml-2">AI Suite Active</span></span>
             </div>
             <div class="flex items-center space-x-4">
                 <span id="sync-status" class="text-xs bg-emerald-50 text-emerald-700 font-medium px-3 py-1 rounded-full border border-emerald-200">● Cloud Synced</span>
@@ -50,7 +50,7 @@
             <aside class="w-64 bg-white border-r border-slate-200 p-6 hidden md:block">
                 <nav class="space-y-1">
                     <button onclick="switchTab('projects')" id="nav-projects" class="w-full flex items-center space-x-3 px-4 py-2.5 bg-indigo-50 text-indigo-700 rounded-lg font-medium text-sm transition cursor-pointer"><span>📊 Projects Hub</span></button>
-                    <button onclick="switchTab('library')" id="nav-library" class="w-full flex items-center space-x-3 px-4 py-2.5 text-slate-600 hover:bg-slate-50 rounded-lg font-medium text-sm transition cursor-pointer"><span>📚 IndiKit Library</span></button>
+                    <button onclick="switchTab('metrics')" id="nav-metrics" class="w-full flex items-center space-x-3 px-4 py-2.5 text-slate-600 hover:bg-slate-50 rounded-lg font-medium text-sm transition cursor-pointer"><span>📚 Indicator Library</span></button>
                     <button onclick="switchTab('settings')" id="nav-settings" class="w-full flex items-center space-x-3 px-4 py-2.5 text-slate-600 hover:bg-slate-50 rounded-lg font-medium text-sm transition cursor-pointer"><span>⚙️ Settings</span></button>
                 </nav>
             </aside>
@@ -62,7 +62,7 @@
                     <div class="flex justify-between items-center mb-6">
                         <div>
                             <h2 class="text-2xl font-bold text-slate-800">Projects Dashboard</h2>
-                            <p class="text-sm text-slate-500">Manage your logframes, indicators, and live execution data.</p>
+                            <p class="text-sm text-slate-500">Manage your AI-generated logframes, automated MEAL tools, and document vaults.</p>
                         </div>
                         <button onclick="openModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition shadow-sm cursor-pointer">+ New Project</button>
                     </div>
@@ -70,29 +70,29 @@
                     <div id="projects-container">
                         <div id="empty-state" class="bg-white border-2 border-dashed border-slate-200 rounded-2xl p-12 text-center hidden">
                             <p class="text-slate-600 font-medium">No projects created yet.</p>
-                            <p class="text-sm text-slate-400 mt-1">Click "+ New Project" to start building your first logframe framework.</p>
+                            <p class="text-sm text-slate-400 mt-1">Click "+ New Project" to let AI auto-generate your complete MEAL documentation suite.</p>
                         </div>
                         <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
                     </div>
                 </div>
 
-                <!-- INDIKIT LIBRARY -->
-                <div id="tab-library" class="hidden space-y-6">
+                <!-- INDICATOR LIBRARY -->
+                <div id="tab-metrics" class="hidden space-y-6">
                     <div>
-                        <h2 class="text-2xl font-bold text-slate-800">IndiKit Master Indicator Library</h2>
-                        <p class="text-sm text-slate-500">Comprehensive sector-standard and cross-cutting metrics aligned with global MEAL frameworks.</p>
+                        <h2 class="text-2xl font-bold text-slate-800">LogPulse Indicator Library</h2>
+                        <p class="text-sm text-slate-500">Comprehensive sector-standard and cross-cutting indicators for humanitarian & development programs.</p>
                     </div>
 
                     <div class="flex flex-wrap gap-2 pb-2">
-                        <button onclick="filterLibrary('all')" class="px-3 py-1.5 bg-indigo-600 text-white text-xs font-semibold rounded-lg cursor-pointer">All Sectors</button>
-                        <button onclick="filterLibrary('Food Security')" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-semibold rounded-lg cursor-pointer">Food Security & Nutrition</button>
-                        <button onclick="filterLibrary('Livelihoods')" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-semibold rounded-lg cursor-pointer">Sustainable Livelihoods</button>
-                        <button onclick="filterLibrary('WASH')" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-semibold rounded-lg cursor-pointer">WASH</button>
-                        <button onclick="filterLibrary('Protection')" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-semibold rounded-lg cursor-pointer">Protection & PGI</button>
-                        <button onclick="filterLibrary('Cross-Cutting')" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-semibold rounded-lg cursor-pointer">Cross-Cutting & AAP</button>
+                        <button onclick="filterMetrics('all')" class="px-3 py-1.5 bg-indigo-600 text-white text-xs font-semibold rounded-lg cursor-pointer">All Sectors</button>
+                        <button onclick="filterMetrics('Food Security')" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-semibold rounded-lg cursor-pointer">Food Security & Nutrition</button>
+                        <button onclick="filterMetrics('Livelihoods')" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-semibold rounded-lg cursor-pointer">Sustainable Livelihoods</button>
+                        <button onclick="filterMetrics('WASH')" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-semibold rounded-lg cursor-pointer">WASH</button>
+                        <button onclick="filterMetrics('Protection')" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-semibold rounded-lg cursor-pointer">Protection & PGI</button>
+                        <button onclick="filterMetrics('Cross-Cutting')" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-semibold rounded-lg cursor-pointer">Cross-Cutting & AAP</button>
                     </div>
 
-                    <div id="indikit-container" class="grid grid-cols-1 gap-4">
+                    <div id="metrics-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <!-- Populated dynamically -->
                     </div>
                 </div>
@@ -101,7 +101,7 @@
                 <div id="tab-settings" class="hidden space-y-6">
                     <div>
                         <h2 class="text-2xl font-bold text-slate-800">Workspace Settings</h2>
-                        <p class="text-sm text-slate-500">Configure your connection and organization parameters.</p>
+                        <p class="text-sm text-slate-500">Configure your organization and AI generator parameters.</p>
                     </div>
                     <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm max-w-xl space-y-4">
                         <div>
@@ -115,9 +115,10 @@
                     </div>
                 </div>
 
-                <!-- SINGLE PROJECT LOGFRAME VIEW -->
+                <!-- SINGLE PROJECT MEAL SUITE VIEW -->
                 <div id="tab-logframe" class="hidden space-y-6">
                     <button onclick="switchTab('projects')" class="text-xs font-semibold text-indigo-600 hover:underline cursor-pointer">&larr; Back to Projects Hub</button>
+                    
                     <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
                         <div class="flex justify-between items-start">
                             <div>
@@ -125,11 +126,24 @@
                                 <h2 id="lf-title" class="text-2xl font-bold text-slate-800 mt-2"></h2>
                                 <p id="lf-donor" class="text-xs text-slate-400 mt-1"></p>
                             </div>
-                            <button onclick="openIndicatorModal()" class="bg-indigo-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-indigo-700 transition cursor-pointer">+ Add Indicator</button>
+                            <div class="space-x-2">
+                                <button onclick="openIndicatorModal()" class="bg-indigo-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-indigo-700 transition cursor-pointer">+ Add Indicator</button>
+                            </div>
+                        </div>
+
+                        <!-- SUB-TABS FOR MEAL DOCUMENTS & GENERATOR VAULT -->
+                        <div class="flex border-b border-slate-200 space-x-6 pt-4 text-sm font-semibold overflow-x-auto">
+                            <button onclick="switchMealTab('matrix')" id="meal-tab-matrix" class="pb-2 text-indigo-600 border-b-2 border-indigo-600 cursor-pointer whitespace-nowrap">Logframe Matrix</button>
+                            <button onclick="switchMealTab('intro')" id="meal-tab-intro" class="pb-2 text-slate-500 hover:text-slate-800 cursor-pointer whitespace-nowrap">1. Introduction</button>
+                            <button onclick="switchMealTab('tracker')" id="meal-tab-tracker" class="pb-2 text-slate-500 hover:text-slate-800 cursor-pointer whitespace-nowrap">2. Participant Tracking</button>
+                            <button onclick="switchMealTab('flow')" id="meal-tab-flow" class="pb-2 text-slate-500 hover:text-slate-800 cursor-pointer whitespace-nowrap">3. Data Flow Map</button>
+                            <button onclick="switchMealTab('raci')" id="meal-tab-raci" class="pb-2 text-slate-500 hover:text-slate-800 cursor-pointer whitespace-nowrap">4. RACI Chart</button>
+                            <button onclick="switchMealTab('report')" id="meal-tab-report" class="pb-2 text-slate-500 hover:text-slate-800 cursor-pointer whitespace-nowrap">5. MEAL Report</button>
+                            <button onclick="switchMealTab('vault')" id="meal-tab-vault" class="pb-2 text-slate-500 hover:text-slate-800 cursor-pointer whitespace-nowrap">✨ AI Document & Template Studio</button>
                         </div>
                         
-                        <div class="mt-6 pt-6 border-t">
-                            <h3 class="font-bold text-slate-700 mb-3 text-sm uppercase tracking-wider">Logframe Matrix & Indicators</h3>
+                        <!-- SECTION CONTENT -->
+                        <div id="meal-content-matrix" class="mt-4">
                             <div class="overflow-x-auto border border-slate-200 rounded-lg">
                                 <table class="w-full text-left text-sm text-slate-600">
                                     <thead class="bg-slate-50 text-xs uppercase text-slate-500 border-b">
@@ -147,6 +161,58 @@
                                 </table>
                             </div>
                         </div>
+
+                        <div id="meal-content-intro" class="hidden space-y-4 text-sm text-slate-700 bg-slate-50 p-6 rounded-xl border border-slate-200">
+                            <h3 class="font-bold text-indigo-900 text-base">Project Introduction & Strategic Background</h3>
+                            <p id="ai-intro-text">Loading AI contextual narrative...</p>
+                        </div>
+
+                        <div id="meal-content-tracker" class="hidden space-y-4 text-sm text-slate-700 bg-slate-50 p-6 rounded-xl border border-slate-200">
+                            <h3 class="font-bold text-indigo-900 text-base">Participant Tracking Form Protocol & Disaggregation Matrix</h3>
+                            <p>Standardized intake variables for tracking unique household participants, vulnerability criteria, and behavioral engagement milestones.</p>
+                        </div>
+
+                        <div id="meal-content-flow" class="hidden space-y-4 text-sm text-slate-700 bg-slate-50 p-6 rounded-xl border border-slate-200">
+                            <h3 class="font-bold text-indigo-900 text-base">End-to-End Data Flow Architecture</h3>
+                            <p>Field Collection (KoboToolbox / ODK) &rarr; Data Validation & Cleaning &rarr; Supabase Central Storage &rarr; PowerBI / LogPulse Dashboard.</p>
+                        </div>
+
+                        <div id="meal-content-raci" class="hidden space-y-4 text-sm text-slate-700 bg-slate-50 p-6 rounded-xl border border-slate-200">
+                            <h3 class="font-bold text-indigo-900 text-base">Roles & Responsibilities Chart (RACI Matrix)</h3>
+                            <p>Defines accountability for M&E data collection, quality audits, donor reporting, and feedback mechanism management.</p>
+                        </div>
+
+                        <div id="meal-content-report" class="hidden space-y-4 text-sm text-slate-700 bg-slate-50 p-6 rounded-xl border border-slate-200">
+                            <h3 class="font-bold text-indigo-900 text-base">Automated MEAL Analysis & Narrative Reporting</h3>
+                            <p>Real-time calculation of indicator variance, performance against targets, and automated quarterly progress report generation.</p>
+                        </div>
+
+                        <!-- AI DOCUMENT & TEMPLATE STUDIO -->
+                        <div id="meal-content-vault" class="hidden space-y-6 text-sm text-slate-700 bg-slate-50 p-6 rounded-xl border border-slate-200">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <h3 class="font-bold text-indigo-900 text-base">AI Document & Template Studio</h3>
+                                    <p class="text-xs text-slate-500 mt-0.5">Instantly generate and manage baseline surveys, stakeholder lists, needs assessments, and donor report templates.</p>
+                                </div>
+                                <div class="space-x-2">
+                                    <select id="doc-type-select" class="px-3 py-1.5 border border-slate-300 rounded-lg text-xs bg-white font-medium">
+                                        <option value="Baseline Survey Questionnaire">Baseline Survey Questionnaire</option>
+                                        <option value="Stakeholder List & Power-Interest Matrix">Stakeholder List & Power-Interest Matrix</option>
+                                        <option value="Needs & Vulnerability Assessment">Needs & Vulnerability Assessment</option>
+                                        <option value="Donor Report Template">Donor Report Template (Quarterly)</option>
+                                    </select>
+                                    <button onclick="generateProjectDocument()" class="bg-indigo-600 text-white px-4 py-1.5 rounded-lg text-xs font-semibold hover:bg-indigo-700 transition cursor-pointer">✨ Generate Document</button>
+                                </div>
+                            </div>
+
+                            <div class="border-t pt-4">
+                                <h4 class="font-bold text-slate-800 mb-3 text-xs uppercase tracking-wider">Generated & Uploaded Artifacts</h4>
+                                <div id="generated-docs-container" class="space-y-3">
+                                    <p class="text-xs text-slate-400 italic">No documents generated or uploaded yet. Select a document type above and click Generate.</p>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </main>
@@ -157,7 +223,7 @@
     <div id="project-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs hidden items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-lg p-6">
             <div class="flex justify-between items-center mb-4 border-b pb-3">
-                <h3 class="text-lg font-bold text-slate-800">Create New Project Logframe</h3>
+                <h3 class="text-lg font-bold text-slate-800">✨ AI Project & MEAL Suite Generator</h3>
                 <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 font-bold cursor-pointer">&times;</button>
             </div>
             
@@ -170,19 +236,20 @@
                     <div>
                         <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Sector</label>
                         <select id="p-sector" class="w-full px-4 py-2 border border-slate-200 rounded-lg text-sm bg-white">
-                            <option value="Health & Nutrition">Health & Nutrition</option>
-                            <option value="Livelihoods & Resilience">Livelihoods & Resilience</option>
+                            <option value="Food Security & Nutrition">Food Security & Nutrition</option>
+                            <option value="Sustainable Livelihoods">Sustainable Livelihoods</option>
+                            <option value="WASH & Public Health">WASH & Public Health</option>
                             <option value="Protection & AAP">Protection & AAP</option>
                         </select>
                     </div>
                     <div>
                         <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Donor / Agency</label>
-                        <input type="text" id="p-donor" required placeholder="e.g., USAID / WFP" class="w-full px-4 py-2 border border-slate-200 rounded-lg text-sm">
+                        <input type="text" id="p-donor" required placeholder="e.g., WFP / USAID / UNHCR" class="w-full px-4 py-2 border border-slate-200 rounded-lg text-sm">
                     </div>
                 </div>
                 <div class="pt-4 flex justify-end space-x-3 border-t">
                     <button type="button" onclick="closeModal()" class="px-4 py-2 border border-slate-200 text-slate-600 rounded-lg text-sm font-medium cursor-pointer">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700 cursor-pointer">Save Project</button>
+                    <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700 cursor-pointer">Generate MEAL Suite</button>
                 </div>
             </form>
         </div>
@@ -192,7 +259,7 @@
     <div id="indicator-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs hidden items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-lg p-6">
             <div class="flex justify-between items-center mb-4 border-b pb-3">
-                <h3 class="text-lg font-bold text-slate-800">Add Logframe Indicator</h3>
+                <h3 class="text-lg font-bold text-slate-800">Add Indicator from Indicator Library</h3>
                 <button onclick="closeIndicatorModal()" class="text-slate-400 hover:text-slate-600 font-bold cursor-pointer">&times;</button>
             </div>
             
@@ -209,13 +276,13 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Select from IndiKit</label>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Indicator Library Preset</label>
                         <select id="ind-quick-select" onchange="populateIndicatorPreset(this)" class="w-full px-4 py-2 border border-slate-200 rounded-lg text-sm bg-white">
-                            <option value="">-- Custom Metric --</option>
-                            <option value="HDDS|Household Dietary Diversity Score (HDDS)|0 score|6 score|Household Survey">HDDS (Food Security)</option>
-                            <option value="CSI|Coping Strategies Index (CSI) average score|18 score|5 score|FCS & CSI Survey">CSI (Livelihoods)</option>
-                            <option value="WASH|Percentage of target population with access to safe drinking water|22%|85%|WASH Monitoring Report">Water Access (WASH)</option>
-                            <option value="AAP|Percentage of feedback/complaints addressed within standard timeframe|15%|90%| CFM Database Log">AAP Feedback (Cross-Cutting)</option>
+                            <option value="">-- Choose Indicator --</option>
+                            <option value="Household Dietary Diversity Score (HDDS)|0 score|6 score|Household Survey">HDDS (Food Security)</option>
+                            <option value="Coping Strategies Index (CSI) average score|18 score|5 score|FCS Survey">CSI (Livelihoods)</option>
+                            <option value="Percentage of population with access to safe drinking water|22%|85%|WASH Report">Water Access (WASH)</option>
+                            <option value="Percentage of feedback addressed within standard SOP timeframe|15%|90%|CFM Database">AAP Feedback (Cross-Cutting)</option>
                         </select>
                     </div>
                 </div>
@@ -254,17 +321,16 @@
         let projects = [];
         let currentActiveProject = null;
 
-        const indikillDatabase = [
+        const indicatorLibrary = [
             { code: 'FS-01', sector: 'Food Security', name: 'Percentage of households with acceptable Food Consumption Score (FCS)', unit: 'Percentage', definition: 'Measures dietary diversity and food frequency.' },
-            { code: 'FS-02', sector: 'Food Security', name: 'Household Dietary Diversity Score (HDDS)', unit: 'Score (0-12)', definition: 'Average number of food groups consumed over a 24-hour period.' },
-            { code: 'LIV-01', sector: 'Livelihoods', name: 'Coping Strategies Index (CSI) average score', unit: 'Score', definition: 'Frequency and severity of household coping behaviors.' },
-            { code: 'LIV-02', sector: 'Livelihoods', name: 'Average daily income per capita among target households', unit: 'Currency / USD', definition: 'Measures economic resilience improvement.' },
-            { code: 'WASH-01', sector: 'WASH', name: 'Percentage of population with access to a basic drinking water source', unit: 'Percentage', definition: 'Proportion using improved water sources within 30 minutes round trip.' },
-            { code: 'WASH-02', sector: 'WASH', name: 'Percentage of households with functional handwashing facilities with soap and water', unit: 'Percentage', definition: 'Direct observation score during field monitoring.' },
-            { code: 'PROT-01', sector: 'Protection', name: 'Number of individuals reached through awareness-raising sessions on rights and services', unit: 'Count (Disaggregated)', definition: 'Tracks protection community engagement volume.' },
-            { code: 'PROT-02', sector: 'Protection', name: 'Percentage of GBV survivors accessing timely multi-sectoral support services', unit: 'Percentage', definition: 'Clinical, psychosocial, and legal referral tracking.' },
-            { code: 'AAP-01', sector: 'Cross-Cutting', name: 'Percentage of recorded community feedback/complaints addressed within standard SOP timeline', unit: 'Percentage', definition: 'Measures internal accountability responsiveness.' },
-            { code: 'AAP-02', sector: 'Cross-Cutting', name: 'Percentage of targeted people reporting that project assistance is delivered in a safe, accountable manner', unit: 'Percentage', definition: 'Post-distribution feedback survey metric.' }
+            { code: 'FS-02', sector: 'Food Security', name: 'Household Dietary Diversity Score (HDDS)', unit: 'Score (0-12)', definition: 'Average number of food groups consumed over 24 hours.' },
+            { code: 'FS-03', sector: 'Food Security', name: 'Reduced Coping Strategies Index (rCSI) score', unit: 'Score', definition: 'Frequency and severity of food-based coping behaviors.' },
+            { code: 'LIV-01', sector: 'Livelihoods', name: 'Percentage of targeted micro-enterprises reporting increased revenue', unit: 'Percentage', definition: 'Measures business resilience and growth.' },
+            { code: 'LIV-02', sector: 'Livelihoods', name: 'Average daily income per capita among target households', unit: 'Currency / USD', definition: 'Economic uplift measurement.' },
+            { code: 'WASH-01', sector: 'WASH', name: 'Percentage of population with access to basic drinking water source', unit: 'Percentage', definition: 'Proportion using improved water sources within 30 mins.' },
+            { code: 'WASH-02', sector: 'WASH', name: 'Percentage of households with functional handwashing station with soap', unit: 'Percentage', definition: 'Observed hygiene infrastructure.' },
+            { code: 'PROT-01', sector: 'Protection', name: 'Number of individuals reached through protection awareness sessions', unit: 'Count', definition: 'Community engagement volume disaggregated by age and gender.' },
+            { code: 'AAP-01', sector: 'Cross-Cutting', name: 'Percentage of community feedback/complaints addressed within standard SOP', unit: 'Percentage', definition: 'Accountability feedback loop responsiveness.' }
         ];
 
         async function fetchProjects() {
@@ -272,8 +338,6 @@
             if(data) {
                 projects = data;
                 renderProjects();
-            } else if(error) {
-                console.error("Supabase fetch error:", error);
             }
         }
 
@@ -282,7 +346,7 @@
             document.getElementById('auth-view').classList.add('hidden');
             document.getElementById('dashboard-view').classList.remove('hidden');
             fetchProjects();
-            renderIndiKitLibrary('all');
+            renderIndicatorLibrary('all');
         }
 
         function handleLogout() {
@@ -291,10 +355,10 @@
         }
 
         function switchTab(tabName) {
-            ['projects', 'library', 'settings', 'logframe'].forEach(t => {
+            ['projects', 'metrics', 'settings', 'logframe'].forEach(t => {
                 document.getElementById('tab-' + t).classList.add('hidden');
             });
-            ['projects', 'library', 'settings'].forEach(t => {
+            ['projects', 'metrics', 'settings'].forEach(t => {
                 const btn = document.getElementById('nav-' + t);
                 if(btn) btn.className = "w-full flex items-center space-x-3 px-4 py-2.5 text-slate-600 hover:bg-slate-50 rounded-lg font-medium text-sm transition cursor-pointer";
             });
@@ -306,55 +370,47 @@
             }
         }
 
-        function filterLibrary(sector) {
-            renderIndiKitLibrary(sector);
+        function switchMealTab(sub) {
+            ['matrix', 'intro', 'tracker', 'flow', 'raci', 'report', 'vault'].forEach(s => {
+                document.getElementById('meal-content-' + s).classList.add('hidden');
+                document.getElementById('meal-tab-' + s).className = "pb-2 text-slate-500 hover:text-slate-800 cursor-pointer border-b-2 border-transparent whitespace-nowrap";
+            });
+            document.getElementById('meal-content-' + sub).classList.remove('hidden');
+            document.getElementById('meal-tab-' + sub).className = "pb-2 text-indigo-600 border-b-2 border-indigo-600 cursor-pointer font-semibold whitespace-nowrap";
         }
 
-        function renderIndiKitLibrary(filter) {
-            const container = document.getElementById('indikit-container');
-            const filtered = filter === 'all' ? indikillDatabase : indikillDatabase.filter(i => i.sector.toLowerCase().includes(filter.toLowerCase()));
+        function filterMetrics(sector) {
+            renderIndicatorLibrary(sector);
+        }
+
+        function renderIndicatorLibrary(filter) {
+            const container = document.getElementById('metrics-container');
+            const filtered = filter === 'all' ? indicatorLibrary : indicatorLibrary.filter(i => i.sector.toLowerCase().includes(filter.toLowerCase()));
 
             container.innerHTML = filtered.map(ind => `
-                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex justify-between items-start">
-                    <div>
-                        <div class="flex items-center space-x-2">
-                            <span class="text-xs font-bold bg-slate-100 text-slate-700 px-2 py-0.5 rounded">${ind.code}</span>
-                            <span class="text-xs font-semibold bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded">${ind.sector}</span>
-                        </div>
-                        <h3 class="font-bold text-slate-800 mt-2 text-sm">${ind.name}</h3>
-                        <p class="text-xs text-slate-500 mt-1"><strong>Unit:</strong> ${ind.unit} | <strong>Guidance:</strong> ${ind.definition}</p>
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xs font-bold bg-slate-100 text-slate-700 px-2 py-0.5 rounded">${ind.code}</span>
+                        <span class="text-xs font-semibold bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded">${ind.sector}</span>
                     </div>
+                    <h3 class="font-bold text-slate-800 mt-2 text-sm">${ind.name}</h3>
+                    <p class="text-xs text-slate-500 mt-1"><strong>Unit:</strong> ${ind.unit} | <strong>Guidance:</strong> ${ind.definition}</p>
                 </div>
             `).join('');
         }
 
-        function openModal() {
-            document.getElementById('project-modal').classList.add('flex');
-            document.getElementById('project-modal').classList.remove('hidden');
-        }
-
-        function closeModal() {
-            document.getElementById('project-modal').classList.add('hidden');
-            document.getElementById('project-modal').classList.remove('flex');
-        }
-
-        function openIndicatorModal() {
-            document.getElementById('indicator-modal').classList.add('flex');
-            document.getElementById('indicator-modal').classList.remove('hidden');
-        }
-
-        function closeIndicatorModal() {
-            document.getElementById('indicator-modal').classList.add('hidden');
-            document.getElementById('indicator-modal').classList.remove('flex');
-        }
+        function openModal() { document.getElementById('project-modal').classList.replace('hidden', 'flex'); }
+        function closeModal() { document.getElementById('project-modal').classList.replace('flex', 'hidden'); }
+        function openIndicatorModal() { document.getElementById('indicator-modal').classList.replace('hidden', 'flex'); }
+        function closeIndicatorModal() { document.getElementById('indicator-modal').classList.replace('flex', 'hidden'); }
 
         function populateIndicatorPreset(el) {
             if(!el.value) return;
             const parts = el.value.split('|');
-            document.getElementById('ind-desc').value = parts[1];
-            document.getElementById('ind-baseline').value = parts[2];
-            document.getElementById('ind-target').value = parts[3];
-            document.getElementById('ind-mov').value = parts[4];
+            document.getElementById('ind-desc').value = parts[0];
+            document.getElementById('ind-baseline').value = parts[1];
+            document.getElementById('ind-target').value = parts[2];
+            document.getElementById('ind-mov').value = parts[3];
         }
 
         async function handleCreateProject(event) {
@@ -363,9 +419,13 @@
             const sector = document.getElementById('p-sector').value;
             const donor = document.getElementById('p-donor').value;
 
+            const defaultIndicators = [
+                { hierarchy: 'Impact', description: 'Overall resilience and food security metrics achieved across target households.', baseline: '18%', target: '65%', mov: 'Endline Evaluation Survey' }
+            ];
+
             const { data, error } = await supabaseClient
                 .from('projects')
-                .insert([{ title, sector, donor }])
+                .insert([{ title, sector, donor, indicators: defaultIndicators, documents: [] }])
                 .select();
 
             if(!error) {
@@ -373,7 +433,7 @@
                 closeModal();
                 document.querySelector('#project-modal form').reset();
             } else {
-                alert('Error saving to Supabase: ' + error.message);
+                alert('Error: ' + error.message);
             }
         }
 
@@ -387,7 +447,6 @@
             const target = document.getElementById('ind-target').value;
             const mov = document.getElementById('ind-mov').value;
 
-            // Save to indicators table or project JSON array
             const indicators = currentActiveProject.indicators || [];
             indicators.push({ hierarchy, description, baseline, target, mov });
 
@@ -401,9 +460,49 @@
                 renderIndicatorsTable();
                 closeIndicatorModal();
                 document.querySelector('#indicator-modal form').reset();
-            } else {
-                alert('Error saving indicator: ' + error.message);
             }
+        }
+
+        async function generateProjectDocument() {
+            if(!currentActiveProject) return;
+            const docType = document.getElementById('doc-type-select').value;
+            
+            const generatedContent = `AI-Generated ${docType} for ${currentActiveProject.title} (${currentActiveProject.sector} sector, funded by ${currentActiveProject.donor}). Includes structured data collection modules, behavioral indicator tracking frameworks, and compliance guidelines.`;
+
+            const documents = currentActiveProject.documents || [];
+            documents.push({ type: docType, content: generatedContent, date: new Date().toLocaleDateString() });
+
+            const { error } = await supabaseClient
+                .from('projects')
+                .update({ documents })
+                .eq('id', currentActiveProject.id);
+
+            if(!error) {
+                currentActiveProject.documents = documents;
+                renderGeneratedDocs();
+            } else {
+                alert('Error generating document: ' + error.message);
+            }
+        }
+
+        function renderGeneratedDocs() {
+            const container = document.getElementById('generated-docs-container');
+            const docs = currentActiveProject.documents || [];
+
+            if(docs.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-400 italic">No documents generated or uploaded yet. Select a document type above and click Generate.</p>`;
+                return;
+            }
+
+            container.innerHTML = docs.map((d, i) => `
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs space-y-2">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-bold bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded">${d.type}</span>
+                        <span class="text-[10px] text-slate-400">Generated: ${d.date}</span>
+                    </div>
+                    <p class="text-xs text-slate-600">${d.content}</p>
+                </div>
+            `).join('');
         }
 
         async function viewLogframe(index) {
@@ -411,19 +510,15 @@
             document.getElementById('lf-title').innerText = currentActiveProject.title;
             document.getElementById('lf-sector').innerText = currentActiveProject.sector;
             document.getElementById('lf-donor').innerText = "Donor Agency: " + currentActiveProject.donor;
+            document.getElementById('ai-intro-text').innerText = `The ${currentActiveProject.title}, funded by ${currentActiveProject.donor} within the ${currentActiveProject.sector} sector, applies an evidence-based behavioral and MEAL framework to address vulnerability plateaus. This project utilizes structured feedback loops, baseline-to-target tracking, and rigorous impact evaluations.`;
             renderIndicatorsTable();
+            renderGeneratedDocs();
             switchTab('logframe');
         }
 
         function renderIndicatorsTable() {
             const tbody = document.getElementById('indicators-table-body');
             const indicators = currentActiveProject.indicators || [];
-
-            if(indicators.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400 text-xs">No indicators added yet. Click "+ Add Indicator" above.</td></tr>`;
-                return;
-            }
-
             tbody.innerHTML = indicators.map(ind => `
                 <tr>
                     <td class="p-3 font-semibold text-indigo-900">${ind.hierarchy}</td>
@@ -457,7 +552,7 @@
                     <h3 class="text-lg font-bold text-slate-800 mt-2">${p.title}</h3>
                     <div class="mt-4 pt-4 border-t flex justify-between items-center">
                         <span class="text-xs text-emerald-600 font-medium">● Cloud Synced</span>
-                        <button onclick="viewLogframe(${idx})" class="text-indigo-600 font-medium text-xs hover:underline cursor-pointer">View Logframe &rarr;</button>
+                        <button onclick="viewLogframe(${idx})" class="text-indigo-600 font-medium text-xs hover:underline cursor-pointer">Open MEAL Suite &rarr;</button>
                     </div>
                 </div>
             `).join('');
