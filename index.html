@@ -50,7 +50,7 @@
             <aside class="w-64 bg-white border-r border-slate-200 p-6 hidden md:block">
                 <nav class="space-y-1">
                     <button onclick="switchTab('projects')" id="nav-projects" class="w-full flex items-center space-x-3 px-4 py-2.5 bg-indigo-50 text-indigo-700 rounded-lg font-medium text-sm transition cursor-pointer"><span>📊 Projects Hub</span></button>
-                    <button onclick="switchTab('library')" id="nav-library" class="w-full flex items-center space-x-3 px-4 py-2.5 text-slate-600 hover:bg-slate-50 rounded-lg font-medium text-sm transition cursor-pointer"><span>📚 Indicator Library</span></button>
+                    <button onclick="switchTab('library')" id="nav-library" class="w-full flex items-center space-x-3 px-4 py-2.5 text-slate-600 hover:bg-slate-50 rounded-lg font-medium text-sm transition cursor-pointer"><span>📚 IndiKit Library</span></button>
                     <button onclick="switchTab('settings')" id="nav-settings" class="w-full flex items-center space-x-3 px-4 py-2.5 text-slate-600 hover:bg-slate-50 rounded-lg font-medium text-sm transition cursor-pointer"><span>⚙️ Settings</span></button>
                 </nav>
             </aside>
@@ -76,23 +76,24 @@
                     </div>
                 </div>
 
-                <!-- INDICATOR LIBRARY -->
+                <!-- INDIKIT LIBRARY -->
                 <div id="tab-library" class="hidden space-y-6">
                     <div>
-                        <h2 class="text-2xl font-bold text-slate-800">Master Indicator Library</h2>
-                        <p class="text-sm text-slate-500">Global standard metrics across sectors, modeled after proven frameworks.</p>
+                        <h2 class="text-2xl font-bold text-slate-800">IndiKit Master Indicator Library</h2>
+                        <p class="text-sm text-slate-500">Comprehensive sector-standard and cross-cutting metrics aligned with global MEAL frameworks.</p>
                     </div>
-                    <div class="grid grid-cols-1 gap-4">
-                        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                            <span class="text-xs font-semibold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded">Health & Nutrition</span>
-                            <h3 class="font-bold text-slate-800 mt-2">HLTH-01: Number of primary healthcare consultations provided</h3>
-                            <p class="text-xs text-slate-500 mt-1">Disaggregation: Age, Gender | Unit: Count</p>
-                        </div>
-                        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                            <span class="text-xs font-semibold bg-blue-50 text-blue-700 px-2 py-0.5 rounded">Livelihoods & Resilience</span>
-                            <h3 class="font-bold text-slate-800 mt-2">LIV-02: Household Dietary Diversity Score (HDDS)</h3>
-                            <p class="text-xs text-slate-500 mt-1">Disaggregation: Seasonality, Household Type | Unit: Score (0-12)</p>
-                        </div>
+
+                    <div class="flex flex-wrap gap-2 pb-2">
+                        <button onclick="filterLibrary('all')" class="px-3 py-1.5 bg-indigo-600 text-white text-xs font-semibold rounded-lg cursor-pointer">All Sectors</button>
+                        <button onclick="filterLibrary('Food Security')" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-semibold rounded-lg cursor-pointer">Food Security & Nutrition</button>
+                        <button onclick="filterLibrary('Livelihoods')" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-semibold rounded-lg cursor-pointer">Sustainable Livelihoods</button>
+                        <button onclick="filterLibrary('WASH')" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-semibold rounded-lg cursor-pointer">WASH</button>
+                        <button onclick="filterLibrary('Protection')" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-semibold rounded-lg cursor-pointer">Protection & PGI</button>
+                        <button onclick="filterLibrary('Cross-Cutting')" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-semibold rounded-lg cursor-pointer">Cross-Cutting & AAP</button>
+                    </div>
+
+                    <div id="indikit-container" class="grid grid-cols-1 gap-4">
+                        <!-- Populated dynamically -->
                     </div>
                 </div>
 
@@ -118,10 +119,13 @@
                 <div id="tab-logframe" class="hidden space-y-6">
                     <button onclick="switchTab('projects')" class="text-xs font-semibold text-indigo-600 hover:underline cursor-pointer">&larr; Back to Projects Hub</button>
                     <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
-                        <div>
-                            <span id="lf-sector" class="text-xs font-semibold bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-md"></span>
-                            <h2 id="lf-title" class="text-2xl font-bold text-slate-800 mt-2"></h2>
-                            <p id="lf-donor" class="text-xs text-slate-400 mt-1"></p>
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span id="lf-sector" class="text-xs font-semibold bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-md"></span>
+                                <h2 id="lf-title" class="text-2xl font-bold text-slate-800 mt-2"></h2>
+                                <p id="lf-donor" class="text-xs text-slate-400 mt-1"></p>
+                            </div>
+                            <button onclick="openIndicatorModal()" class="bg-indigo-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-indigo-700 transition cursor-pointer">+ Add Indicator</button>
                         </div>
                         
                         <div class="mt-6 pt-6 border-t">
@@ -137,14 +141,8 @@
                                             <th class="p-3">Means of Verification</th>
                                         </tr>
                                     </thead>
-                                    <tbody class="divide-y divide-slate-100">
-                                        <tr>
-                                            <td class="p-3 font-semibold text-indigo-900">Outcome 1</td>
-                                            <td class="p-3">Improved resilience and food security metrics achieved across target households.</td>
-                                            <td class="p-3">18%</td>
-                                            <td class="p-3">65%</td>
-                                            <td class="p-3">Household Baseline & Endline Survey Reports</td>
-                                        </tr>
+                                    <tbody id="indicators-table-body" class="divide-y divide-slate-100">
+                                        <!-- Dynamically loaded -->
                                     </tbody>
                                 </table>
                             </div>
@@ -155,7 +153,7 @@
         </div>
     </div>
 
-    <!-- MODAL -->
+    <!-- NEW PROJECT MODAL -->
     <div id="project-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs hidden items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-lg p-6">
             <div class="flex justify-between items-center mb-4 border-b pb-3">
@@ -190,6 +188,63 @@
         </div>
     </div>
 
+    <!-- ADD INDICATOR MODAL -->
+    <div id="indicator-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs hidden items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-lg p-6">
+            <div class="flex justify-between items-center mb-4 border-b pb-3">
+                <h3 class="text-lg font-bold text-slate-800">Add Logframe Indicator</h3>
+                <button onclick="closeIndicatorModal()" class="text-slate-400 hover:text-slate-600 font-bold cursor-pointer">&times;</button>
+            </div>
+            
+            <form onsubmit="handleCreateIndicator(event)" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Hierarchy Level</label>
+                        <select id="ind-hierarchy" class="w-full px-4 py-2 border border-slate-200 rounded-lg text-sm bg-white">
+                            <option value="Impact">Impact / Goal</option>
+                            <option value="Outcome 1">Outcome 1</option>
+                            <option value="Outcome 2">Outcome 2</option>
+                            <option value="Output 1.1">Output 1.1</option>
+                            <option value="Output 1.2">Output 1.2</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Select from IndiKit</label>
+                        <select id="ind-quick-select" onchange="populateIndicatorPreset(this)" class="w-full px-4 py-2 border border-slate-200 rounded-lg text-sm bg-white">
+                            <option value="">-- Custom Metric --</option>
+                            <option value="HDDS|Household Dietary Diversity Score (HDDS)|0 score|6 score|Household Survey">HDDS (Food Security)</option>
+                            <option value="CSI|Coping Strategies Index (CSI) average score|18 score|5 score|FCS & CSI Survey">CSI (Livelihoods)</option>
+                            <option value="WASH|Percentage of target population with access to safe drinking water|22%|85%|WASH Monitoring Report">Water Access (WASH)</option>
+                            <option value="AAP|Percentage of feedback/complaints addressed within standard timeframe|15%|90%| CFM Database Log">AAP Feedback (Cross-Cutting)</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Indicator Description</label>
+                    <textarea id="ind-desc" required rows="2" placeholder="Describe exact indicator metric..." class="w-full px-4 py-2 border border-slate-200 rounded-lg text-sm"></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Baseline Value</label>
+                        <input type="text" id="ind-baseline" required placeholder="e.g., 18%" class="w-full px-4 py-2 border border-slate-200 rounded-lg text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Target Value</label>
+                        <input type="text" id="ind-target" required placeholder="e.g., 65%" class="w-full px-4 py-2 border border-slate-200 rounded-lg text-sm">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Means of Verification</label>
+                    <input type="text" id="ind-mov" required placeholder="e.g., Post-Distribution Monitoring Report" class="w-full px-4 py-2 border border-slate-200 rounded-lg text-sm">
+                </div>
+                <div class="pt-4 flex justify-end space-x-3 border-t">
+                    <button type="button" onclick="closeIndicatorModal()" class="px-4 py-2 border border-slate-200 text-slate-600 rounded-lg text-sm font-medium cursor-pointer">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700 cursor-pointer">Add Indicator</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- SCRIPT LOGIC -->
     <script>
         const SUPABASE_URL = 'https://hwldzjpmuwalfssepzdv.supabase.co';
@@ -197,6 +252,20 @@
         
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         let projects = [];
+        let currentActiveProject = null;
+
+        const indikillDatabase = [
+            { code: 'FS-01', sector: 'Food Security', name: 'Percentage of households with acceptable Food Consumption Score (FCS)', unit: 'Percentage', definition: 'Measures dietary diversity and food frequency.' },
+            { code: 'FS-02', sector: 'Food Security', name: 'Household Dietary Diversity Score (HDDS)', unit: 'Score (0-12)', definition: 'Average number of food groups consumed over a 24-hour period.' },
+            { code: 'LIV-01', sector: 'Livelihoods', name: 'Coping Strategies Index (CSI) average score', unit: 'Score', definition: 'Frequency and severity of household coping behaviors.' },
+            { code: 'LIV-02', sector: 'Livelihoods', name: 'Average daily income per capita among target households', unit: 'Currency / USD', definition: 'Measures economic resilience improvement.' },
+            { code: 'WASH-01', sector: 'WASH', name: 'Percentage of population with access to a basic drinking water source', unit: 'Percentage', definition: 'Proportion using improved water sources within 30 minutes round trip.' },
+            { code: 'WASH-02', sector: 'WASH', name: 'Percentage of households with functional handwashing facilities with soap and water', unit: 'Percentage', definition: 'Direct observation score during field monitoring.' },
+            { code: 'PROT-01', sector: 'Protection', name: 'Number of individuals reached through awareness-raising sessions on rights and services', unit: 'Count (Disaggregated)', definition: 'Tracks protection community engagement volume.' },
+            { code: 'PROT-02', sector: 'Protection', name: 'Percentage of GBV survivors accessing timely multi-sectoral support services', unit: 'Percentage', definition: 'Clinical, psychosocial, and legal referral tracking.' },
+            { code: 'AAP-01', sector: 'Cross-Cutting', name: 'Percentage of recorded community feedback/complaints addressed within standard SOP timeline', unit: 'Percentage', definition: 'Measures internal accountability responsiveness.' },
+            { code: 'AAP-02', sector: 'Cross-Cutting', name: 'Percentage of targeted people reporting that project assistance is delivered in a safe, accountable manner', unit: 'Percentage', definition: 'Post-distribution feedback survey metric.' }
+        ];
 
         async function fetchProjects() {
             const { data, error } = await supabaseClient.from('projects').select('*');
@@ -213,6 +282,7 @@
             document.getElementById('auth-view').classList.add('hidden');
             document.getElementById('dashboard-view').classList.remove('hidden');
             fetchProjects();
+            renderIndiKitLibrary('all');
         }
 
         function handleLogout() {
@@ -236,6 +306,28 @@
             }
         }
 
+        function filterLibrary(sector) {
+            renderIndiKitLibrary(sector);
+        }
+
+        function renderIndiKitLibrary(filter) {
+            const container = document.getElementById('indikit-container');
+            const filtered = filter === 'all' ? indikillDatabase : indikillDatabase.filter(i => i.sector.toLowerCase().includes(filter.toLowerCase()));
+
+            container.innerHTML = filtered.map(ind => `
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex justify-between items-start">
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-xs font-bold bg-slate-100 text-slate-700 px-2 py-0.5 rounded">${ind.code}</span>
+                            <span class="text-xs font-semibold bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded">${ind.sector}</span>
+                        </div>
+                        <h3 class="font-bold text-slate-800 mt-2 text-sm">${ind.name}</h3>
+                        <p class="text-xs text-slate-500 mt-1"><strong>Unit:</strong> ${ind.unit} | <strong>Guidance:</strong> ${ind.definition}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
         function openModal() {
             document.getElementById('project-modal').classList.add('flex');
             document.getElementById('project-modal').classList.remove('hidden');
@@ -246,13 +338,31 @@
             document.getElementById('project-modal').classList.remove('flex');
         }
 
+        function openIndicatorModal() {
+            document.getElementById('indicator-modal').classList.add('flex');
+            document.getElementById('indicator-modal').classList.remove('hidden');
+        }
+
+        function closeIndicatorModal() {
+            document.getElementById('indicator-modal').classList.add('hidden');
+            document.getElementById('indicator-modal').classList.remove('flex');
+        }
+
+        function populateIndicatorPreset(el) {
+            if(!el.value) return;
+            const parts = el.value.split('|');
+            document.getElementById('ind-desc').value = parts[1];
+            document.getElementById('ind-baseline').value = parts[2];
+            document.getElementById('ind-target').value = parts[3];
+            document.getElementById('ind-mov').value = parts[4];
+        }
+
         async function handleCreateProject(event) {
             event.preventDefault();
             const title = document.getElementById('p-title').value;
             const sector = document.getElementById('p-sector').value;
             const donor = document.getElementById('p-donor').value;
 
-            // Fixed from .form() to .from()
             const { data, error } = await supabaseClient
                 .from('projects')
                 .insert([{ title, sector, donor }])
@@ -263,17 +373,66 @@
                 closeModal();
                 document.querySelector('#project-modal form').reset();
             } else {
-                console.error("Supabase save error details:", error);
                 alert('Error saving to Supabase: ' + error.message);
             }
         }
 
-        function viewLogframe(index) {
-            const p = projects[index];
-            document.getElementById('lf-title').innerText = p.title;
-            document.getElementById('lf-sector').innerText = p.sector;
-            document.getElementById('lf-donor').innerText = "Donor Agency: " + p.donor;
+        async function handleCreateIndicator(event) {
+            event.preventDefault();
+            if(!currentActiveProject) return;
+
+            const hierarchy = document.getElementById('ind-hierarchy').value;
+            const description = document.getElementById('ind-desc').value;
+            const baseline = document.getElementById('ind-baseline').value;
+            const target = document.getElementById('ind-target').value;
+            const mov = document.getElementById('ind-mov').value;
+
+            // Save to indicators table or project JSON array
+            const indicators = currentActiveProject.indicators || [];
+            indicators.push({ hierarchy, description, baseline, target, mov });
+
+            const { error } = await supabaseClient
+                .from('projects')
+                .update({ indicators })
+                .eq('id', currentActiveProject.id);
+
+            if(!error) {
+                currentActiveProject.indicators = indicators;
+                renderIndicatorsTable();
+                closeIndicatorModal();
+                document.querySelector('#indicator-modal form').reset();
+            } else {
+                alert('Error saving indicator: ' + error.message);
+            }
+        }
+
+        async function viewLogframe(index) {
+            currentActiveProject = projects[index];
+            document.getElementById('lf-title').innerText = currentActiveProject.title;
+            document.getElementById('lf-sector').innerText = currentActiveProject.sector;
+            document.getElementById('lf-donor').innerText = "Donor Agency: " + currentActiveProject.donor;
+            renderIndicatorsTable();
             switchTab('logframe');
+        }
+
+        function renderIndicatorsTable() {
+            const tbody = document.getElementById('indicators-table-body');
+            const indicators = currentActiveProject.indicators || [];
+
+            if(indicators.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400 text-xs">No indicators added yet. Click "+ Add Indicator" above.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = indicators.map(ind => `
+                <tr>
+                    <td class="p-3 font-semibold text-indigo-900">${ind.hierarchy}</td>
+                    <td class="p-3">${ind.description}</td>
+                    <td class="p-3">${ind.baseline}</td>
+                    <td class="p-3">${ind.target}</td>
+                    <td class="p-3">${ind.mov}</td>
+                </tr>
+            `).join('');
         }
 
         function renderProjects() {
