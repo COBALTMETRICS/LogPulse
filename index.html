@@ -17,20 +17,19 @@
                 <p class="text-sm text-slate-500 mt-1">Intelligent MEAL Command Center</p>
             </div>
             
-            <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
+            <form onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
                     <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Email Address</label>
-                    <input type="email" id="login-email" required placeholder="name@organization.org" class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                    <input type="email" required placeholder="name@organization.org" class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Password</label>
-                    <input type="password" id="login-password" required placeholder="••••••••" class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                    <input type="password" required placeholder="••••••••" class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
                 </div>
                 <button type="submit" class="w-full bg-indigo-600 text-white py-2.5 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition shadow-sm cursor-pointer">
                     Sign In / Register
                 </button>
             </form>
-            <p class="text-xs text-center text-slate-400 mt-6">Secure, role-based access for NGO project managers.</p>
         </div>
     </div>
 
@@ -42,13 +41,12 @@
                 <span class="font-bold text-slate-800 text-lg">LogPulse</span>
             </div>
             <div class="flex items-center space-x-4">
-                <span class="text-xs bg-emerald-50 text-emerald-700 font-medium px-3 py-1 rounded-full border border-emerald-200">● Cloud Synced</span>
+                <span id="sync-status" class="text-xs bg-emerald-50 text-emerald-700 font-medium px-3 py-1 rounded-full border border-emerald-200">● Cloud Synced</span>
                 <button onclick="handleLogout()" class="text-sm text-slate-500 hover:text-red-600 font-medium transition cursor-pointer">Sign Out</button>
             </div>
         </header>
 
         <div class="flex flex-1">
-            <!-- Sidebar Navigation -->
             <aside class="w-64 bg-white border-r border-slate-200 p-6 hidden md:block">
                 <nav class="space-y-1">
                     <button onclick="switchTab('projects')" id="nav-projects" class="w-full flex items-center space-x-3 px-4 py-2.5 bg-indigo-50 text-indigo-700 rounded-lg font-medium text-sm transition cursor-pointer"><span>📊 Projects Hub</span></button>
@@ -57,31 +55,28 @@
                 </nav>
             </aside>
 
-            <!-- Main Content Area -->
             <main class="flex-1 p-8">
                 
-                <!-- TAB 1: PROJECTS HUB -->
+                <!-- PROJECTS HUB -->
                 <div id="tab-projects" class="space-y-6">
                     <div class="flex justify-between items-center mb-6">
                         <div>
                             <h2 class="text-2xl font-bold text-slate-800">Projects Dashboard</h2>
                             <p class="text-sm text-slate-500">Manage your logframes, indicators, and live execution data.</p>
                         </div>
-                        <button onclick="openModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition shadow-sm cursor-pointer">
-                            + New Project
-                        </button>
+                        <button onclick="openModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition shadow-sm cursor-pointer">+ New Project</button>
                     </div>
 
                     <div id="projects-container">
-                        <div id="empty-state" class="bg-white border-2 border-dashed border-slate-200 rounded-2xl p-12 text-center">
+                        <div id="empty-state" class="bg-white border-2 border-dashed border-slate-200 rounded-2xl p-12 text-center hidden">
                             <p class="text-slate-600 font-medium">No projects created yet.</p>
                             <p class="text-sm text-slate-400 mt-1">Click "+ New Project" to start building your first logframe framework.</p>
                         </div>
-                        <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6 hidden"></div>
+                        <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
                     </div>
                 </div>
 
-                <!-- TAB 2: INDICATOR LIBRARY -->
+                <!-- INDICATOR LIBRARY -->
                 <div id="tab-library" class="hidden space-y-6">
                     <div>
                         <h2 class="text-2xl font-bold text-slate-800">Master Indicator Library</h2>
@@ -101,11 +96,11 @@
                     </div>
                 </div>
 
-                <!-- TAB 3: SETTINGS -->
+                <!-- SETTINGS -->
                 <div id="tab-settings" class="hidden space-y-6">
                     <div>
                         <h2 class="text-2xl font-bold text-slate-800">Workspace Settings</h2>
-                        <p class="text-sm text-slate-500">Manage your organization profile and database sync status.</p>
+                        <p class="text-sm text-slate-500">Configure your connection and organization parameters.</p>
                     </div>
                     <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm max-w-xl space-y-4">
                         <div>
@@ -119,20 +114,48 @@
                     </div>
                 </div>
 
-                <!-- TAB 4: SINGLE PROJECT LOGFRAME VIEW -->
+                <!-- SINGLE PROJECT LOGFRAME VIEW -->
                 <div id="tab-logframe" class="hidden space-y-6">
                     <button onclick="switchTab('projects')" class="text-xs font-semibold text-indigo-600 hover:underline cursor-pointer">&larr; Back to Projects Hub</button>
-                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                        <span id="lf-sector" class="text-xs font-semibold bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-md"></span>
-                        <h2 id="lf-title" class="text-2xl font-bold text-slate-800 mt-2"></h2>
-                        <p id="lf-donor" class="text-xs text-slate-400 mt-1"></p>
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                        <div>
+                            <span id="lf-sector" class="text-xs font-semibold bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-md"></span>
+                            <h2 id="lf-title" class="text-2xl font-bold text-slate-800 mt-2"></h2>
+                            <p id="lf-donor" class="text-xs text-slate-400 mt-1"></p>
+                        </div>
+                        
+                        <div class="mt-6 pt-6 border-t">
+                            <h3 class="font-bold text-slate-700 mb-3 text-sm uppercase tracking-wider">Logframe Matrix & Indicators</h3>
+                            <div class="overflow-x-auto border border-slate-200 rounded-lg">
+                                <table class="w-full text-left text-sm text-slate-600">
+                                    <thead class="bg-slate-50 text-xs uppercase text-slate-500 border-b">
+                                        <tr>
+                                            <th class="p-3">Hierarchy</th>
+                                            <th class="p-3">Indicator Description</th>
+                                            <th class="p-3">Baseline</th>
+                                            <th class="p-3">Target</th>
+                                            <th class="p-3">Means of Verification</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100">
+                                        <tr>
+                                            <td class="p-3 font-semibold text-indigo-900">Outcome 1</td>
+                                            <td class="p-3">Improved resilience and food security metrics achieved across target households.</td>
+                                            <td class="p-3">18%</td>
+                                            <td class="p-3">65%</td>
+                                            <td class="p-3">Household Baseline & Endline Survey Reports</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </main>
         </div>
     </div>
 
-    <!-- MODAL: NEW PROJECT WIZARD -->
+    <!-- MODAL -->
     <div id="project-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs hidden items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-lg p-6">
             <div class="flex justify-between items-center mb-4 border-b pb-3">
@@ -143,12 +166,12 @@
             <form onsubmit="handleCreateProject(event)" class="space-y-4">
                 <div>
                     <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Project Title</label>
-                    <input type="text" id="p-title" required placeholder="e.g., Kakuma Livelihood Resilience Program" class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                    <input type="text" id="p-title" required placeholder="e.g., Kakuma Livelihood Resilience Program" class="w-full px-4 py-2 border border-slate-200 rounded-lg text-sm">
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Sector</label>
-                        <select id="p-sector" class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm bg-white">
+                        <select id="p-sector" class="w-full px-4 py-2 border border-slate-200 rounded-lg text-sm bg-white">
                             <option value="Health & Nutrition">Health & Nutrition</option>
                             <option value="Livelihoods & Resilience">Livelihoods & Resilience</option>
                             <option value="Protection & AAP">Protection & AAP</option>
@@ -156,12 +179,12 @@
                     </div>
                     <div>
                         <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Donor / Agency</label>
-                        <input type="text" id="p-donor" required placeholder="e.g., USAID / WFP" class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                        <input type="text" id="p-donor" required placeholder="e.g., USAID / WFP" class="w-full px-4 py-2 border border-slate-200 rounded-lg text-sm">
                     </div>
                 </div>
                 <div class="pt-4 flex justify-end space-x-3 border-t">
-                    <button type="button" onclick="closeModal()" class="px-4 py-2 border border-slate-200 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-50 cursor-pointer">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700 transition cursor-pointer">Save to Cloud</button>
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 border border-slate-200 text-slate-600 rounded-lg text-sm font-medium cursor-pointer">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700 cursor-pointer">Save Project</button>
                 </div>
             </form>
         </div>
@@ -169,24 +192,19 @@
 
     <!-- SCRIPT LOGIC -->
     <script>
-        const SUPABASE_URL = 'https://hwldzjpmuwalfssepzdv.supabase.co
-';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh3bGR6anBtdXdhbGZzc2VwemR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc1MDQ5NjUsImV4cCI6MjEwMzA4MDk2NX0._1AmXD7nPUrqelwv7TLK8jB3He5DeXZHVLbokgQMPcA
-';
+        const SUPABASE_URL = 'https://hwldzjpmuwalfssepzdv.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh3bGR6anBtdXdhbGZzc2VwemR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc1MDQ5NjUsImV4cCI6MjEwMzA4MDk2NX0._1AmXD7nPUrqelwv7TLK8jB3He5DeXZHVLbokgQMPcA';
         
-        let supabaseClient = null;
-        if(SUPABASE_URL !== 'YOUR_SUPABASE_URL_HERE') {
-            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        }
-        
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         let projects = [];
 
         async function fetchProjects() {
-            if(!supabaseClient) return;
             const { data, error } = await supabaseClient.from('projects').select('*');
             if(data) {
                 projects = data;
                 renderProjects();
+            } else if(error) {
+                console.error("Supabase fetch error:", error);
             }
         }
 
@@ -208,13 +226,13 @@
             });
             ['projects', 'library', 'settings'].forEach(t => {
                 const btn = document.getElementById('nav-' + t);
-                if(btn) btn.className = "w-full flex items-center space-x-3 px-4 py-2.5 text-slate-600 hover:bg-slate-50 rounded-lg font-medium text-sm transition";
+                if(btn) btn.className = "w-full flex items-center space-x-3 px-4 py-2.5 text-slate-600 hover:bg-slate-50 rounded-lg font-medium text-sm transition cursor-pointer";
             });
 
             document.getElementById('tab-' + tabName).classList.remove('hidden');
             if(tabName !== 'logframe') {
                 const activeBtn = document.getElementById('nav-' + tabName);
-                if(activeBtn) activeBtn.className = "w-full flex items-center space-x-3 px-4 py-2.5 bg-indigo-50 text-indigo-700 rounded-lg font-medium text-sm transition";
+                if(activeBtn) activeBtn.className = "w-full flex items-center space-x-3 px-4 py-2.5 bg-indigo-50 text-indigo-700 rounded-lg font-medium text-sm transition cursor-pointer";
             }
         }
 
@@ -234,25 +252,17 @@
             const sector = document.getElementById('p-sector').value;
             const donor = document.getElementById('p-donor').value;
 
-            if(supabaseClient) {
-                const { data, error } = await supabaseClient
-                    .from('projects')
-                    .insert([{ title, sector, donor }])
-                    .select();
+            const { data, error } = await supabaseClient
+                .form('projects')
+                .insert([{ title, sector, donor }])
+                .select();
 
-                if(!error) {
-                    fetchProjects();
-                    closeModal();
-                    document.querySelector('#project-modal form').reset();
-                } else {
-                    alert('Supabase Error: Check if your "projects" table exists.');
-                }
-            } else {
-                // Fallback local mode if Supabase keys aren't added yet
-                projects.push({ title, sector, donor });
-                renderProjects();
+            if(!error) {
+                fetchProjects();
                 closeModal();
                 document.querySelector('#project-modal form').reset();
+            } else {
+                alert('Error saving to Supabase. Ensure your "projects" table has text columns: title, sector, donor.');
             }
         }
 
@@ -285,7 +295,7 @@
                     </div>
                     <h3 class="text-lg font-bold text-slate-800 mt-2">${p.title}</h3>
                     <div class="mt-4 pt-4 border-t flex justify-between items-center">
-                        <span class="text-xs text-emerald-600 font-medium">● Active Workspace</span>
+                        <span class="text-xs text-emerald-600 font-medium">● Cloud Synced</span>
                         <button onclick="viewLogframe(${idx})" class="text-indigo-600 font-medium text-xs hover:underline cursor-pointer">View Logframe &rarr;</button>
                     </div>
                 </div>
