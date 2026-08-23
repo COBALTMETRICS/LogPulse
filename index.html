@@ -252,8 +252,9 @@
             const sector = document.getElementById('p-sector').value;
             const donor = document.getElementById('p-donor').value;
 
+            // Fixed from .form() to .from()
             const { data, error } = await supabaseClient
-                .form('projects')
+                .from('projects')
                 .insert([{ title, sector, donor }])
                 .select();
 
@@ -262,7 +263,8 @@
                 closeModal();
                 document.querySelector('#project-modal form').reset();
             } else {
-                alert('Error saving to Supabase. Ensure your "projects" table has text columns: title, sector, donor.');
+                console.error("Supabase save error details:", error);
+                alert('Error saving to Supabase: ' + error.message);
             }
         }
 
