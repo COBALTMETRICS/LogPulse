@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LogPulse | MEAL Command Center</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- Supabase Client CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body class="bg-slate-50 text-slate-900 font-sans min-h-screen">
@@ -18,16 +17,16 @@
                 <p class="text-sm text-slate-500 mt-1">Intelligent MEAL Command Center</p>
             </div>
             
-            <form onsubmit="handleLogin(event)" class="space-y-4">
+            <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
                     <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Email Address</label>
-                    <input type="email" required placeholder="name@organization.org" class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                    <input type="email" id="login-email" required placeholder="name@organization.org" class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Password</label>
-                    <input type="password" required placeholder="••••••••" class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                    <input type="password" id="login-password" required placeholder="••••••••" class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
                 </div>
-                <button type="submit" class="w-full bg-indigo-600 text-white py-2.5 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition shadow-sm">
+                <button type="submit" class="w-full bg-indigo-600 text-white py-2.5 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition shadow-sm cursor-pointer">
                     Sign In / Register
                 </button>
             </form>
@@ -44,7 +43,7 @@
             </div>
             <div class="flex items-center space-x-4">
                 <span class="text-xs bg-emerald-50 text-emerald-700 font-medium px-3 py-1 rounded-full border border-emerald-200">● Cloud Synced</span>
-                <button onclick="handleLogout()" class="text-sm text-slate-500 hover:text-red-600 font-medium transition">Sign Out</button>
+                <button onclick="handleLogout()" class="text-sm text-slate-500 hover:text-red-600 font-medium transition cursor-pointer">Sign Out</button>
             </div>
         </header>
 
@@ -52,9 +51,9 @@
             <!-- Sidebar Navigation -->
             <aside class="w-64 bg-white border-r border-slate-200 p-6 hidden md:block">
                 <nav class="space-y-1">
-                    <button onclick="switchTab('projects')" id="nav-projects" class="w-full flex items-center space-x-3 px-4 py-2.5 bg-indigo-50 text-indigo-700 rounded-lg font-medium text-sm transition"><span>📊 Projects Hub</span></button>
-                    <button onclick="switchTab('library')" id="nav-library" class="w-full flex items-center space-x-3 px-4 py-2.5 text-slate-600 hover:bg-slate-50 rounded-lg font-medium text-sm transition"><span>📚 Indicator Library</span></button>
-                    <button onclick="switchTab('settings')" id="nav-settings" class="w-full flex items-center space-x-3 px-4 py-2.5 text-slate-600 hover:bg-slate-50 rounded-lg font-medium text-sm transition"><span>⚙️ Settings</span></button>
+                    <button onclick="switchTab('projects')" id="nav-projects" class="w-full flex items-center space-x-3 px-4 py-2.5 bg-indigo-50 text-indigo-700 rounded-lg font-medium text-sm transition cursor-pointer"><span>📊 Projects Hub</span></button>
+                    <button onclick="switchTab('library')" id="nav-library" class="w-full flex items-center space-x-3 px-4 py-2.5 text-slate-600 hover:bg-slate-50 rounded-lg font-medium text-sm transition cursor-pointer"><span>📚 Indicator Library</span></button>
+                    <button onclick="switchTab('settings')" id="nav-settings" class="w-full flex items-center space-x-3 px-4 py-2.5 text-slate-600 hover:bg-slate-50 rounded-lg font-medium text-sm transition cursor-pointer"><span>⚙️ Settings</span></button>
                 </nav>
             </aside>
 
@@ -122,7 +121,7 @@
 
                 <!-- TAB 4: SINGLE PROJECT LOGFRAME VIEW -->
                 <div id="tab-logframe" class="hidden space-y-6">
-                    <button onclick="switchTab('projects')" class="text-xs font-semibold text-indigo-600 hover:underline">&larr; Back to Projects Hub</button>
+                    <button onclick="switchTab('projects')" class="text-xs font-semibold text-indigo-600 hover:underline cursor-pointer">&larr; Back to Projects Hub</button>
                     <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
                         <span id="lf-sector" class="text-xs font-semibold bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-md"></span>
                         <h2 id="lf-title" class="text-2xl font-bold text-slate-800 mt-2"></h2>
@@ -138,7 +137,7 @@
         <div class="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-lg p-6">
             <div class="flex justify-between items-center mb-4 border-b pb-3">
                 <h3 class="text-lg font-bold text-slate-800">Create New Project Logframe</h3>
-                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 font-bold">&times;</button>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 font-bold cursor-pointer">&times;</button>
             </div>
             
             <form onsubmit="handleCreateProject(event)" class="space-y-4">
@@ -161,25 +160,27 @@
                     </div>
                 </div>
                 <div class="pt-4 flex justify-end space-x-3 border-t">
-                    <button type="button" onclick="closeModal()" class="px-4 py-2 border border-slate-200 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-50">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700 transition">Save to Cloud</button>
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 border border-slate-200 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-50 cursor-pointer">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700 transition cursor-pointer">Save to Cloud</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- SUPABASE & APP LOGIC -->
+    <!-- SCRIPT LOGIC -->
     <script>
-        // REPLACE THESE WITH YOUR SUPABASE CREDENTIALS FROM PROJECT SETTINGS
-        const SUPABASE_URL = https://hwldzjpmuwalfssepzdv.supabase.co ;
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh3bGR6anBtdXdhbGZzc2VwemR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc1MDQ5NjUsImV4cCI6MjEwMzA4MDk2NX0._1AmXD7nPUrqelwv7TLK8jB3He5DeXZHVLbokgQMPcA
-
-;
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL_HERE';
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY_HERE';
         
-        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        let supabaseClient = null;
+        if(SUPABASE_URL !== 'YOUR_SUPABASE_URL_HERE') {
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        }
+        
         let projects = [];
 
         async function fetchProjects() {
+            if(!supabaseClient) return;
             const { data, error } = await supabaseClient.from('projects').select('*');
             if(data) {
                 projects = data;
@@ -231,18 +232,25 @@
             const sector = document.getElementById('p-sector').value;
             const donor = document.getElementById('p-donor').value;
 
-            // Insert into Supabase database table named 'projects'
-            const { data, error } = await supabaseClient
-                .from('projects')
-                .insert([{ title, sector, donor }])
-                .select();
+            if(supabaseClient) {
+                const { data, error } = await supabaseClient
+                    .from('projects')
+                    .insert([{ title, sector, donor }])
+                    .select();
 
-            if(!error) {
-                fetchProjects();
-                closeModal();
-                document.querySelector('form').reset();
+                if(!error) {
+                    fetchProjects();
+                    closeModal();
+                    document.querySelector('#project-modal form').reset();
+                } else {
+                    alert('Supabase Error: Check if your "projects" table exists.');
+                }
             } else {
-                alert('Error saving project. Ensure your Supabase table "projects" is created.');
+                // Fallback local mode if Supabase keys aren't added yet
+                projects.push({ title, sector, donor });
+                renderProjects();
+                closeModal();
+                document.querySelector('#project-modal form').reset();
             }
         }
 
@@ -275,7 +283,7 @@
                     </div>
                     <h3 class="text-lg font-bold text-slate-800 mt-2">${p.title}</h3>
                     <div class="mt-4 pt-4 border-t flex justify-between items-center">
-                        <span class="text-xs text-emerald-600 font-medium">● Synced to Cloud</span>
+                        <span class="text-xs text-emerald-600 font-medium">● Active Workspace</span>
                         <button onclick="viewLogframe(${idx})" class="text-indigo-600 font-medium text-xs hover:underline cursor-pointer">View Logframe &rarr;</button>
                     </div>
                 </div>
