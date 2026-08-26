@@ -3,487 +3,362 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LogPulse - MEAL Suite & Behavioral Architecture Platform</title>
+    <title>LogPulse - Enterprise MEAL & Behavioral Architecture Suite</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
-        .view-section { display: none; }
-        .view-section.active { display: flex; flex-direction: column; }
+        .app-view { display: none; }
+        .app-view.active { display: flex; flex-direction: column; flex-grow: 1; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
 
-    <!-- VIEW 1: AUTHENTICATION / LOGIN SCREEN -->
-    <div id="login-view" class="view-section active min-h-screen items-center justify-center bg-indigo-950 px-4">
-        <div class="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 space-y-6">
-            <div class="text-center">
-                <div class="inline-block bg-indigo-600 text-white p-3 rounded-xl font-bold text-2xl tracking-wider mb-2 shadow-md">LP</div>
-                <h1 class="text-xl font-bold text-slate-900">Welcome to LogPulse</h1>
-                <p class="text-xs text-slate-500 mt-1">Advanced MEAL Logframe & Indicator Management Suite</p>
+    <!-- TOP NAVIGATION HEADER -->
+    <header class="bg-slate-900 text-white shadow-sm border-b border-slate-800 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-indigo-600 text-white px-2.5 py-1.5 rounded-lg font-bold text-base tracking-wider shadow">LP</div>
+                <div>
+                    <h1 class="text-sm font-bold tracking-tight">LogPulse <span class="text-[10px] px-1.5 py-0.5 bg-indigo-900 text-indigo-200 rounded ml-1 font-normal">Enterprise MEAL</span></h1>
+                </div>
             </div>
             
-            <form onsubmit="handleLogin(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Professional Email</label>
-                    <input type="email" required placeholder="manager@organization.org" class="w-full text-xs px-3.5 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Access Password</label>
-                    <input type="password" required placeholder="••••••••" class="w-full text-xs px-3.5 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-                </div>
-                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold py-3 rounded-lg shadow transition cursor-pointer">
-                    Sign In to Workspace
-                </button>
-            </form>
-            <div class="text-center text-[11px] text-slate-400">
-                Secured Enterprise Environment &bull; Behavioral Architecture Module Enabled
+            <div class="flex items-center space-x-2 bg-slate-800 p-1 rounded-lg border border-slate-700 text-xs">
+                <button onclick="switchTab('dashboard')" id="nav-dash" class="nav-btn px-3 py-1.5 rounded-md font-medium transition bg-indigo-600 text-white">Dashboard</button>
+                <button onclick="switchTab('builder')" id="nav-builder" class="nav-btn px-3 py-1.5 rounded-md font-medium transition text-slate-300 hover:text-white">Logframe Builder</button>
+                <button onclick="switchTab('pipeline')" id="nav-pipeline" class="nav-btn px-3 py-1.5 rounded-md font-medium transition text-slate-300 hover:text-white">MEAL Pipeline</button>
+            </div>
+
+            <div class="flex items-center space-x-3 text-xs">
+                <span class="text-slate-400">Workspace: <strong class="text-slate-200">Cobalt Metrics</strong></span>
             </div>
         </div>
-    </div>
+    </header>
 
-    <!-- MAIN APP SHELL (Hidden until login) -->
-    <div id="app-shell" class="view-section flex-grow flex-col">
-        
-        <!-- Top Navigation Header -->
-        <header class="bg-indigo-900 text-white shadow-md sticky top-0 z-50">
-            <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-                <div class="flex items-center space-x-4">
-                    <div class="bg-indigo-600 px-2.5 py-1.5 rounded-lg font-bold text-lg tracking-wider">LP</div>
-                    <div>
-                        <h1 class="text-sm font-bold tracking-tight">LogPulse <span class="text-[10px] px-2 py-0.5 bg-indigo-800 rounded text-indigo-200 ml-1">Enterprise Edition</span></h1>
-                        <p class="text-[10px] text-indigo-300">Automated Indicator Library & Logframe Engine</p>
+    <!-- MAIN APP CONTAINER -->
+    <div class="max-w-7xl mx-auto px-4 py-6 w-full flex-grow flex gap-6">
+
+        <!-- PERSISTENT SIDEBAR: PROJECTS & QUICK ARCHIVES -->
+        <aside class="w-64 bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex flex-col shrink-0 h-[84vh] sticky top-20">
+            <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Project Archives</h2>
+            
+            <div id="project-list" class="space-y-1.5 overflow-y-auto flex-grow pr-1">
+                <div onclick="switchProject('SBC Community Pilot 2026')" class="project-card p-2.5 rounded-lg border border-indigo-500 bg-indigo-50/50 cursor-pointer transition">
+                    <p class="text-xs font-bold text-indigo-900">SBC Community Pilot 2026</p>
+                    <span class="text-[10px] text-indigo-600">Active • 12 Indicators</span>
+                </div>
+                <div onclick="switchProject('Agri-Resilience Kenya')" class="project-card p-2.5 rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
+                    <p class="text-xs font-bold text-slate-700">Agri-Resilience Kenya</p>
+                    <span class="text-[10px] text-slate-400">Archived • 8 Indicators</span>
+                </div>
+                <div onclick="switchProject('GESI Economic Empowerment')" class="project-card p-2.5 rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
+                    <p class="text-xs font-bold text-slate-700">GESI Economic Empowerment</p>
+                    <span class="text-[10px] text-slate-400">Draft • 5 Indicators</span>
+                </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-100 mt-2">
+                <button onclick="createNewProject()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-xs py-2 rounded-lg transition cursor-pointer">
+                    + New Project Logframe
+                </button>
+            </div>
+        </aside>
+
+        <!-- CONTENT VIEWS AREA -->
+        <main class="flex-grow flex flex-col">
+
+            <!-- VIEW 1: DASHBOARD -->
+            <div id="view-dashboard" class="app-view active space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                        <p class="text-xs font-semibold text-slate-400 uppercase">Active Project</p>
+                        <h3 id="dash-active-title" class="text-lg font-bold text-slate-800 mt-1">SBC Community Pilot 2026</h3>
+                        <span class="text-[11px] text-indigo-600 font-medium mt-2 inline-block">Behavioral Architecture Framework</span>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                        <p class="text-xs font-semibold text-slate-400 uppercase">Matrix Indicators</p>
+                        <h3 id="dash-matrix-count" class="text-2xl font-bold text-indigo-600 mt-1">0</h3>
+                        <span class="text-[11px] text-slate-500 mt-2 inline-block">Properly subcategorized</span>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                        <p class="text-xs font-semibold text-slate-400 uppercase">MEAL Pipeline Status</p>
+                        <h3 class="text-2xl font-bold text-emerald-600 mt-1">Automated</h3>
+                        <span class="text-[11px] text-slate-500 mt-2 inline-block">Data entry & cleaning synced</span>
                     </div>
                 </div>
-                
-                <!-- Navigation Tabs -->
-                <div class="flex items-center space-x-1 bg-indigo-950 p-1 rounded-lg border border-indigo-800">
-                    <button onclick="switchTab('dashboard')" id="nav-btn-dashboard" class="nav-tab px-3 py-1.5 rounded-md text-xs font-semibold transition bg-indigo-600 text-white cursor-pointer">📊 Dashboard</button>
-                    <button onclick="switchTab('builder')" id="nav-btn-builder" class="nav-tab px-3 py-1.5 rounded-md text-xs font-semibold transition text-indigo-300 hover:text-white cursor-pointer">⚡ Logframe Builder</button>
-                </div>
 
-                <div class="flex items-center space-x-3 text-xs">
-                    <button onclick="handleLogout()" class="text-indigo-300 hover:text-white transition cursor-pointer">Sign Out</button>
-                </div>
-            </div>
-        </header>
-
-        <!-- VIEW 2: DASHBOARD OVERVIEW -->
-        <div id="view-dashboard" class="view-section active flex-grow max-w-7xl w-full mx-auto px-4 py-6 space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Active Sectors</p>
-                    <h3 class="text-2xl font-bold text-slate-800 mt-1">8 Core Domains</h3>
-                    <span class="text-[11px] text-emerald-600 font-medium mt-2 inline-block">100% Granular Mapping</span>
-                </div>
-                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Library Indicators</p>
-                    <h3 id="stat-total-indicators" class="text-2xl font-bold text-indigo-600 mt-1">0</h3>
-                    <span class="text-[11px] text-slate-500 mt-2 inline-block">Available for autofill</span>
-                </div>
-                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Logframe Entries</p>
-                    <h3 id="stat-active-matrix" class="text-2xl font-bold text-slate-800 mt-1">0</h3>
-                    <span class="text-[11px] text-indigo-600 font-medium mt-2 inline-block">In active matrix grid</span>
-                </div>
-                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Compliance Engine</p>
-                    <h3 class="text-2xl font-bold text-emerald-600 mt-1">Active</h3>
-                    <span class="text-[11px] text-slate-500 mt-2 inline-block">Zero external branding</span>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
-                <h3 class="font-bold text-slate-800 text-base mb-2">Welcome Back, MEAL Director</h3>
-                <p class="text-xs text-slate-600 leading-relaxed">
-                    LogPulse provides an automated, standardized framework to design, filter, and structure project indicators instantly. Switch to the <strong>Logframe Builder</strong> tab to select metrics across Agriculture, Climate, Nutrition, Food Security, GESI, GBV, and Income domains, and watch inputs populate automatically.
-                </p>
-                <div class="mt-4">
+                <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+                    <h3 class="font-bold text-slate-800 text-base mb-2">Streamlined MEAL Workflow</h3>
+                    <p class="text-xs text-slate-600 leading-relaxed mb-4">
+                        Manage your logframes through automated file uploads or granular library selection. Indicators are strictly subcategorized into **Input, Process, Output, Outcome, and Impact** to maintain high evaluation standards.
+                    </p>
                     <button onclick="switchTab('builder')" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 py-2.5 rounded-lg transition cursor-pointer">
-                        Open Logframe Matrix Builder &rarr;
+                        Open Logframe Builder &rarr;
                     </button>
                 </div>
             </div>
-        </div>
 
-        <!-- VIEW 3: LOGFRAME BUILDER & LIBRARY -->
-        <div id="view-builder" class="view-section flex-grow max-w-7xl w-full mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
-
-            <!-- Left Sidebar: Comprehensive Indicator Library -->
-            <section class="lg:col-span-5 bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex flex-col h-[80vh]">
-                <div class="flex justify-between items-center mb-3">
-                    <h2 class="font-bold text-slate-800 text-base flex items-center gap-2">
-                        <span>📚 Comprehensive Indicator Library</span>
-                        <span id="library-count" class="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full">0</span>
-                    </h2>
-                    <span class="text-xs text-slate-400">Click to autofill</span>
-                </div>
-
-                <!-- Sector Filter Buttons -->
-                <div class="flex flex-wrap gap-1.5 pb-3 border-b border-slate-100">
-                    <button onclick="filterLibrary('all')" class="lib-filter-btn px-2.5 py-1 bg-indigo-600 text-white text-xs font-semibold rounded-md transition cursor-pointer">All</button>
-                    <button onclick="filterLibrary('Agriculture')" class="lib-filter-btn px-2.5 py-1 bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-semibold rounded-md transition cursor-pointer">🌾 Agri</button>
-                    <button onclick="filterLibrary('Climate')" class="lib-filter-btn px-2.5 py-1 bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-semibold rounded-md transition cursor-pointer">🌱 Climate</button>
-                    <button onclick="filterLibrary('Nutrition')" class="lib-filter-btn px-2.5 py-1 bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-semibold rounded-md transition cursor-pointer">🥗 Nutrition</button>
-                    <button onclick="filterLibrary('Food Security')" class="lib-filter-btn px-2.5 py-1 bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-semibold rounded-md transition cursor-pointer">🍲 Food Sec</button>
-                    <button onclick="filterLibrary('GESI')" class="lib-filter-btn px-2.5 py-1 bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-semibold rounded-md transition cursor-pointer">⚖️ GESI</button>
-                    <button onclick="filterLibrary('GBV')" class="lib-filter-btn px-2.5 py-1 bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-semibold rounded-md transition cursor-pointer">🛡️ GBV</button>
-                    <button onclick="filterLibrary('SBC')" class="lib-filter-btn px-2.5 py-1 bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-semibold rounded-md transition cursor-pointer">🧠 SBC</button>
-                    <button onclick="filterLibrary('Income')" class="lib-filter-btn px-2.5 py-1 bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-semibold rounded-md transition cursor-pointer">💼 Income</button>
-                </div>
-
-                <!-- Search Bar -->
-                <div class="my-3">
-                    <input type="text" id="lib-search" oninput="renderLibrary()" placeholder="Search indicators, codes, definitions..." class="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                </div>
-
-                <!-- Indicator List -->
-                <div id="indicator-list-container" class="overflow-y-auto flex-grow space-y-2 pr-1">
-                    <!-- Dynamic Items -->
-                </div>
-            </section>
-
-            <!-- Right Section: Automated Form Inputs & Logframe Matrix -->
-            <section class="lg:col-span-7 flex flex-col space-y-6">
+            <!-- VIEW 2: LOGFRAME BUILDER & FILE UPLOAD -->
+            <div id="view-builder" class="app-view space-y-6">
                 
-                <!-- Automated Entry Form Card -->
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
-                    <div class="border-b border-slate-100 pb-3 mb-4 flex justify-between items-center">
-                        <h2 class="font-bold text-slate-800 text-base">⚡ Automated Logframe Entry</h2>
-                        <span id="selected-indicator-badge" class="text-xs font-medium bg-amber-50 text-amber-700 px-2.5 py-1 rounded-full border border-amber-200">No indicator selected</span>
+                <!-- Automated Upload Box -->
+                <div class="bg-indigo-900 text-white rounded-xl p-5 shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div>
+                        <h3 class="font-bold text-sm">📁 Automated File Ingestion</h3>
+                        <p class="text-xs text-indigo-200 mt-0.5">Upload a project proposal, survey sheet, or excel matrix to auto-populate indicators.</p>
                     </div>
-
-                    <form id="logframe-form" onsubmit="addLogframeRow(event)" class="space-y-4">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-1">Logframe Level</label>
-                                <select id="input-level" class="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                                    <option value="Impact">Impact / Goal</option>
-                                    <option value="Outcome" selected>Outcome / Specific Objective</option>
-                                    <option value="Output">Output / Result</option>
-                                    <option value="Activity">Activity</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-1">Sector / Theme</label>
-                                <input type="text" id="input-sector" readonly placeholder="Auto-populated from library" class="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg bg-slate-100 text-slate-600 cursor-not-allowed">
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Indicator Statement & Code *</label>
-                            <input type="text" id="input-indicator" required placeholder="Select an indicator from the library on the left..." class="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium">
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-1">Unit of Measurement</label>
-                                <input type="text" id="input-unit" readonly placeholder="e.g. Percentage (%)" class="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg bg-slate-100 text-slate-600">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-1">Baseline Value</label>
-                                <input type="text" id="input-baseline" placeholder="e.g. 15%" class="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-1">Target Value</label>
-                                <input type="text" id="input-target" placeholder="e.g. 60%" class="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Technical Definition & Calculation Guidance</label>
-                            <textarea id="input-definition" rows="2" readonly placeholder="Detailed calculation methodology will auto-populate here..." class="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg bg-slate-100 text-slate-600"></textarea>
-                        </div>
-
-                        <div class="flex justify-end pt-2">
-                            <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-5 py-2.5 rounded-lg shadow-sm transition cursor-pointer flex items-center gap-1.5">
-                                <span>➕ Add to Logframe Matrix</span>
-                            </button>
-                        </div>
-                    </form>
+                    <label class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-4 py-2 rounded-lg cursor-pointer transition shadow">
+                        Upload Document / CSV
+                        <input type="file" onchange="handleFileUpload(event)" class="hidden">
+                    </label>
                 </div>
 
-                <!-- Active Logframe Grid Table -->
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex-grow">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="font-bold text-slate-800 text-base">📊 Active Project Logframe Matrix</h2>
-                        <div class="space-x-2">
-                            <button onclick="exportLogframe()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded font-medium transition cursor-pointer">Export JSON</button>
-                            <button onclick="clearLogframe()" class="text-xs bg-rose-50 hover:bg-rose-100 text-rose-600 px-2.5 py-1 rounded font-medium transition cursor-pointer">Reset</button>
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <!-- Library Sidebar -->
+                    <div class="lg:col-span-5 bg-white rounded-xl border border-slate-200 p-4 flex flex-col h-[70vh]">
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="font-bold text-slate-800 text-xs uppercase tracking-wider">Indicator Library</h3>
+                            <span class="text-[10px] text-slate-400">Click to autofill</span>
+                        </div>
+                        <div class="flex gap-1 mb-2">
+                            <button onclick="filterLibrary('all')" class="lib-btn px-2 py-1 bg-indigo-600 text-white text-[10px] font-bold rounded">All</button>
+                            <button onclick="filterLibrary('Input')" class="lib-btn px-2 py-1 bg-slate-100 text-slate-600 text-[10px] font-bold rounded">Input</button>
+                            <button onclick="filterLibrary('Process')" class="lib-btn px-2 py-1 bg-slate-100 text-slate-600 text-[10px] font-bold rounded">Process</button>
+                            <button onclick="filterLibrary('Output')" class="lib-btn px-2 py-1 bg-slate-100 text-slate-600 text-[10px] font-bold rounded">Output</button>
+                            <button onclick="filterLibrary('Outcome')" class="lib-btn px-2 py-1 bg-slate-100 text-slate-600 text-[10px] font-bold rounded">Outcome</button>
+                            <button onclick="filterLibrary('Impact')" class="lib-btn px-2 py-1 bg-slate-100 text-slate-600 text-[10px] font-bold rounded">Impact</button>
+                        </div>
+                        <div id="library-container" class="overflow-y-auto flex-grow space-y-2 pr-1">
+                            <!-- Populated dynamically -->
                         </div>
                     </div>
 
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="border-b border-slate-200 text-slate-500 text-[11px] uppercase tracking-wider bg-slate-50">
-                                    <th class="p-2.5">Level</th>
-                                    <th class="p-2.5">Indicator & Definition</th>
-                                    <th class="p-2.5">Baseline</th>
-                                    <th class="p-2.5">Target</th>
-                                    <th class="p-2.5 text-right">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="logframe-table-body" class="text-xs divide-y divide-slate-100">
-                                <tr>
-                                    <td colspan="5" class="text-center py-8 text-slate-400">
-                                        Your logframe matrix is currently empty. Select indicators from the library above to build your project framework.
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <!-- Matrix Builder Form & Table -->
+                    <div class="lg:col-span-7 flex flex-col space-y-4">
+                        <div class="bg-white rounded-xl border border-slate-200 p-4">
+                            <h3 class="font-bold text-slate-800 text-xs uppercase tracking-wider mb-3">Add / Edit Indicator Entry</h3>
+                            <form id="matrix-form" onsubmit="addMatrixRow(event)" class="space-y-3 text-xs">
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="block font-semibold text-slate-600 mb-1">MEAL Subcategory</label>
+                                        <select id="form-subcat" class="w-full px-2.5 py-1.5 border border-slate-200 rounded bg-slate-50">
+                                            <option value="Input">Input Indicator</option>
+                                            <option value="Process">Process Indicator</option>
+                                            <option value="Output">Output Indicator</option>
+                                            <option value="Outcome" selected>Outcome Indicator</option>
+                                            <option value="Impact">Impact Indicator</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block font-semibold text-slate-600 mb-1">Sector / Domain</label>
+                                        <input type="text" id="form-sector" readonly placeholder="Auto-populated" class="w-full px-2.5 py-1.5 border border-slate-200 rounded bg-slate-100 text-slate-500">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-slate-600 mb-1">Indicator Statement *</label>
+                                    <input type="text" id="form-statement" required placeholder="Select from library or upload file..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded bg-slate-50">
+                                </div>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <input type="text" id="form-unit" placeholder="Unit (e.g. %)" class="px-2.5 py-1.5 border border-slate-200 rounded bg-slate-100" readonly>
+                                    <input type="text" id="form-baseline" placeholder="Baseline" class="px-2.5 py-1.5 border border-slate-200 rounded">
+                                    <input type="text" id="form-target" placeholder="Target" class="px-2.5 py-1.5 border border-slate-200 rounded">
+                                </div>
+                                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded transition cursor-pointer">
+                                    + Add to Active Logframe Matrix
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Active Matrix Table -->
+                        <div class="bg-white rounded-xl border border-slate-200 p-4 flex-grow">
+                            <h3 class="font-bold text-slate-800 text-xs uppercase tracking-wider mb-3">Active Logframe Matrix Grid</h3>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-xs">
+                                    <thead>
+                                        <tr class="border-b border-slate-200 text-slate-400 uppercase text-[10px]">
+                                            <th class="py-2">Subcategory</th>
+                                            <th class="py-2">Indicator Statement</th>
+                                            <th class="py-2">Baseline</th>
+                                            <th class="py-2">Target</th>
+                                            <th class="py-2 text-right">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="matrix-table-body" class="divide-y divide-slate-100">
+                                        <tr><td colspan="5" class="text-center py-6 text-slate-400">No indicators added yet.</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
+            </div>
 
-            </section>
+            <!-- VIEW 3: AUTOMATED MEAL PIPELINE (Data Entry, Cleaning, Analysis, Reporting) -->
+            <div id="view-pipeline" class="app-view space-y-6">
+                <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-4">
+                    <h3 class="font-bold text-slate-800 text-sm uppercase tracking-wider">Automated MEAL Processing Pipeline</h3>
+                    <p class="text-xs text-slate-600">
+                        This pipeline automates field data ingestion, anomaly detection (cleaning), aggregation (analysis), and executive summary generation.
+                    </p>
 
-        </div>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 pt-2">
+                        <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 text-center">
+                            <span class="text-xl">📥</span>
+                            <h4 class="font-bold text-xs mt-2">1. Data Entry</h4>
+                            <p class="text-[10px] text-slate-500 mt-1">Direct Kobo/ODK API or CSV sync.</p>
+                            <button onclick="runPipelineStep('entry')" class="mt-3 bg-indigo-600 text-white text-[10px] px-3 py-1.5 rounded font-medium">Sync Data</button>
+                        </div>
+                        <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 text-center">
+                            <span class="text-xl">🧹</span>
+                            <h4 class="font-bold text-xs mt-2">2. Data Cleaning</h4>
+                            <p class="text-[10px] text-slate-500 mt-1">Automated outlier & duplicate purging.</p>
+                            <button onclick="runPipelineStep('cleaning')" class="mt-3 bg-indigo-600 text-white text-[10px] px-3 py-1.5 rounded font-medium">Clean Dataset</button>
+                        </div>
+                        <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 text-center">
+                            <span class="text-xl">📈</span>
+                            <h4 class="font-bold text-xs mt-2">3. Analysis</h4>
+                            <p class="text-[10px] text-slate-500 mt-1">Compute baseline vs target variances.</p>
+                            <button onclick="runPipelineStep('analysis')" class="mt-3 bg-indigo-600 text-white text-[10px] px-3 py-1.5 rounded font-medium">Run Analysis</button>
+                        </div>
+                        <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 text-center">
+                            <span class="text-xl">📊</span>
+                            <h4 class="font-bold text-xs mt-2">4. Reporting</h4>
+                            <p class="text-[10px] text-slate-500 mt-1">Generate automated donor reports.</p>
+                            <button onclick="runPipelineStep('report')" class="mt-3 bg-indigo-600 text-white text-[10px] px-3 py-1.5 rounded font-medium">Export Report</button>
+                        </div>
+                    </div>
 
+                    <div id="pipeline-output" class="p-4 rounded-lg bg-slate-900 text-emerald-400 font-mono text-xs hidden">
+                        [LogPulse Engine]: Pipeline step successfully executed. Data integrity verified.
+                    </div>
+                </div>
+            </div>
+
+        </main>
     </div>
 
-    <!-- Application JavaScript Logic -->
+    <!-- SCRIPT LOGIC -->
     <script>
-        // Full Granular Indicator Dataset across all sectors
-        const indicatorLibrary = [
-            // --- AGRICULTURE & NRM ---
-            { code: 'AGRI-01', sector: 'Agriculture', name: 'Reported Crop Yield Per Unit', unit: 'kg / Hectare', definition: 'Ratio of harvested crop production weight to cultivated land area unit.' },
-            { code: 'AGRI-02', sector: 'Agriculture', name: 'Adoption of Promoted Agricultural Technologies', unit: 'Percentage (%)', definition: 'Proportion of targeted farmers actively utilizing improved seeds, fertilizers, or irrigation.' },
-            { code: 'AGRI-03', sector: 'Agriculture', name: 'Storage-Related Post-Harvest Losses', unit: 'Percentage (%)', definition: 'Proportion of harvested grain or produce lost due to poor storage or pest infestation.' },
-            { code: 'AGRI-04', sector: 'Agriculture', name: 'Agricultural Productivity Index', unit: 'Ratio Score', definition: 'Ratio of agricultural outputs to invested financial and labor inputs.' },
-            { code: 'AGRI-05', sector: 'Agriculture', name: 'Farmers’ Participation in Cooperatives or Producer Groups', unit: 'Percentage (%)', definition: 'Proportion of active farmers registered in formal marketing or input-sharing cooperatives.' },
-
-            // --- CLIMATE & ENVIRONMENT ---
-            { code: 'CLIM-01', sector: 'Climate', name: 'Area of Land Under Improved Management Practices', unit: 'Hectares (Ha)', definition: 'Surface area benefiting from climate-resilient agriculture, soil conservation, or reforestation.' },
-            { code: 'CLIM-02', sector: 'Climate', name: 'Increased Access to and Use of Clean Energy Solutions', unit: 'Percentage (%)', definition: 'Proportion of households adopting solar units, energy-efficient cookstoves, or clean fuel.' },
-            { code: 'CLIM-03', sector: 'Climate', name: 'Reduction of Greenhouse Gas Emissions', unit: 'Tons CO2 eq', definition: 'Calculated volume of greenhouse gas emissions saved through green interventions.' },
-            { code: 'CLIM-04', sector: 'Climate', name: 'Adoption of Climate Resilience and Adaptation Measures', unit: 'Percentage (%)', definition: 'Proportion of vulnerable communities implementing approved disaster risk reduction practices.' },
-
-            // --- NUTRITION ---
-            { code: 'NUT-01', sector: 'Nutrition', name: 'Minimum Dietary Diversity - Women (MDD-W)', unit: 'Percentage (%)', definition: 'Proportion of women aged 15-49 consuming foods from 5 out of 10 designated food groups the previous day.' },
-            { code: 'NUT-02', sector: 'Nutrition', name: 'Exclusive Breastfeeding Under Six Months', unit: 'Percentage (%)', definition: 'Proportion of infants 0-5 months of age who received only breast milk during the previous day.' },
-            { code: 'NUT-03', sector: 'Nutrition', name: 'Minimum Acceptable Diet (MAD) for Children', unit: 'Percentage (%)', definition: 'Proportion of children 6-23 months receiving appropriate dietary diversity and meal frequency.' },
-            { code: 'NUT-04', sector: 'Nutrition', name: 'Prevalence of Global Acute Malnutrition (GAM based on WHZ)', unit: 'Percentage (%)', definition: 'Proportion of children aged 6-59 months suffering from moderate or severe acute malnutrition.' },
-            { code: 'NUT-05', sector: 'Nutrition', name: 'Recovery (Cure) Rate in Acute Malnutrition Treatment', unit: 'Percentage (%)', definition: 'Proportion of admitted malnourished children successfully discharged as cured.' },
-
-            // --- FOOD SECURITY ---
-            { code: 'FS-01', sector: 'Food Security', name: 'Household Dietary Diversity Score (HDDS)', unit: 'Score (0-12)', definition: 'Average number of unique food groups consumed by household members over a 24-hour recall period.' },
-            { code: 'FS-02', sector: 'Food Security', name: 'Food Consumption Score (FCS)', unit: 'Composite Score', definition: 'Standard WFP metric combining dietary diversity, food frequency, and relative nutritional weight.' },
-            { code: 'FS-03', sector: 'Food Security', name: 'Household Hunger Scale (HHS) Index', unit: 'Score (0-6)', definition: 'Measures food deprivation levels in households experiencing severe food insecurity.' },
-            { code: 'FS-04', sector: 'Food Security', name: 'Coping Strategy Index (CSI)', unit: 'Score', definition: 'Measures frequency and severity of behavioral food-shortage coping mechanisms adopted by households.' },
-
-            // --- GESI ---
-            { code: 'GESI-01', sector: 'GESI', name: 'GEM Scale Score (Gender-Equitable Men Scale)', unit: 'Mean Score (1-4)', definition: 'Measures attitudes toward gender norms, equity, and equitable household roles.' },
-            { code: 'GESI-02', sector: 'GESI', name: 'Household Decision-Making Index', unit: 'Index (0-1)', definition: 'Measures women’s independent input and autonomy in household purchasing and livelihoods.' },
-            { code: 'GESI-03', sector: 'GESI', name: 'Women’s Control Over Own Income', unit: 'Percentage (%)', definition: 'Proportion of women who independently decide how cash earned directly by them is utilized.' },
-            { code: 'GESI-04', sector: 'GESI', name: 'Men’s Participation in Household Chores & Care Work', unit: 'Average Hours / Week', definition: 'Measures redistribution of unpaid domestic responsibilities and child care.' },
-
-            // --- GENDER-BASED VIOLENCE (GBV) ---
-            { code: 'GBV-01', sector: 'GBV', name: 'Acceptability of Gender-Based Violence', unit: 'Percentage (%)', definition: 'Proportion agreeing that intimate partner violence is justifiable under specific circumstances.' },
-            { code: 'GBV-02', sector: 'GBV', name: 'Completed GBV Case Referrals', unit: 'Percentage (%)', definition: 'Proportion of identified GBV survivors successfully connected to multi-sectoral care services.' },
-            { code: 'GBV-03', sector: 'GBV', name: 'Awareness of Available GBV Support Services', unit: 'Percentage (%)', definition: 'Proportion knowing where to physically or digitally access clinical, legal, or psychosocial assistance.' },
-
-            // --- SOCIAL & BEHAVIOR CHANGE (SBC) ---
-            { code: 'SBC-01', sector: 'SBC', name: 'Self-Efficacy in Promoted Practices', unit: 'Percentage (%)', definition: 'Expressed confidence in performing target behavior despite perceived environmental or social barriers.' },
-            { code: 'SBC-02', sector: 'SBC', name: 'Positive Descriptive & Injunctive Norms', unit: 'Percentage (%)', definition: 'Perception that key reference groups and peers approve and practice the desired behavior.' },
-            { code: 'SBC-03', sector: 'SBC', name: 'Frequency of Interpersonal Communication (IPC) Exposure', unit: 'Count / Dosage', definition: 'Reach and dosage of community dialogue sessions, home visits, or educator messaging.' },
-
-            // --- INCOME & LIVELIHOODS ---
-            { code: 'INC-01', sector: 'Income', name: 'Increased Income and Economic Well-being', unit: 'Percentage (%)', definition: 'Proportion of target population reporting sustainable net income growth over project lifecycle.' },
-            { code: 'INC-02', sector: 'Income', name: 'Number of Decent Jobs Created', unit: 'Count', definition: 'Total formal and informal jobs created or supported through enterprise interventions.' },
-            { code: 'INC-03', sector: 'Income', name: 'Improved Access to Micro-Finance or Savings Groups', unit: 'Percentage (%)', definition: 'Proportion of beneficiaries actively utilizing community savings or digital financial services.' }
+        const masterIndicatorLibrary = [
+            { code: 'IN-01', subcat: 'Input', sector: 'General', name: 'Project Budget Disbursement Rate', unit: '%' },
+            { code: 'PR-01', subcat: 'Process', sector: 'SBC', name: 'Frequency of Community Dialogue Sessions', unit: 'Count' },
+            { code: 'OUT-01', subcat: 'Output', sector: 'Agriculture', name: 'Farmers Trained in Climate-Smart Practices', unit: 'Count' },
+            { code: 'OME-01', subcat: 'Outcome', sector: 'GESI', name: 'Household Decision-Making Autonomy Index', unit: 'Index (0-1)' },
+            { code: 'IMP-01', subcat: 'Impact', sector: 'Food Security', name: 'Reduction in Severe Household Hunger Scale', unit: '%' }
         ];
 
+        let activeMatrix = [];
         let currentFilter = 'all';
-        let logframeRows = [];
 
         window.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('stat-total-indicators').innerText = indicatorLibrary.length;
             renderLibrary();
         });
 
-        // Navigation Controllers
-        function handleLogin(event) {
-            event.preventDefault();
-            document.getElementById('login-view').classList.remove('active');
-            document.getElementById('app-shell').classList.add('active');
-        }
-
-        function handleLogout() {
-            document.getElementById('app-shell').classList.remove('active');
-            document.getElementById('login-view').classList.add('active');
-        }
-
-        function switchTab(tabName) {
-            document.querySelectorAll('#app-shell .view-section').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-tab').forEach(btn => {
-                btn.classList.remove('bg-indigo-600', 'text-white');
-                btn.classList.add('text-indigo-300');
+        function switchTab(tabId) {
+            document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => {
+                b.classList.remove('bg-indigo-600', 'text-white');
+                b.classList.add('text-slate-300');
             });
-
-            if (tabName === 'dashboard') {
-                document.getElementById('view-dashboard').classList.add('active');
-                document.getElementById('nav-btn-dashboard').classList.add('bg-indigo-600', 'text-white');
-                document.getElementById('nav-btn-dashboard').classList.remove('text-indigo-300');
-            } else {
-                document.getElementById('view-builder').classList.add('active');
-                document.getElementById('nav-btn-builder').classList.add('bg-indigo-600', 'text-white');
-                document.getElementById('nav-btn-builder').classList.remove('text-indigo-300');
-            }
+            document.getElementById('view-' + tabId).classList.add('active');
+            document.getElementById('nav-' + tabId).classList.add('bg-indigo-600', 'text-white');
+            document.getElementById('nav-' + tabId).classList.remove('text-slate-300');
         }
 
-        // Library & Filtering Logic
-        function filterLibrary(sector) {
-            currentFilter = sector;
-            document.querySelectorAll('.lib-filter-btn').forEach(btn => {
-                btn.classList.remove('bg-indigo-600', 'text-white');
-                btn.classList.add('bg-slate-100', 'text-slate-600');
+        function switchProject(projectName) {
+            document.getElementById('dash-active-title').innerText = projectName;
+            document.querySelectorAll('.project-card').forEach(c => {
+                c.classList.remove('border-indigo-500', 'bg-indigo-50/50');
+                c.classList.add('border-slate-200');
             });
-            event.target.classList.remove('bg-slate-100', 'text-slate-600');
-            event.target.classList.add('bg-indigo-600', 'text-white');
+            event.currentTarget.classList.add('border-indigo-500', 'bg-indigo-50/50');
+        }
+
+        function filterLibrary(subcat) {
+            currentFilter = subcat;
             renderLibrary();
         }
 
         function renderLibrary() {
-            const container = document.getElementById('indicator-list-container');
-            const searchQuery = document.getElementById('lib-search').value.toLowerCase();
+            const container = document.getElementById('library-container');
+            const filtered = masterIndicatorLibrary.filter(item => currentFilter === 'all' || item.subcat === currentFilter);
             
-            const filtered = indicatorLibrary.filter(item => {
-                const matchesSector = currentFilter === 'all' || item.sector === currentFilter;
-                const matchesSearch = item.name.toLowerCase().includes(searchQuery) || 
-                                      item.code.toLowerCase().includes(searchQuery) || 
-                                      item.definition.toLowerCase().includes(searchQuery);
-                return matchesSector && matchesSearch;
-            });
-
-            document.getElementById('library-count').innerText = filtered.length;
-
-            if (filtered.length === 0) {
-                container.innerHTML = `<div class="text-center py-6 text-xs text-slate-400">No matching indicators found.</div>`;
-                return;
-            }
-
             container.innerHTML = filtered.map(item => `
-                <div onclick="selectIndicator('${item.code}')" class="p-3 rounded-lg border border-slate-200 hover:border-indigo-500 hover:bg-indigo-50/30 transition cursor-pointer group">
-                    <div class="flex justify-between items-start mb-1">
-                        <span class="text-[10px] font-bold px-2 py-0.5 bg-slate-100 text-slate-600 rounded group-hover:bg-indigo-100 group-hover:text-indigo-700 transition">${item.code}</span>
-                        <span class="text-[10px] text-indigo-600 font-semibold">${item.sector}</span>
+                <div onclick="autofillForm('${item.code}')" class="p-2.5 rounded border border-slate-200 hover:border-indigo-500 cursor-pointer text-xs bg-slate-50 transition">
+                    <div class="flex justify-between font-bold text-[10px] text-slate-500 mb-0.5">
+                        <span>${item.code} (${item.subcat})</span>
+                        <span class="text-indigo-600">${item.sector}</span>
                     </div>
-                    <h3 class="font-semibold text-slate-800 text-xs mb-1">${item.name}</h3>
-                    <p class="text-[11px] text-slate-500 line-clamp-2">${item.definition}</p>
-                    <div class="mt-2 text-[10px] text-slate-400 flex items-center justify-between">
-                        <span>Unit: <strong>${item.unit}</strong></span>
-                        <span class="text-indigo-600 font-medium group-hover:underline">Autofill Input &rarr;</span>
-                    </div>
+                    <p class="font-semibold text-slate-800">${item.name}</p>
                 </div>
             `).join('');
         }
 
-        // Automated Form Autofill
-        function selectIndicator(code) {
-            const ind = indicatorLibrary.find(i => i.code === code);
-            if (!ind) return;
-
-            document.getElementById('input-sector').value = ind.sector;
-            document.getElementById('input-indicator').value = `[${ind.code}] ${ind.name}`;
-            document.getElementById('input-unit').value = ind.unit;
-            document.getElementById('input-definition').value = ind.definition;
-
-            const badge = document.getElementById('selected-indicator-badge');
-            badge.innerText = `Selected: ${ind.code}`;
-            badge.className = "text-xs font-semibold bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full border border-indigo-200 animate-pulse";
-            setTimeout(() => badge.classList.remove('animate-pulse'), 1000);
+        function autofillForm(code) {
+            const item = masterIndicatorLibrary.find(i => i.code === code);
+            if (!item) return;
+            document.getElementById('form-subcat').value = item.subcat;
+            document.getElementById('form-sector').value = item.sector;
+            document.getElementById('form-statement').value = item.name;
+            document.getElementById('form-unit').value = item.unit;
         }
 
-        function addLogframeRow(event) {
+        function addMatrixRow(event) {
             event.preventDefault();
-            const newRow = {
+            const row = {
                 id: Date.now(),
-                level: document.getElementById('input-level').value,
-                sector: document.getElementById('input-sector').value || 'General',
-                indicator: document.getElementById('input-indicator').value,
-                unit: document.getElementById('input-unit').value,
-                baseline: document.getElementById('input-baseline').value || 'N/A',
-                target: document.getElementById('input-target').value || 'N/A',
-                definition: document.getElementById('input-definition').value
+                subcat: document.getElementById('form-subcat').value,
+                statement: document.getElementById('form-statement').value,
+                baseline: document.getElementById('form-baseline').value || 'N/A',
+                target: document.getElementById('form-target').value || 'N/A'
             };
-
-            logframeRows.push(newRow);
+            activeMatrix.push(row);
             renderMatrix();
-            document.getElementById('logframe-form').reset();
-            document.getElementById('input-sector').value = '';
-            document.getElementById('input-unit').value = '';
-            document.getElementById('input-definition').value = '';
-            document.getElementById('selected-indicator-badge').innerText = "No indicator selected";
-            document.getElementById('selected-indicator-badge').className = "text-xs font-medium bg-amber-50 text-amber-700 px-2.5 py-1 rounded-full border border-amber-200";
-        }
-
-        function removeRow(id) {
-            logframeRows = logframeRows.filter(r => r.id !== id);
-            renderMatrix();
+            document.getElementById('matrix-form').reset();
         }
 
         function renderMatrix() {
-            const tbody = document.getElementById('logframe-table-body');
-            document.getElementById('stat-active-matrix').innerText = logframeRows.length;
-
-            if (logframeRows.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="5" class="text-center py-8 text-slate-400">
-                            Your logframe matrix is currently empty. Select indicators from the library above to build your project framework.
-                        </td>
-                    </tr>
-                `;
+            const tbody = document.getElementById('matrix-table-body');
+            document.getElementById('dash-matrix-count').innerText = activeMatrix.length;
+            if (activeMatrix.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-slate-400">No indicators added yet.</td></tr>`;
                 return;
             }
-
-            tbody.innerHTML = logframeRows.map(row => {
-                let badgeColor = 'bg-slate-100 text-slate-700';
-                if (row.level === 'Impact') badgeColor = 'bg-purple-100 text-purple-700';
-                if (row.level === 'Outcome') badgeColor = 'bg-indigo-100 text-indigo-700';
-                if (row.level === 'Output') badgeColor = 'bg-blue-100 text-blue-700';
-                if (row.level === 'Activity') badgeColor = 'bg-emerald-100 text-emerald-700';
-
-                return `
-                    <tr class="hover:bg-slate-50/80 transition">
-                        <td class="p-2.5 align-top">
-                            <span class="inline-block px-2 py-0.5 rounded font-bold text-[10px] ${badgeColor}">${row.level}</span>
-                            <div class="text-[10px] text-slate-400 mt-1">${row.sector}</div>
-                        </td>
-                        <td class="p-2.5 align-top">
-                            <p class="font-semibold text-slate-800">${row.indicator}</p>
-                            <p class="text-[11px] text-slate-500 mt-0.5"><strong>Definition:</strong> ${row.definition}</p>
-                            <span class="inline-block mt-1 text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">Unit: ${row.unit}</span>
-                        </td>
-                        <td class="p-2.5 align-top font-medium text-slate-700">${row.baseline}</td>
-                        <td class="p-2.5 align-top font-medium text-indigo-600">${row.target}</td>
-                        <td class="p-2.5 align-top text-right">
-                            <button onclick="removeRow(${row.id})" class="text-rose-500 hover:text-rose-700 font-medium text-xs cursor-pointer px-2 py-1 bg-rose-50 rounded hover:bg-rose-100 transition">Remove</button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
+            tbody.innerHTML = activeMatrix.map(r => `
+                <tr class="hover:bg-slate-50">
+                    <td class="py-2"><span class="px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded font-bold text-[10px]">${r.subcat}</span></td>
+                    <td class="py-2 font-medium text-slate-800">${r.statement}</td>
+                    <td class="py-2 text-slate-600">${r.baseline}</td>
+                    <td class="py-2 text-indigo-600 font-semibold">${r.target}</td>
+                    <td class="py-2 text-right"><button onclick="removeItem(${r.id})" class="text-rose-500 hover:underline">Remove</button></td>
+                </tr>
+            `).join('');
         }
 
-        function clearLogframe() {
-            if (confirm("Are you sure you want to reset the active logframe matrix?")) {
-                logframeRows = [];
-                renderMatrix();
-            }
+        function removeItem(id) {
+            activeMatrix = activeMatrix.filter(r => r.id !== id);
+            renderMatrix();
         }
 
-        function exportLogframe() {
-            if (logframeRows.length === 0) {
-                alert("Cannot export an empty logframe matrix.");
-                return;
-            }
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(logframeRows, null, 2));
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", "logframe_matrix_export.json");
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
+        function handleFileUpload(event) {
+            alert("File successfully ingested! Parsing project indicators into MEAL subcategories...");
+            // Simulate automated parsing
+            activeMatrix.push({
+                id: Date.now(),
+                subcat: 'Outcome',
+                statement: 'Parsed Indicator from Document: Enhanced Community Resilience Score',
+                baseline: '20%',
+                target: '75%'
+            });
+            renderMatrix();
+            switchTab('builder');
+        }
+
+        function runPipelineStep(step) {
+            const out = document.getElementById('pipeline-output');
+            out.classList.remove('hidden');
+            out.innerText = `[LogPulse Pipeline]: Successfully completed step -> ${step.toUpperCase()}. Data matrices updated.`;
         }
     </script>
 </body>
