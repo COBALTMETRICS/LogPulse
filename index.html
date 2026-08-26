@@ -14,7 +14,7 @@
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
 
-    <!-- VIEW 0: AUTHENTICATION SCREEN (Sign In / Sign Up) -->
+    <!-- VIEW 0: AUTHENTICATION SCREEN -->
     <div id="view-auth" class="app-view active fixed inset-0 bg-slate-900 z-50 justify-center items-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 space-y-6">
             <div class="text-center space-y-2">
@@ -60,7 +60,7 @@
             </div>
 
             <div class="flex items-center space-x-3 text-xs">
-                <span class="text-slate-400 hidden md:inline">Workspace: <strong id="header-workspace" class="text-slate-200">SBC Community Pilot 2026</strong></span>
+                <span class="text-slate-400 hidden md:inline">Workspace: <strong id="header-workspace" class="text-slate-200">Adolescents Mental Wellness</strong></span>
                 <button onclick="logout()" class="text-rose-400 hover:underline ml-2">Sign Out</button>
             </div>
         </div>
@@ -77,9 +77,9 @@
             </div>
             
             <div id="project-list" class="space-y-1.5 overflow-y-auto flex-grow pr-1">
-                <div onclick="selectProject('SBC Community Pilot 2026', 'SBC')" class="project-card p-2.5 rounded-lg border border-indigo-500 bg-indigo-50/50 cursor-pointer transition">
-                    <p class="text-xs font-bold text-indigo-900">SBC Community Pilot 2026</p>
-                    <span class="text-[10px] text-indigo-600">Active • Sector: SBC</span>
+                <div onclick="selectProject('SBC Community Pilot 2026', 'SBC')" class="project-card p-2.5 rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
+                    <p class="text-xs font-bold text-slate-700">SBC Community Pilot 2026</p>
+                    <span class="text-[10px] text-slate-400">Active • Sector: SBC</span>
                 </div>
                 <div onclick="selectProject('Agri-Resilience Kenya', 'Agriculture')" class="project-card p-2.5 rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
                     <p class="text-xs font-bold text-slate-700">Agri-Resilience Kenya</p>
@@ -92,6 +92,10 @@
                 <div onclick="selectProject('SGBV Awareness', 'SGBV')" class="project-card p-2.5 rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
                     <p class="text-xs font-bold text-slate-700">SGBV Awareness</p>
                     <span class="text-[10px] text-slate-400">Active • Sector: SGBV / Protection</span>
+                </div>
+                <div onclick="selectProject('Adolescents Mental Wellness', 'Health')" class="project-card p-2.5 rounded-lg border border-indigo-500 bg-indigo-50/50 cursor-pointer transition">
+                    <p class="text-xs font-bold text-indigo-900">Adolescents Mental Wellness</p>
+                    <span class="text-[10px] text-indigo-600">Active • Sector: Health</span>
                 </div>
             </div>
 
@@ -110,12 +114,12 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
                         <p class="text-xs font-semibold text-slate-400 uppercase">Active Project Archive</p>
-                        <h3 id="dash-active-title" class="text-lg font-bold text-slate-800 mt-1">SBC Community Pilot 2026</h3>
-                        <span id="dash-active-sector" class="text-[11px] text-indigo-600 font-medium mt-2 inline-block">Sector Domain: Social & Behavior Change (SBC)</span>
+                        <h3 id="dash-active-title" class="text-lg font-bold text-slate-800 mt-1">Adolescents Mental Wellness</h3>
+                        <span id="dash-active-sector" class="text-[11px] text-indigo-600 font-medium mt-2 inline-block">Sector Domain: Health</span>
                     </div>
                     <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
                         <p class="text-xs font-semibold text-slate-400 uppercase">Matrix Indicators</p>
-                        <h3 id="dash-matrix-count" class="text-2xl font-bold text-indigo-600 mt-1">4</h3>
+                        <h3 id="dash-matrix-count" class="text-2xl font-bold text-indigo-600 mt-1">0</h3>
                         <span class="text-[11px] text-slate-500 mt-2 inline-block">Categorized into Input-to-Impact hierarchy</span>
                     </div>
                     <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
@@ -145,7 +149,7 @@
                 <div class="bg-indigo-900 text-white rounded-xl p-5 shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
                     <div>
                         <h3 class="font-bold text-sm">📁 Automated Proposal Parsing or Smart Repository Suggestions</h3>
-                        <p id="builder-banner-subtitle" class="text-xs text-indigo-200 mt-0.5">Showing sector-tailored indicators for: <strong class="text-white">SBC Community Pilot 2026</strong></p>
+                        <p id="builder-banner-subtitle" class="text-xs text-indigo-200 mt-0.5">Showing sector-tailored indicators for: <strong class="text-white">Adolescents Mental Wellness (Health)</strong></p>
                     </div>
                     <label class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-4 py-2 rounded-lg cursor-pointer transition shadow">
                         Upload Document / Matrix
@@ -169,7 +173,7 @@
                             <button onclick="filterLibrary('Impact')" class="lib-btn px-2 py-1 bg-slate-100 text-slate-600 text-[10px] font-bold rounded">Impact</button>
                         </div>
                         <div id="library-container" class="overflow-y-auto flex-grow space-y-2 pr-1">
-                            <!-- Populated dynamically based on active sector -->
+                            <!-- Populated dynamically -->
                         </div>
                     </div>
 
@@ -233,7 +237,7 @@
                 </div>
             </div>
 
-            <!-- VIEW 3: TOOL DESIGN (Surveys & Participant Templates) -->
+            <!-- VIEW 3: TOOL DESIGN -->
             <div id="view-tools" class="app-view space-y-6">
                 <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-4">
                     <div>
@@ -242,24 +246,21 @@
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-                        <!-- Survey Form Generator -->
                         <div class="p-5 rounded-xl border border-slate-200 bg-slate-50 space-y-3 flex flex-col justify-between">
                             <div>
                                 <span class="text-2xl">📋</span>
                                 <h4 class="font-bold text-xs uppercase text-slate-800 mt-2">KoboToolbox / ODK Survey Schema Generator</h4>
-                                <p class="text-xs text-slate-600 mt-1">Automatically translates active outcome, output, and process indicators into structured survey questions and XML choice lists for field enumerators.</p>
+                                <p class="text-xs text-slate-600 mt-1">Automatically translates active outcome, output, and process indicators into structured survey questions.</p>
                             </div>
                             <button onclick="generateSurveyTool()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold py-2.5 rounded-lg transition">
                                 Generate Survey Form (XLSForm)
                             </button>
                         </div>
-
-                        <!-- Participant & Attendance Templates -->
                         <div class="p-5 rounded-xl border border-slate-200 bg-slate-50 space-y-3 flex flex-col justify-between">
                             <div>
                                 <span class="text-2xl">👥</span>
                                 <h4 class="font-bold text-xs uppercase text-slate-800 mt-2">Participant Register & Feedback Template</h4>
-                                <p class="text-xs text-slate-600 mt-1">Generates GESI-compliant participant tracking templates, community dialogue sign-in sheets, and feedback mechanism logging logs.</p>
+                                <p class="text-xs text-slate-600 mt-1">Generates GESI-compliant participant tracking templates and community feedback logs.</p>
                             </div>
                             <button onclick="generateParticipantTemplate()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold py-2.5 rounded-lg transition">
                                 Download Participant Template (Excel)
@@ -267,7 +268,6 @@
                         </div>
                     </div>
 
-                    <!-- Tool Output Preview -->
                     <div id="tool-preview-box" class="p-4 rounded-lg bg-slate-900 text-slate-200 font-mono text-xs space-y-2 hidden">
                         <p class="text-indigo-400 font-bold">[Tool Design Studio Ready]</p>
                         <div id="tool-preview-content"></div>
@@ -275,7 +275,7 @@
                 </div>
             </div>
 
-            <!-- VIEW 4: AUTOMATED MEAL PIPELINE (Data Entry & Cleaning) -->
+            <!-- VIEW 4: DATA PIPELINE -->
             <div id="view-pipeline" class="app-view space-y-6">
                 <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-4">
                     <div class="flex justify-between items-center">
@@ -287,27 +287,24 @@
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-                        <!-- Step 3.1: Data Ingestion & Anomaly Detection -->
                         <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-col justify-between">
                             <div>
                                 <span class="text-xl">📥</span>
                                 <h4 class="font-bold text-xs mt-2 uppercase text-slate-800">3.1 Data Ingestion & Anomaly Check</h4>
-                                <p class="text-[11px] text-slate-500 mt-1">Pulls raw data from field surveys, checking for missing variables, duplicate submissions, and target outliers.</p>
+                                <p class="text-[11px] text-slate-500 mt-1">Pulls raw data from field surveys, checking for missing variables and duplicate submissions.</p>
                             </div>
                             <button onclick="executePipeline('ingestion')" class="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white text-xs py-2 rounded font-medium transition">Run Ingestion & Outlier Scan</button>
                         </div>
-                        <!-- Step 3.2: Data Transformation & Aggregation -->
                         <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-col justify-between">
                             <div>
                                 <span class="text-xl">🧹</span>
                                 <h4 class="font-bold text-xs mt-2 uppercase text-slate-800">3.2 Data Transformation & GESI Disaggregation</h4>
-                                <p class="text-[11px] text-slate-500 mt-1">Disaggregates cleaned data by sector, gender compliance parameters, and geographic location.</p>
+                                <p class="text-[11px] text-slate-500 mt-1">Disaggregates cleaned data by sector and gender compliance parameters.</p>
                             </div>
                             <button onclick="executePipeline('aggregation')" class="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white text-xs py-2 rounded font-medium transition">Run GESI Disaggregation</button>
                         </div>
                     </div>
 
-                    <!-- Pipeline Output Box -->
                     <div id="pipeline-output" class="p-4 rounded-lg bg-slate-900 text-slate-200 font-mono text-xs space-y-2 hidden">
                         <p class="text-emerald-400 font-bold">[Cleaning Engine Active]</p>
                         <div id="pipeline-log-content"></div>
@@ -315,7 +312,7 @@
                 </div>
             </div>
 
-            <!-- VIEW 5: ANALYSIS, REPORTING & ADAPTIVE LEARNING -->
+            <!-- VIEW 5: ANALYSIS & LEARNING -->
             <div id="view-analysis" class="app-view space-y-6">
                 <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-4">
                     <div>
@@ -324,27 +321,24 @@
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-                        <!-- Variance & Feedback Loops -->
                         <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-col justify-between">
                             <div>
                                 <span class="text-xl">📈</span>
                                 <h4 class="font-bold text-xs mt-2 uppercase text-slate-800">4.1 Variance Tracking & Accountability</h4>
-                                <p class="text-[11px] text-slate-500 mt-1">Compares actual field numbers against baseline values and project targets, reviewing community feedback mechanisms.</p>
+                                <p class="text-[11px] text-slate-500 mt-1">Compares actual field numbers against baseline values and project targets.</p>
                             </div>
                             <button onclick="executeAnalysis('variance')" class="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white text-xs py-2 rounded font-medium transition">Run Variance Analysis</button>
                         </div>
-                        <!-- Donor Reports & Adaptive Learning -->
                         <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-col justify-between">
                             <div>
                                 <span class="text-xl">📊</span>
                                 <h4 class="font-bold text-xs mt-2 uppercase text-slate-800">5.1 Donor Reports & Adaptive Learning</h4>
-                                <p class="text-[11px] text-slate-500 mt-1">Compiles executive summary dashboards for donors and triggers adaptive learning reviews for next-quarter strategy.</p>
+                                <p class="text-[11px] text-slate-500 mt-1">Compiles executive summary dashboards for donors and triggers adaptive learning reviews.</p>
                             </div>
                             <button onclick="executeAnalysis('report')" class="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white text-xs py-2 rounded font-medium transition">Generate Donor Report & Review</button>
                         </div>
                     </div>
 
-                    <!-- Analysis Output Box -->
                     <div id="analysis-output" class="p-4 rounded-lg bg-slate-900 text-slate-200 font-mono text-xs space-y-2 hidden">
                         <p class="text-indigo-400 font-bold">[Analysis & Learning Engine Active]</p>
                         <div id="analysis-log-content"></div>
@@ -366,11 +360,12 @@
             <div>
                 <label class="block font-semibold text-slate-600 mb-1">Sector / Domain *</label>
                 <select id="new-proj-sector" class="w-full px-3 py-2 border border-slate-200 rounded bg-slate-50">
+                    <option value="Health">Health & Psychosocial Support</option>
                     <option value="SGBV">SGBV / Protection</option>
                     <option value="SBC">Social & Behavior Change (SBC)</option>
                     <option value="Agriculture">Agriculture & Resilience</option>
                     <option value="GESI">GESI & Economic Empowerment</option>
-                    <option value="Health">Public Health & Nutrition</option>
+                    <option value="Education">Education & Youth Development</option>
                 </select>
             </div>
             <div class="flex justify-end space-x-2 pt-2">
@@ -382,8 +377,15 @@
 
     <!-- SCRIPT LOGIC -->
     <script>
-        // Comprehensive Sector-Aware Indicator Repository
+        // Comprehensive Indicator Repository with Universal Fallbacks
         const indicatorRepository = [
+            // Health Sector
+            { code: 'HLT-IN-01', subcat: 'Input', sector: 'Health', name: 'Dedicated Budget Allocation for Clinical & Mental Health Services', unit: 'USD' },
+            { code: 'HLT-PR-01', subcat: 'Process', sector: 'Health', name: 'Number of Psychosocial Support & Counseling Sessions Conducted', unit: 'Count' },
+            { code: 'HLT-OUT-01', subcat: 'Output', sector: 'Health', name: 'Adolescents Reached with Mental Health Screening & Wellness Support', unit: 'Count' },
+            { code: 'HLT-OME-01', subcat: 'Outcome', sector: 'Health', name: 'Percentage Reduction in Reported Psychological Distress Scores', unit: '%' },
+            { code: 'HLT-IMP-01', subcat: 'Impact', sector: 'Health', name: 'Long-term Psychosocial Well-being Index Score', unit: 'Index (0-1)' },
+
             // SGBV / Protection Sector
             { code: 'SGBV-IN-01', subcat: 'Input', sector: 'SGBV', name: 'Budget Allocated for Psychosocial Support & Legal Aid Services', unit: 'USD' },
             { code: 'SGBV-PR-01', subcat: 'Process', sector: 'SGBV', name: 'Number of Community Awareness Sessions on SGBV Prevention', unit: 'Count' },
@@ -409,26 +411,26 @@
             { code: 'GESI-IN-01', subcat: 'Input', sector: 'GESI', name: 'Dedicated GESI Mainstreaming Grant Allocation', unit: 'USD' },
             { code: 'GESI-PR-01', subcat: 'Process', sector: 'GESI', name: 'Leadership Mentorship Circles Conducted for Marginalized Groups', unit: 'Count' },
             { code: 'GESI-OUT-01', subcat: 'Output', sector: 'GESI', name: 'Women and Youth Leaders Participating in Local Governance Committees', unit: 'Count' },
-            { code: 'GESI-OME-01', subcat: 'Outcome', sector: 'GESI', name: 'Household Decision-Making Autonomy Index', unit: 'Index (0-1)' }
+            { code: 'GESI-OME-01', subcat: 'Outcome', sector: 'GESI', name: 'Household Decision-Making Autonomy Index', unit: 'Index (0-1)' },
+
+            // Universal Cross-Sector Fallbacks
+            { code: 'UNI-IN-01', subcat: 'Input', sector: 'Universal', name: 'Total Project Expenditure vs Approved Budget', unit: '%' },
+            { code: 'UNI-PR-01', subcat: 'Process', sector: 'Universal', name: 'Number of Stakeholder Coordination Meetings Conducted', unit: 'Count' },
+            { code: 'UNI-OUT-01', subcat: 'Output', sector: 'Universal', name: 'Total Target Beneficiaries Reached by Project Activities', unit: 'Count' },
+            { code: 'UNI-OME-01', subcat: 'Outcome', sector: 'Universal', name: 'Beneficiary Satisfaction Rate with Project Services', unit: '%' },
+            { code: 'UNI-IMP-01', subcat: 'Impact', sector: 'Universal', name: 'Overall Quality of Life & Resilience Improvement Index', unit: 'Index (0-1)' }
         ];
 
-        let activeMatrix = [
-            { id: 1, subcat: 'Input', statement: 'Budget Allocated for Psychosocial Support & Legal Aid Services', baseline: '$0', target: '$45,000' },
-            { id: 2, subcat: 'Process', statement: 'Number of Community Awareness Sessions on SGBV Prevention', baseline: '0', target: '24' },
-            { id: 3, subcat: 'Output', statement: 'Survivors of SGBV Provided with Timely Medical & Legal Assistance', baseline: '0', target: '180' },
-            { id: 4, subcat: 'Outcome', statement: 'Percentage Increase in Community Reporting Confidence for SGBV Cases', baseline: '15%', target: '75%' }
-        ];
-
+        let activeMatrix = [];
         let currentFilter = 'all';
-        let currentProjectName = 'SGBV Awareness';
-        let currentSector = 'SGBV';
+        let currentProjectName = 'Adolescents Mental Wellness';
+        let currentSector = 'Health';
 
         window.addEventListener('DOMContentLoaded', () => {
             renderLibrary();
             renderMatrix();
         });
 
-        // Authentication Handlers
         function handleLogin(e) {
             e.preventDefault();
             document.getElementById('view-auth').classList.remove('active');
@@ -438,7 +440,6 @@
             document.getElementById('view-auth').classList.add('active');
         }
 
-        // Tab Switcher
         function switchTab(tabId) {
             document.querySelectorAll('.app-view').forEach(v => {
                 if(v.id !== 'view-auth') v.classList.remove('active');
@@ -452,7 +453,6 @@
             document.getElementById('nav-' + tabId).classList.remove('text-slate-300');
         }
 
-        // Project Archive Selection with Smart Sector Filtering
         function selectProject(name, sector) {
             currentProjectName = name;
             currentSector = sector;
@@ -467,7 +467,6 @@
             });
             event.currentTarget.classList.add('border-indigo-500', 'bg-indigo-50/50');
             
-            // Re-render library with smart sector suggestions
             renderLibrary();
         }
 
@@ -498,7 +497,6 @@
             closeNewProjectModal();
         }
 
-        // Smart Library Filters & Rendering
         function filterLibrary(subcat) {
             currentFilter = subcat;
             renderLibrary();
@@ -506,18 +504,13 @@
 
         function renderLibrary() {
             const container = document.getElementById('library-container');
-            // Filter by active project sector AND active subcategory tab
+            // Pull matching sector indicators + ALWAYS include universal cross-sector fallback indicators
             const filtered = indicatorRepository.filter(item => {
-                const matchesSector = item.sector === currentSector;
+                const matchesSector = item.sector === currentSector || item.sector === 'Universal';
                 const matchesSubcat = currentFilter === 'all' || item.subcat === currentFilter;
                 return matchesSector && matchesSubcat;
             });
             
-            if(filtered.length === 0) {
-                container.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs">No tailored indicators found for sector '${currentSector}' under subcategory '${currentFilter}'. Try 'All' or upload a matrix.</div>`;
-                return;
-            }
-
             container.innerHTML = filtered.map(item => `
                 <div onclick="autofillForm('${item.code}')" class="p-2.5 rounded border border-slate-200 hover:border-indigo-500 cursor-pointer text-xs bg-slate-50 transition">
                     <div class="flex justify-between font-bold text-[10px] text-slate-500 mb-0.5">
@@ -580,15 +573,14 @@
             activeMatrix.push({
                 id: Date.now(),
                 subcat: 'Outcome',
-                statement: 'Parsed Indicator: Community Resilience & Protection Index Score',
-                baseline: '20%',
-                target: '85%'
+                statement: 'Parsed Indicator: Mental Health Resilience Score',
+                baseline: '30%',
+                target: '90%'
             });
             renderMatrix();
             switchTab('builder');
         }
 
-        // Tool Design Generators
         function generateSurveyTool() {
             const box = document.getElementById('tool-preview-box');
             const content = document.getElementById('tool-preview-content');
@@ -613,7 +605,6 @@
             `;
         }
 
-        // Data Cleaning Pipeline Execution
         function executePipeline(step) {
             const out = document.getElementById('pipeline-output');
             const logContent = document.getElementById('pipeline-log-content');
@@ -634,7 +625,7 @@
                 logContent.innerHTML = `
                     <span class="text-indigo-300">>> STEP 3.1: RAW DATA INGESTION & ANOMALY SCAN</span><br>
                     Pulled field submissions across ${activeMatrix.length} active indicators for <strong class="text-white">${currentSector}</strong>.<br>
-                    <span class="text-emerald-400">Scanned for missing variables and duplicate IDs: 0 duplicate submissions purged. Outliers flagged against baseline parameters. Data integrity verified at 99.4%.</span>
+                    <span class="text-emerald-400">Scanned for missing variables and duplicate IDs: 0 duplicate submissions purged. Outliers flagged against baseline parameters. Data integrity verified at 99.8%.</span>
                 `;
             } else if(step === 'aggregation') {
                 logContent.innerHTML = `
@@ -645,7 +636,6 @@
             }
         }
 
-        // Analysis & Adaptive Learning Execution
         function executeAnalysis(step) {
             const out = document.getElementById('analysis-output');
             const logContent = document.getElementById('analysis-log-content');
@@ -663,7 +653,7 @@
                 logContent.innerHTML = `
                     <span class="text-indigo-300">>> STEP 4.1: VARIANCE TRACKING & FEEDBACK LOOPS</span><br>
                     Comparing actual field performance against baseline values and project targets for <strong class="text-white">${currentProjectName}</strong>:<br><br>
-                    ${activeMatrix.map(ind => `✔ ${ind.statement}: Baseline (${ind.baseline}) vs Target (${ind.target}) -> Performance Variance: +12.5% (On Track)`).join('<br>')}<br><br>
+                    ${activeMatrix.map(ind => `✔ ${ind.statement}: Baseline (${ind.baseline}) vs Target (${ind.target}) -> Performance Variance: +14.2% (On Track)`).join('<br>')}<br><br>
                     <span class="text-emerald-400">Community feedback & complaint mechanism review: 0 unresolved grievances logged.</span>
                 `;
             } else if(step === 'report') {
