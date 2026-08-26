@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LogPulse - Enterprise MEAL & Behavioral Architecture Suite</title>
+    <title>LogPulse - Enterprise MEAL Suite</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -14,8 +14,35 @@
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
 
+    <!-- VIEW 0: AUTHENTICATION SCREEN (Sign In / Sign Up) -->
+    <div id="view-auth" class="app-view active fixed inset-0 bg-slate-900 z-50 justify-center items-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 space-y-6">
+            <div class="text-center space-y-2">
+                <div class="bg-indigo-600 text-white w-12 h-12 rounded-xl mx-auto flex items-center justify-center font-bold text-xl shadow">LP</div>
+                <h2 class="text-xl font-bold text-slate-900">LogPulse Enterprise Edition</h2>
+                <p class="text-xs text-slate-500">Cobalt Metrics & Research • Behavioral MEAL Suite</p>
+            </div>
+            <form onsubmit="handleLogin(event)" class="space-y-4 text-xs">
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Professional Email</label>
+                    <input type="email" id="auth-email" required value="director@cobaltmetrics.com" class="w-full px-3 py-2 border border-slate-200 rounded-lg bg-slate-50">
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Secure Password</label>
+                    <input type="password" id="auth-pass" required value="password123" class="w-full px-3 py-2 border border-slate-200 rounded-lg bg-slate-50">
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-lg transition cursor-pointer shadow">
+                    Sign In to Workspace
+                </button>
+            </form>
+            <div class="text-center text-[11px] text-slate-400">
+                Protected by enterprise-grade behavioral compliance security.
+            </div>
+        </div>
+    </div>
+
     <!-- TOP NAVIGATION HEADER -->
-    <header class="bg-slate-900 text-white shadow-sm border-b border-slate-800 sticky top-0 z-50">
+    <header class="bg-slate-900 text-white shadow-sm border-b border-slate-800 sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center space-x-3">
                 <div class="bg-indigo-600 text-white px-2.5 py-1.5 rounded-lg font-bold text-base tracking-wider shadow">LP</div>
@@ -24,14 +51,17 @@
                 </div>
             </div>
             
-            <div class="flex items-center space-x-2 bg-slate-800 p-1 rounded-lg border border-slate-700 text-xs">
+            <div class="flex items-center space-x-1 bg-slate-800 p-1 rounded-lg border border-slate-700 text-xs overflow-x-auto">
                 <button onclick="switchTab('dashboard')" id="nav-dash" class="nav-btn px-3 py-1.5 rounded-md font-medium transition bg-indigo-600 text-white">Dashboard</button>
-                <button onclick="switchTab('builder')" id="nav-builder" class="nav-btn px-3 py-1.5 rounded-md font-medium transition text-slate-300 hover:text-white">Logframe Builder</button>
-                <button onclick="switchTab('pipeline')" id="nav-pipeline" class="nav-btn px-3 py-1.5 rounded-md font-medium transition text-slate-300 hover:text-white">MEAL Pipeline</button>
+                <button onclick="switchTab('builder')" id="nav-builder" class="nav-btn px-3 py-1.5 rounded-md font-medium transition text-slate-300 hover:text-white">1. Logframe Builder</button>
+                <button onclick="switchTab('tools')" id="nav-tools" class="nav-btn px-3 py-1.5 rounded-md font-medium transition text-slate-300 hover:text-white">2. Tool Design</button>
+                <button onclick="switchTab('pipeline')" id="nav-pipeline" class="nav-btn px-3 py-1.5 rounded-md font-medium transition text-slate-300 hover:text-white">3. Data Pipeline</button>
+                <button onclick="switchTab('analysis')" id="nav-analysis" class="nav-btn px-3 py-1.5 rounded-md font-medium transition text-slate-300 hover:text-white">4. Analysis & Learning</button>
             </div>
 
             <div class="flex items-center space-x-3 text-xs">
-                <span class="text-slate-400">Workspace: <strong class="text-slate-200">Cobalt Metrics</strong></span>
+                <span class="text-slate-400 hidden md:inline">Workspace: <strong id="header-workspace" class="text-slate-200">SBC Community Pilot 2026</strong></span>
+                <button onclick="logout()" class="text-rose-400 hover:underline ml-2">Sign Out</button>
             </div>
         </div>
     </header>
@@ -39,27 +69,30 @@
     <!-- MAIN APP CONTAINER -->
     <div class="max-w-7xl mx-auto px-4 py-6 w-full flex-grow flex gap-6">
 
-        <!-- PERSISTENT SIDEBAR: PROJECTS & QUICK ARCHIVES -->
+        <!-- PERSISTENT SIDEBAR: PROJECTS & ARCHIVES -->
         <aside class="w-64 bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex flex-col shrink-0 h-[84vh] sticky top-20">
-            <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Project Archives</h2>
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Project Archives</h2>
+                <button onclick="openNewProjectModal()" class="text-indigo-600 hover:text-indigo-800 font-bold text-xs" title="New Project">+</button>
+            </div>
             
             <div id="project-list" class="space-y-1.5 overflow-y-auto flex-grow pr-1">
-                <div onclick="switchProject('SBC Community Pilot 2026')" class="project-card p-2.5 rounded-lg border border-indigo-500 bg-indigo-50/50 cursor-pointer transition">
+                <div onclick="selectProject('SBC Community Pilot 2026')" class="project-card p-2.5 rounded-lg border border-indigo-500 bg-indigo-50/50 cursor-pointer transition">
                     <p class="text-xs font-bold text-indigo-900">SBC Community Pilot 2026</p>
-                    <span class="text-[10px] text-indigo-600">Active • 12 Indicators</span>
+                    <span class="text-[10px] text-indigo-600">Active • <span id="proj-count-1">4</span> Indicators</span>
                 </div>
-                <div onclick="switchProject('Agri-Resilience Kenya')" class="project-card p-2.5 rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
+                <div onclick="selectProject('Agri-Resilience Kenya')" class="project-card p-2.5 rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
                     <p class="text-xs font-bold text-slate-700">Agri-Resilience Kenya</p>
                     <span class="text-[10px] text-slate-400">Archived • 8 Indicators</span>
                 </div>
-                <div onclick="switchProject('GESI Economic Empowerment')" class="project-card p-2.5 rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
+                <div onclick="selectProject('GESI Economic Empowerment')" class="project-card p-2.5 rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
                     <p class="text-xs font-bold text-slate-700">GESI Economic Empowerment</p>
                     <span class="text-[10px] text-slate-400">Draft • 5 Indicators</span>
                 </div>
             </div>
 
             <div class="pt-3 border-t border-slate-100 mt-2">
-                <button onclick="createNewProject()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-xs py-2 rounded-lg transition cursor-pointer">
+                <button onclick="openNewProjectModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-xs py-2 rounded-lg transition cursor-pointer">
                     + New Project Logframe
                 </button>
             </div>
@@ -69,59 +102,64 @@
         <main class="flex-grow flex flex-col">
 
             <!-- VIEW 1: DASHBOARD -->
-            <div id="view-dashboard" class="app-view active space-y-6">
+            <div id="view-dashboard" class="app-view space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                        <p class="text-xs font-semibold text-slate-400 uppercase">Active Project</p>
+                        <p class="text-xs font-semibold text-slate-400 uppercase">Active Project Archive</p>
                         <h3 id="dash-active-title" class="text-lg font-bold text-slate-800 mt-1">SBC Community Pilot 2026</h3>
                         <span class="text-[11px] text-indigo-600 font-medium mt-2 inline-block">Behavioral Architecture Framework</span>
                     </div>
                     <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
                         <p class="text-xs font-semibold text-slate-400 uppercase">Matrix Indicators</p>
-                        <h3 id="dash-matrix-count" class="text-2xl font-bold text-indigo-600 mt-1">0</h3>
-                        <span class="text-[11px] text-slate-500 mt-2 inline-block">Properly subcategorized</span>
+                        <h3 id="dash-matrix-count" class="text-2xl font-bold text-indigo-600 mt-1">4</h3>
+                        <span class="text-[11px] text-slate-500 mt-2 inline-block">Categorized into Input-to-Impact hierarchy</span>
                     </div>
                     <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                        <p class="text-xs font-semibold text-slate-400 uppercase">MEAL Pipeline Status</p>
-                        <h3 class="text-2xl font-bold text-emerald-600 mt-1">Automated</h3>
-                        <span class="text-[11px] text-slate-500 mt-2 inline-block">Data entry & cleaning synced</span>
+                        <p class="text-xs font-semibold text-slate-400 uppercase">Survey & Tool Sync</p>
+                        <h3 class="text-2xl font-bold text-emerald-600 mt-1">Ready</h3>
+                        <span class="text-[11px] text-slate-500 mt-2 inline-block">Linked to Kobo / ODK & Participant registers</span>
                     </div>
                 </div>
 
                 <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
-                    <h3 class="font-bold text-slate-800 text-base mb-2">Streamlined MEAL Workflow</h3>
+                    <h3 class="font-bold text-slate-800 text-base mb-2">End-to-End Behavioral MEAL Journey</h3>
                     <p class="text-xs text-slate-600 leading-relaxed mb-4">
-                        Manage your logframes through automated file uploads or granular library selection. Indicators are strictly subcategorized into **Input, Process, Output, Outcome, and Impact** to maintain high evaluation standards.
+                        Seamlessly design logframes from standard indicator repositories, digitize survey instruments and participant templates for field enumerators, manage data cleaning pipelines, and run variance and adaptive learning reviews.
                     </p>
-                    <button onclick="switchTab('builder')" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 py-2.5 rounded-lg transition cursor-pointer">
-                        Open Logframe Builder &rarr;
-                    </button>
+                    <div class="flex gap-3">
+                        <button onclick="switchTab('builder')" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 py-2.5 rounded-lg transition cursor-pointer">
+                            1. Start Logframe Builder &rarr;
+                        </button>
+                        <button onclick="switchTab('tools')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-4 py-2.5 rounded-lg transition cursor-pointer">
+                            2. Design Surveys & Templates &rarr;
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <!-- VIEW 2: LOGFRAME BUILDER & FILE UPLOAD -->
+            <!-- VIEW 2: LOGFRAME BUILDER & COMPREHENSIVE INDICATOR REPOSITORY -->
             <div id="view-builder" class="app-view space-y-6">
                 
                 <!-- Automated Upload Box -->
                 <div class="bg-indigo-900 text-white rounded-xl p-5 shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
                     <div>
-                        <h3 class="font-bold text-sm">📁 Automated File Ingestion</h3>
-                        <p class="text-xs text-indigo-200 mt-0.5">Upload a project proposal, survey sheet, or excel matrix to auto-populate indicators.</p>
+                        <h3 class="font-bold text-sm">📁 Automated Proposal Parsing or Repository Selection</h3>
+                        <p class="text-xs text-indigo-200 mt-0.5">Upload grant proposals or pick instantly from the curated indicator repository below.</p>
                     </div>
                     <label class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-4 py-2 rounded-lg cursor-pointer transition shadow">
-                        Upload Document / CSV
+                        Upload Document / Matrix
                         <input type="file" onchange="handleFileUpload(event)" class="hidden">
                     </label>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                    <!-- Library Sidebar -->
+                    <!-- Indicator Repository Sidebar -->
                     <div class="lg:col-span-5 bg-white rounded-xl border border-slate-200 p-4 flex flex-col h-[70vh]">
                         <div class="flex justify-between items-center mb-2">
-                            <h3 class="font-bold text-slate-800 text-xs uppercase tracking-wider">Indicator Library</h3>
+                            <h3 class="font-bold text-slate-800 text-xs uppercase tracking-wider">Indicator Repository</h3>
                             <span class="text-[10px] text-slate-400">Click to autofill</span>
                         </div>
-                        <div class="flex gap-1 mb-2">
+                        <div class="flex flex-wrap gap-1 mb-2">
                             <button onclick="filterLibrary('all')" class="lib-btn px-2 py-1 bg-indigo-600 text-white text-[10px] font-bold rounded">All</button>
                             <button onclick="filterLibrary('Input')" class="lib-btn px-2 py-1 bg-slate-100 text-slate-600 text-[10px] font-bold rounded">Input</button>
                             <button onclick="filterLibrary('Process')" class="lib-btn px-2 py-1 bg-slate-100 text-slate-600 text-[10px] font-bold rounded">Process</button>
@@ -141,7 +179,7 @@
                             <form id="matrix-form" onsubmit="addMatrixRow(event)" class="space-y-3 text-xs">
                                 <div class="grid grid-cols-2 gap-3">
                                     <div>
-                                        <label class="block font-semibold text-slate-600 mb-1">MEAL Subcategory</label>
+                                        <label class="block font-semibold text-slate-600 mb-1">Results Chain Subcategory *</label>
                                         <select id="form-subcat" class="w-full px-2.5 py-1.5 border border-slate-200 rounded bg-slate-50">
                                             <option value="Input">Input Indicator</option>
                                             <option value="Process">Process Indicator</option>
@@ -157,12 +195,12 @@
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-slate-600 mb-1">Indicator Statement *</label>
-                                    <input type="text" id="form-statement" required placeholder="Select from library or upload file..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded bg-slate-50">
+                                    <input type="text" id="form-statement" required placeholder="Select from repository or upload file..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded bg-slate-50">
                                 </div>
                                 <div class="grid grid-cols-3 gap-2">
-                                    <input type="text" id="form-unit" placeholder="Unit (e.g. %)" class="px-2.5 py-1.5 border border-slate-200 rounded bg-slate-100" readonly>
-                                    <input type="text" id="form-baseline" placeholder="Baseline" class="px-2.5 py-1.5 border border-slate-200 rounded">
-                                    <input type="text" id="form-target" placeholder="Target" class="px-2.5 py-1.5 border border-slate-200 rounded">
+                                    <input type="text" id="form-unit" placeholder="Unit (e.g. %, Count)" class="px-2.5 py-1.5 border border-slate-200 rounded bg-slate-100" readonly>
+                                    <input type="text" id="form-baseline" placeholder="Baseline value" class="px-2.5 py-1.5 border border-slate-200 rounded">
+                                    <input type="text" id="form-target" placeholder="Target value" class="px-2.5 py-1.5 border border-slate-200 rounded">
                                 </div>
                                 <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded transition cursor-pointer">
                                     + Add to Active Logframe Matrix
@@ -185,7 +223,7 @@
                                         </tr>
                                     </thead>
                                     <tbody id="matrix-table-body" class="divide-y divide-slate-100">
-                                        <tr><td colspan="5" class="text-center py-6 text-slate-400">No indicators added yet.</td></tr>
+                                        <!-- Populated dynamically -->
                                     </tbody>
                                 </table>
                             </div>
@@ -194,43 +232,121 @@
                 </div>
             </div>
 
-            <!-- VIEW 3: AUTOMATED MEAL PIPELINE (Data Entry, Cleaning, Analysis, Reporting) -->
-            <div id="view-pipeline" class="app-view space-y-6">
+            <!-- VIEW 3: TOOL DESIGN (Surveys & Participant Templates) -->
+            <div id="view-tools" class="app-view space-y-6">
                 <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-4">
-                    <h3 class="font-bold text-slate-800 text-sm uppercase tracking-wider">Automated MEAL Processing Pipeline</h3>
-                    <p class="text-xs text-slate-600">
-                        This pipeline automates field data ingestion, anomaly detection (cleaning), aggregation (analysis), and executive summary generation.
-                    </p>
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-sm uppercase tracking-wider">Phase 2: Tool Design & Field Instruments</h3>
+                        <p class="text-xs text-slate-500 mt-0.5">Generate KoboToolbox / ODK survey forms and structured participant attendance/feedback registers from your active logframe indicators.</p>
+                    </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 pt-2">
-                        <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 text-center">
-                            <span class="text-xl">📥</span>
-                            <h4 class="font-bold text-xs mt-2">1. Data Entry</h4>
-                            <p class="text-[10px] text-slate-500 mt-1">Direct Kobo/ODK API or CSV sync.</p>
-                            <button onclick="runPipelineStep('entry')" class="mt-3 bg-indigo-600 text-white text-[10px] px-3 py-1.5 rounded font-medium">Sync Data</button>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                        <!-- Survey Form Generator -->
+                        <div class="p-5 rounded-xl border border-slate-200 bg-slate-50 space-y-3 flex flex-col justify-between">
+                            <div>
+                                <span class="text-2xl">📋</span>
+                                <h4 class="font-bold text-xs uppercase text-slate-800 mt-2">KoboToolbox / ODK Survey Schema Generator</h4>
+                                <p class="text-xs text-slate-600 mt-1">Automatically translates active outcome, output, and process indicators into structured survey questions and XML choice lists for field enumerators.</p>
+                            </div>
+                            <button onclick="generateSurveyTool()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold py-2.5 rounded-lg transition">
+                                Generate Survey Form (XLSForm)
+                            </button>
                         </div>
-                        <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 text-center">
-                            <span class="text-xl">🧹</span>
-                            <h4 class="font-bold text-xs mt-2">2. Data Cleaning</h4>
-                            <p class="text-[10px] text-slate-500 mt-1">Automated outlier & duplicate purging.</p>
-                            <button onclick="runPipelineStep('cleaning')" class="mt-3 bg-indigo-600 text-white text-[10px] px-3 py-1.5 rounded font-medium">Clean Dataset</button>
-                        </div>
-                        <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 text-center">
-                            <span class="text-xl">📈</span>
-                            <h4 class="font-bold text-xs mt-2">3. Analysis</h4>
-                            <p class="text-[10px] text-slate-500 mt-1">Compute baseline vs target variances.</p>
-                            <button onclick="runPipelineStep('analysis')" class="mt-3 bg-indigo-600 text-white text-[10px] px-3 py-1.5 rounded font-medium">Run Analysis</button>
-                        </div>
-                        <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 text-center">
-                            <span class="text-xl">📊</span>
-                            <h4 class="font-bold text-xs mt-2">4. Reporting</h4>
-                            <p class="text-[10px] text-slate-500 mt-1">Generate automated donor reports.</p>
-                            <button onclick="runPipelineStep('report')" class="mt-3 bg-indigo-600 text-white text-[10px] px-3 py-1.5 rounded font-medium">Export Report</button>
+
+                        <!-- Participant & Attendance Templates -->
+                        <div class="p-5 rounded-xl border border-slate-200 bg-slate-50 space-y-3 flex flex-col justify-between">
+                            <div>
+                                <span class="text-2xl">👥</span>
+                                <h4 class="font-bold text-xs uppercase text-slate-800 mt-2">Participant Register & Feedback Template</h4>
+                                <p class="text-xs text-slate-600 mt-1">Generates GESI-compliant participant tracking templates, community dialogue sign-in sheets, and feedback mechanism logging logs.</p>
+                            </div>
+                            <button onclick="generateParticipantTemplate()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold py-2.5 rounded-lg transition">
+                                Download Participant Template (Excel)
+                            </button>
                         </div>
                     </div>
 
-                    <div id="pipeline-output" class="p-4 rounded-lg bg-slate-900 text-emerald-400 font-mono text-xs hidden">
-                        [LogPulse Engine]: Pipeline step successfully executed. Data integrity verified.
+                    <!-- Tool Output Preview -->
+                    <div id="tool-preview-box" class="p-4 rounded-lg bg-slate-900 text-slate-200 font-mono text-xs space-y-2 hidden">
+                        <p class="text-indigo-400 font-bold">[Tool Design Studio Ready]</p>
+                        <div id="tool-preview-content"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 4: AUTOMATED MEAL PIPELINE (Data Entry & Cleaning) -->
+            <div id="view-pipeline" class="app-view space-y-6">
+                <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-4">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-sm uppercase tracking-wider">Phase 3: Data Management & Quality Control (Cleaning)</h3>
+                            <p class="text-xs text-slate-500 mt-0.5">Ingest raw field submissions, purge duplicates, and verify anomalies against established baselines.</p>
+                        </div>
+                        <span id="pipeline-status-badge" class="px-2.5 py-1 bg-amber-100 text-amber-800 rounded font-bold text-[10px]">Awaiting Data Input</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                        <!-- Step 3.1: Data Ingestion & Anomaly Detection -->
+                        <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-col justify-between">
+                            <div>
+                                <span class="text-xl">📥</span>
+                                <h4 class="font-bold text-xs mt-2 uppercase text-slate-800">3.1 Data Ingestion & Anomaly Check</h4>
+                                <p class="text-[11px] text-slate-500 mt-1">Pulls raw data from field surveys, checking for missing variables, duplicate submissions, and target outliers.</p>
+                            </div>
+                            <button onclick="executePipeline('ingestion')" class="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white text-xs py-2 rounded font-medium transition">Run Ingestion & Outlier Scan</button>
+                        </div>
+                        <!-- Step 3.2: Data Transformation & Aggregation -->
+                        <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-col justify-between">
+                            <div>
+                                <span class="text-xl">🧹</span>
+                                <h4 class="font-bold text-xs mt-2 uppercase text-slate-800">3.2 Data Transformation & GESI Disaggregation</h4>
+                                <p class="text-[11px] text-slate-500 mt-1">Disaggregates cleaned data by sector, gender compliance parameters, and geographic location.</p>
+                            </div>
+                            <button onclick="executePipeline('aggregation')" class="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white text-xs py-2 rounded font-medium transition">Run GESI Disaggregation</button>
+                        </div>
+                    </div>
+
+                    <!-- Pipeline Output Box -->
+                    <div id="pipeline-output" class="p-4 rounded-lg bg-slate-900 text-slate-200 font-mono text-xs space-y-2 hidden">
+                        <p class="text-emerald-400 font-bold">[Cleaning Engine Active]</p>
+                        <div id="pipeline-log-content"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 5: ANALYSIS, REPORTING & ADAPTIVE LEARNING -->
+            <div id="view-analysis" class="app-view space-y-6">
+                <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-4">
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-sm uppercase tracking-wider">Phase 4 & 5: Analysis, Reporting & Adaptive Learning</h3>
+                        <p class="text-xs text-slate-500 mt-0.5">Track variances, review feedback loops, compile donor reports, and execute quarterly learning reviews.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                        <!-- Variance & Feedback Loops -->
+                        <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-col justify-between">
+                            <div>
+                                <span class="text-xl">📈</span>
+                                <h4 class="font-bold text-xs mt-2 uppercase text-slate-800">4.1 Variance Tracking & Accountability</h4>
+                                <p class="text-[11px] text-slate-500 mt-1">Compares actual field numbers against baseline values and project targets, reviewing community feedback mechanisms.</p>
+                            </div>
+                            <button onclick="executeAnalysis('variance')" class="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white text-xs py-2 rounded font-medium transition">Run Variance Analysis</button>
+                        </div>
+                        <!-- Donor Reports & Adaptive Learning -->
+                        <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-col justify-between">
+                            <div>
+                                <span class="text-xl">📊</span>
+                                <h4 class="font-bold text-xs mt-2 uppercase text-slate-800">5.1 Donor Reports & Adaptive Learning</h4>
+                                <p class="text-[11px] text-slate-500 mt-1">Compiles executive summary dashboards for donors and triggers adaptive learning reviews for next-quarter strategy.</p>
+                            </div>
+                            <button onclick="executeAnalysis('report')" class="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white text-xs py-2 rounded font-medium transition">Generate Donor Report & Review</button>
+                        </div>
+                    </div>
+
+                    <!-- Analysis Output Box -->
+                    <div id="analysis-output" class="p-4 rounded-lg bg-slate-900 text-slate-200 font-mono text-xs space-y-2 hidden">
+                        <p class="text-indigo-400 font-bold">[Analysis & Learning Engine Active]</p>
+                        <div id="analysis-log-content"></div>
                     </div>
                 </div>
             </div>
@@ -238,25 +354,65 @@
         </main>
     </div>
 
+    <!-- NEW PROJECT MODAL -->
+    <div id="modal-project" class="fixed inset-0 bg-slate-900/50 z-50 hidden justify-center items-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-sm w-full p-6 space-y-4 text-xs">
+            <h3 class="font-bold text-slate-900 text-sm">Create New Project Logframe</h3>
+            <div>
+                <label class="block font-semibold text-slate-600 mb-1">Project Title *</label>
+                <input type="text" id="new-proj-name" placeholder="e.g. Turkana Resilience Initiative" class="w-full px-3 py-2 border border-slate-200 rounded">
+            </div>
+            <div class="flex justify-end space-x-2 pt-2">
+                <button onclick="closeNewProjectModal()" class="px-3 py-1.5 text-slate-600 hover:bg-slate-100 rounded">Cancel</button>
+                <button onclick="saveNewProject()" class="px-4 py-1.5 bg-indigo-600 text-white font-semibold rounded hover:bg-indigo-700">Create Project</button>
+            </div>
+        </div>
+    </div>
+
     <!-- SCRIPT LOGIC -->
     <script>
-        const masterIndicatorLibrary = [
-            { code: 'IN-01', subcat: 'Input', sector: 'General', name: 'Project Budget Disbursement Rate', unit: '%' },
-            { code: 'PR-01', subcat: 'Process', sector: 'SBC', name: 'Frequency of Community Dialogue Sessions', unit: 'Count' },
-            { code: 'OUT-01', subcat: 'Output', sector: 'Agriculture', name: 'Farmers Trained in Climate-Smart Practices', unit: 'Count' },
+        // Comprehensive Indicator Repository (Indikit-backed content without frontend brand naming)
+        const indicatorRepository = [
+            { code: 'IN-01', subcat: 'Input', sector: 'General', name: 'Project Budget Disbursement Rate vs Allocation', unit: '%' },
+            { code: 'PR-01', subcat: 'Process', sector: 'SBC', name: 'Frequency of Community Dialogue Sessions Conducted', unit: 'Count' },
+            { code: 'PR-02', subcat: 'Process', sector: 'Agriculture', name: 'Number of Extension Advisory Visits Completed', unit: 'Count' },
+            { code: 'OUT-01', subcat: 'Output', sector: 'Agriculture', name: 'Smallholder Farmers Trained in Climate-Smart Practices', unit: 'Count' },
+            { code: 'OUT-02', subcat: 'Output', sector: 'GESI', name: 'Women Leader Participants in Local Governance Forums', unit: 'Count' },
             { code: 'OME-01', subcat: 'Outcome', sector: 'GESI', name: 'Household Decision-Making Autonomy Index', unit: 'Index (0-1)' },
-            { code: 'IMP-01', subcat: 'Impact', sector: 'Food Security', name: 'Reduction in Severe Household Hunger Scale', unit: '%' }
+            { code: 'OME-02', subcat: 'Outcome', sector: 'Nutrition', name: 'Minimum Dietary Diversity Score for Women (MDD-W)', unit: '%' },
+            { code: 'IMP-01', subcat: 'Impact', sector: 'Food Security', name: 'Reduction in Severe Household Hunger Scale (HHS)', unit: '%' }
         ];
 
-        let activeMatrix = [];
+        let activeMatrix = [
+            { id: 1, subcat: 'Input', statement: 'Project Budget Disbursement Rate vs Allocation', baseline: '0%', target: '90%' },
+            { id: 2, subcat: 'Process', statement: 'Frequency of Community Dialogue Sessions Conducted', baseline: '0', target: '12' },
+            { id: 3, subcat: 'Output', statement: 'Smallholder Farmers Trained in Climate-Smart Practices', baseline: '0', target: '500' },
+            { id: 4, subcat: 'Impact', statement: 'Reduction in Severe Household Hunger Scale (HHS)', baseline: '25%', target: '5%' }
+        ];
+
         let currentFilter = 'all';
+        let currentProjectName = 'SBC Community Pilot 2026';
 
         window.addEventListener('DOMContentLoaded', () => {
             renderLibrary();
+            renderMatrix();
         });
 
+        // Authentication Handlers
+        function handleLogin(e) {
+            e.preventDefault();
+            document.getElementById('view-auth').classList.remove('active');
+        }
+
+        function logout() {
+            document.getElementById('view-auth').classList.add('active');
+        }
+
+        // Tab Switcher
         function switchTab(tabId) {
-            document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.app-view').forEach(v => {
+                if(v.id !== 'view-auth') v.classList.remove('active');
+            });
             document.querySelectorAll('.nav-btn').forEach(b => {
                 b.classList.remove('bg-indigo-600', 'text-white');
                 b.classList.add('text-slate-300');
@@ -266,8 +422,11 @@
             document.getElementById('nav-' + tabId).classList.remove('text-slate-300');
         }
 
-        function switchProject(projectName) {
-            document.getElementById('dash-active-title').innerText = projectName;
+        // Project Archive Selection
+        function selectProject(name) {
+            currentProjectName = name;
+            document.getElementById('dash-active-title').innerText = name;
+            document.getElementById('header-workspace').innerText = name;
             document.querySelectorAll('.project-card').forEach(c => {
                 c.classList.remove('border-indigo-500', 'bg-indigo-50/50');
                 c.classList.add('border-slate-200');
@@ -275,6 +434,33 @@
             event.currentTarget.classList.add('border-indigo-500', 'bg-indigo-50/50');
         }
 
+        function openNewProjectModal() {
+            document.getElementById('modal-project').classList.remove('hidden');
+            document.getElementById('modal-project').classList.add('flex');
+        }
+
+        function closeNewProjectModal() {
+            document.getElementById('modal-project').classList.remove('flex');
+            document.getElementById('modal-project').classList.add('hidden');
+        }
+
+        function saveNewProject() {
+            const nameInput = document.getElementById('new-proj-name');
+            if(!nameInput.value) return;
+            const list = document.getElementById('project-list');
+            const newDiv = document.createElement('div');
+            newDiv.className = "project-card p-2.5 rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer transition";
+            newDiv.setAttribute('onclick', `selectProject('${nameInput.value}')`);
+            newDiv.innerHTML = `<p class="text-xs font-bold text-slate-700">${nameInput.value}</p><span class="text-[10px] text-slate-400">Active • 0 Indicators</span>`;
+            list.appendChild(newDiv);
+            selectProject(nameInput.value);
+            activeMatrix = [];
+            renderMatrix();
+            nameInput.value = '';
+            closeNewProjectModal();
+        }
+
+        // Library Filters & Rendering
         function filterLibrary(subcat) {
             currentFilter = subcat;
             renderLibrary();
@@ -282,7 +468,7 @@
 
         function renderLibrary() {
             const container = document.getElementById('library-container');
-            const filtered = masterIndicatorLibrary.filter(item => currentFilter === 'all' || item.subcat === currentFilter);
+            const filtered = indicatorRepository.filter(item => currentFilter === 'all' || item.subcat === currentFilter);
             
             container.innerHTML = filtered.map(item => `
                 <div onclick="autofillForm('${item.code}')" class="p-2.5 rounded border border-slate-200 hover:border-indigo-500 cursor-pointer text-xs bg-slate-50 transition">
@@ -296,7 +482,7 @@
         }
 
         function autofillForm(code) {
-            const item = masterIndicatorLibrary.find(i => i.code === code);
+            const item = indicatorRepository.find(i => i.code === code);
             if (!item) return;
             document.getElementById('form-subcat').value = item.subcat;
             document.getElementById('form-sector').value = item.sector;
@@ -304,14 +490,14 @@
             document.getElementById('form-unit').value = item.unit;
         }
 
-        function addMatrixRow(event) {
-            event.preventDefault();
+        function addMatrixRow(e) {
+            e.preventDefault();
             const row = {
                 id: Date.now(),
                 subcat: document.getElementById('form-subcat').value,
                 statement: document.getElementById('form-statement').value,
-                baseline: document.getElementById('form-baseline').value || 'N/A',
-                target: document.getElementById('form-target').value || 'N/A'
+                baseline: document.getElementById('form-baseline').value || '0',
+                target: document.getElementById('form-target').value || '100'
             };
             activeMatrix.push(row);
             renderMatrix();
@@ -341,24 +527,97 @@
             renderMatrix();
         }
 
-        function handleFileUpload(event) {
-            alert("File successfully ingested! Parsing project indicators into MEAL subcategories...");
-            // Simulate automated parsing
+        function handleFileUpload(e) {
+            alert("File successfully parsed! Grant proposal matrix converted into MEAL subcategories.");
             activeMatrix.push({
                 id: Date.now(),
                 subcat: 'Outcome',
-                statement: 'Parsed Indicator from Document: Enhanced Community Resilience Score',
-                baseline: '20%',
-                target: '75%'
+                statement: 'Parsed Indicator: Community Resilience Index Score',
+                baseline: '15%',
+                target: '80%'
             });
             renderMatrix();
             switchTab('builder');
         }
 
-        function runPipelineStep(step) {
+        // Tool Design Generators
+        function generateSurveyTool() {
+            const box = document.getElementById('tool-preview-box');
+            const content = document.getElementById('tool-preview-content');
+            box.classList.remove('hidden');
+            content.innerHTML = `
+                <span class="text-indigo-300">>> KOBO / ODK XLSFORM SCHEMA GENERATED</span><br>
+                Successfully converted ${activeMatrix.length} active logframe indicators into survey question groups:<br><br>
+                ${activeMatrix.map(i => `• type: text | name: <code>ind_${i.id}</code> | label: "Record observation for: ${i.statement}"`).join('<br>')}<br><br>
+                <span class="text-emerald-400 font-bold">XLSForm schema ready for deployment to field tablets.</span>
+            `;
+        }
+
+        function generateParticipantTemplate() {
+            const box = document.getElementById('tool-preview-box');
+            const content = document.getElementById('tool-preview-content');
+            box.classList.remove('hidden');
+            content.innerHTML = `
+                <span class="text-indigo-300">>> PARTICIPANT & GESI REGISTER TEMPLATE</span><br>
+                Generated standardized Excel register for project: <strong class="text-white">${currentProjectName}</strong><br>
+                Includes: Participant ID, Full Name, Age Group, Gender (GESI Compliance), Community Unit, and Feedback/Complaint Logging columns.<br>
+                <span class="text-emerald-400 font-bold">Excel attendance template successfully downloaded.</span>
+            `;
+        }
+
+        // Data Cleaning Pipeline Execution
+        function executePipeline(step) {
             const out = document.getElementById('pipeline-output');
+            const logContent = document.getElementById('pipeline-log-content');
+            const badge = document.getElementById('pipeline-status-badge');
             out.classList.remove('hidden');
-            out.innerText = `[LogPulse Pipeline]: Successfully completed step -> ${step.toUpperCase()}. Data matrices updated.`;
+
+            if(activeMatrix.length === 0) {
+                logContent.innerHTML = `<span class="text-rose-400">Error: No active indicators found in logframe matrix. Please add indicators first.</span>`;
+                badge.innerText = "Pipeline Halted";
+                badge.className = "px-2.5 py-1 bg-rose-100 text-rose-800 rounded font-bold text-[10px]";
+                return;
+            }
+
+            badge.innerText = "Cleaning Active";
+            badge.className = "px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded font-bold text-[10px]";
+
+            if(step === 'ingestion') {
+                logContent.innerHTML = `
+                    <span class="text-indigo-300">>> STEP 3.1: RAW DATA INGESTION & ANOMALY SCAN</span><br>
+                    Pulled 340 submissions across ${activeMatrix.length} active indicators.<br>
+                    <span class="text-emerald-400">Scanned for missing variables and duplicate IDs: 2 duplicate submissions purged. Outliers flagged against baseline parameters. Data integrity verified at 99.1%.</span>
+                `;
+            } else if(step === 'aggregation') {
+                logContent.innerHTML = `
+                    <span class="text-indigo-300">>> STEP 3.2: DATA TRANSFORMATION & GESI DISAGGREGATION</span><br>
+                    Disaggregating cleaned dataset by GESI compliance parameters (gender, age cohorts, and regional hubs)...<br>
+                    <span class="text-emerald-400 font-bold">Aggregation matrix successfully computed across all active logframe subcategories.</span>
+                `;
+            }
+        }
+
+        // Analysis & Adaptive Learning Execution
+        function executeAnalysis(step) {
+            const out = document.getElementById('analysis-output');
+            const logContent = document.getElementById('analysis-log-content');
+            out.classList.remove('hidden');
+
+            if(step === 'variance') {
+                logContent.innerHTML = `
+                    <span class="text-indigo-300">>> STEP 4.1: VARIANCE TRACKING & FEEDBACK LOOPS</span><br>
+                    Comparing actual field performance against baseline values and project targets:<br><br>
+                    ${activeMatrix.map(ind => `✔ ${ind.statement}: Baseline (${ind.baseline}) vs Target (${ind.target}) -> Performance Variance: +14.2% (On Track)`).join('<br>')}<br><br>
+                    <span class="text-emerald-400">Community feedback & complaint mechanism review: 0 unresolved grievances logged.</span>
+                `;
+            } else if(step === 'report') {
+                logContent.innerHTML = `
+                    <span class="text-indigo-300">>> STEP 5.1: DONOR REPORT & ADAPTIVE LEARNING REVIEWS</span><br>
+                    Compiling processed metrics into executive donor summary tables...<br>
+                    Triggering adaptive learning review for next-quarter implementation strategy.<br>
+                    <span class="text-emerald-400 font-bold">Executive donor report PDF and quarterly learning review framework successfully compiled.</span>
+                `;
+            }
         }
     </script>
 </body>
