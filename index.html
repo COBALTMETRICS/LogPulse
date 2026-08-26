@@ -3,209 +3,335 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LogPulse - Professional MEAL Logframe & Indicator Management Suite</title>
+    <title>LogPulse - MEAL Suite & Behavioral Architecture Platform</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
+        .view-section { display: none; }
+        .view-section.active { display: flex; flex-direction: column; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
 
-    <!-- Top Navigation Header -->
-    <header class="bg-indigo-900 text-white shadow-md">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <div class="flex items-center space-x-3">
-                <div class="bg-indigo-600 p-2 rounded-lg font-bold text-xl tracking-wider">LP</div>
-                <div>
-                    <h1 class="text-lg font-bold tracking-tight">LogPulse <span class="text-xs px-2 py-0.5 bg-indigo-700 rounded text-indigo-200 ml-2">IndiKit Granular Edition</span></h1>
-                    <p class="text-xs text-indigo-300">Automated Logframe & Indicator Management Suite</p>
-                </div>
+    <!-- VIEW 1: AUTHENTICATION / LOGIN SCREEN -->
+    <div id="login-view" class="view-section active min-h-screen items-center justify-center bg-indigo-950 px-4">
+        <div class="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 space-y-6">
+            <div class="text-center">
+                <div class="inline-block bg-indigo-600 text-white p-3 rounded-xl font-bold text-2xl tracking-wider mb-2 shadow-md">LP</div>
+                <h1 class="text-xl font-bold text-slate-900">Welcome to LogPulse</h1>
+                <p class="text-xs text-slate-500 mt-1">Advanced MEAL Logframe & Indicator Management Suite</p>
             </div>
-            <div class="flex items-center space-x-3 text-sm">
-                <button onclick="exportLogframe()" class="bg-indigo-700 hover:bg-indigo-600 px-3 py-1.5 rounded-lg font-medium transition cursor-pointer">Export Logframe</button>
-                <button onclick="clearLogframe()" class="bg-rose-600 hover:bg-rose-500 px-3 py-1.5 rounded-lg font-medium transition cursor-pointer">Reset Grid</button>
+            
+            <form onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Professional Email</label>
+                    <input type="email" required placeholder="manager@organization.org" class="w-full text-xs px-3.5 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Access Password</label>
+                    <input type="password" required placeholder="••••••••" class="w-full text-xs px-3.5 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold py-3 rounded-lg shadow transition cursor-pointer">
+                    Sign In to Workspace
+                </button>
+            </form>
+            <div class="text-center text-[11px] text-slate-400">
+                Secured Enterprise Environment &bull; Behavioral Architecture Module Enabled
             </div>
         </div>
-    </header>
+    </div>
 
-    <!-- Main Container -->
-    <main class="max-w-7xl mx-auto px-4 py-6 flex-grow grid grid-cols-1 lg:grid-cols-12 gap-6 w-full">
-
-        <!-- Left Sidebar: Granular Indicator Library (IndiKit Inspired) -->
-        <section class="lg:col-span-5 bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex flex-col h-[82vh]">
-            <div class="flex justify-between items-center mb-3">
-                <h2 class="font-bold text-slate-800 text-base flex items-center gap-2">
-                    <span>📚 Indicator Library</span>
-                    <span id="library-count" class="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full">0</span>
-                </h2>
-                <span class="text-xs text-slate-400">Click to autofill</span>
-            </div>
-
-            <!-- Sector Filter Buttons -->
-            <div class="flex flex-wrap gap-1.5 pb-3 border-b border-slate-100">
-                <button onclick="filterLibrary('all')" class="lib-filter-btn px-2.5 py-1 bg-indigo-600 text-white text-xs font-semibold rounded-md transition cursor-pointer">All</button>
-                <button onclick="filterLibrary('GESI')" class="lib-filter-btn px-2.5 py-1 bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-semibold rounded-md transition cursor-pointer">⚖️ GESI</button>
-                <button onclick="filterLibrary('GBV')" class="lib-filter-btn px-2.5 py-1 bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-semibold rounded-md transition cursor-pointer">🛡️ GBV</button>
-                <button onclick="filterLibrary('SBC')" class="lib-filter-btn px-2.5 py-1 bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-semibold rounded-md transition cursor-pointer">🧠 SBC</button>
-                <button onclick="filterLibrary('Food Security')" class="lib-filter-btn px-2.5 py-1 bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-semibold rounded-md transition cursor-pointer">🌾 Food Sec</button>
-                <button onclick="filterLibrary('Income')" class="lib-filter-btn px-2.5 py-1 bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-semibold rounded-md transition cursor-pointer">💼 Income</button>
-                <button onclick="filterLibrary('Environment')" class="lib-filter-btn px-2.5 py-1 bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-semibold rounded-md transition cursor-pointer">🌱 Env</button>
-            </div>
-
-            <!-- Search Bar -->
-            <div class="my-3">
-                <input type="text" id="lib-search" oninput="renderLibrary()" placeholder="Search indicators, codes, definitions..." class="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            </div>
-
-            <!-- Indicator Items List -->
-            <div id="indicator-list-container" class="overflow-y-auto flex-grow space-y-2 pr-1">
-                <!-- Populated via JavaScript -->
-            </div>
-        </section>
-
-        <!-- Right Section: Logframe Matrix Builder & Automated Form Inputs -->
-        <section class="lg:col-span-7 flex flex-col space-y-6">
-            
-            <!-- Automated Entry Form Card -->
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
-                <div class="border-b border-slate-100 pb-3 mb-4 flex justify-between items-center">
-                    <h2 class="font-bold text-slate-800 text-base">⚡ Automated Logframe Entry</h2>
-                    <span id="selected-indicator-badge" class="text-xs font-medium bg-amber-50 text-amber-700 px-2.5 py-1 rounded-full border border-amber-200">No indicator selected (Click from library)</span>
-                </div>
-
-                <form id="logframe-form" onsubmit="addLogframeRow(event)" class="space-y-4">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Logframe Level</label>
-                            <select id="input-level" class="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                                <option value="Impact">Impact / Goal</option>
-                                <option value="Outcome" selected>Outcome / Specific Objective</option>
-                                <option value="Output">Output / Result</option>
-                                <option value="Activity">Activity</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Sector / Theme</label>
-                            <input type="text" id="input-sector" readonly placeholder="Auto-populated from library" class="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg bg-slate-100 text-slate-600 cursor-not-allowed">
-                        </div>
-                    </div>
-
+    <!-- MAIN APP SHELL (Hidden until login) -->
+    <div id="app-shell" class="view-section flex-grow flex-col">
+        
+        <!-- Top Navigation Header -->
+        <header class="bg-indigo-900 text-white shadow-md sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <div class="bg-indigo-600 px-2.5 py-1.5 rounded-lg font-bold text-lg tracking-wider">LP</div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Indicator Statement & Code *</label>
-                        <input type="text" id="input-indicator" required placeholder="Select an indicator from the library on the left..." class="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium">
+                        <h1 class="text-sm font-bold tracking-tight">LogPulse <span class="text-[10px] px-2 py-0.5 bg-indigo-800 rounded text-indigo-200 ml-1">Enterprise Edition</span></h1>
+                        <p class="text-[10px] text-indigo-300">Automated Indicator Library & Logframe Engine</p>
                     </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Unit of Measurement</label>
-                            <input type="text" id="input-unit" readonly placeholder="e.g. Percentage (%)" class="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg bg-slate-100 text-slate-600">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Baseline Value</label>
-                            <input type="text" id="input-baseline" placeholder="e.g. 15%" class="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Target Value</label>
-                            <input type="text" id="input-target" placeholder="e.g. 60%" class="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">IndiKit Technical Definition & Calculation Guidance</label>
-                        <textarea id="input-definition" rows="2" readonly placeholder="Detailed calculation methodology will auto-populate here..." class="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg bg-slate-100 text-slate-600"></textarea>
-                    </div>
-
-                    <div class="flex justify-end pt-2">
-                        <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-5 py-2.5 rounded-lg shadow-sm transition cursor-pointer flex items-center gap-1.5">
-                            <span>➕ Add to Logframe Matrix</span>
-                        </button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Active Logframe Grid Table -->
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex-grow">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="font-bold text-slate-800 text-base">📊 Active Project Logframe Matrix</h2>
-                    <span id="matrix-count" class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-medium">0 indicators added</span>
+                </div>
+                
+                <!-- Navigation Tabs -->
+                <div class="flex items-center space-x-1 bg-indigo-950 p-1 rounded-lg border border-indigo-800">
+                    <button onclick="switchTab('dashboard')" id="nav-btn-dashboard" class="nav-tab px-3 py-1.5 rounded-md text-xs font-semibold transition bg-indigo-600 text-white cursor-pointer">📊 Dashboard</button>
+                    <button onclick="switchTab('builder')" id="nav-btn-builder" class="nav-tab px-3 py-1.5 rounded-md text-xs font-semibold transition text-indigo-300 hover:text-white cursor-pointer">⚡ Logframe Builder</button>
                 </div>
 
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="border-b border-slate-200 text-slate-500 text-[11px] uppercase tracking-wider bg-slate-50">
-                                <th class="p-2.5">Level</th>
-                                <th class="p-2.5">Indicator & Definition</th>
-                                <th class="p-2.5">Baseline</th>
-                                <th class="p-2.5">Target</th>
-                                <th class="p-2.5 text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="logframe-table-body" class="text-xs divide-y divide-slate-100">
-                            <!-- Dynamic Rows -->
-                            <tr>
-                                <td colspan="5" class="text-center py-8 text-slate-400">
-                                    Your logframe matrix is currently empty. Select indicators from the library above to build your project framework.
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="flex items-center space-x-3 text-xs">
+                    <button onclick="handleLogout()" class="text-indigo-300 hover:text-white transition cursor-pointer">Sign Out</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- VIEW 2: DASHBOARD OVERVIEW -->
+        <div id="view-dashboard" class="view-section active flex-grow max-w-7xl w-full mx-auto px-4 py-6 space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Active Sectors</p>
+                    <h3 class="text-2xl font-bold text-slate-800 mt-1">8 Core Domains</h3>
+                    <span class="text-[11px] text-emerald-600 font-medium mt-2 inline-block">100% Granular Mapping</span>
+                </div>
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Library Indicators</p>
+                    <h3 id="stat-total-indicators" class="text-2xl font-bold text-indigo-600 mt-1">0</h3>
+                    <span class="text-[11px] text-slate-500 mt-2 inline-block">Available for autofill</span>
+                </div>
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Logframe Entries</p>
+                    <h3 id="stat-active-matrix" class="text-2xl font-bold text-slate-800 mt-1">0</h3>
+                    <span class="text-[11px] text-indigo-600 font-medium mt-2 inline-block">In active matrix grid</span>
+                </div>
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Compliance Engine</p>
+                    <h3 class="text-2xl font-bold text-emerald-600 mt-1">Active</h3>
+                    <span class="text-[11px] text-slate-500 mt-2 inline-block">Zero external branding</span>
                 </div>
             </div>
 
-        </section>
+            <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+                <h3 class="font-bold text-slate-800 text-base mb-2">Welcome Back, MEAL Director</h3>
+                <p class="text-xs text-slate-600 leading-relaxed">
+                    LogPulse provides an automated, standardized framework to design, filter, and structure project indicators instantly. Switch to the <strong>Logframe Builder</strong> tab to select metrics across Agriculture, Climate, Nutrition, Food Security, GESI, GBV, and Income domains, and watch inputs populate automatically.
+                </p>
+                <div class="mt-4">
+                    <button onclick="switchTab('builder')" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 py-2.5 rounded-lg transition cursor-pointer">
+                        Open Logframe Matrix Builder &rarr;
+                    </button>
+                </div>
+            </div>
+        </div>
 
-    </main>
+        <!-- VIEW 3: LOGFRAME BUILDER & LIBRARY -->
+        <div id="view-builder" class="view-section flex-grow max-w-7xl w-full mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-    <!-- JavaScript Application Logic -->
+            <!-- Left Sidebar: Comprehensive Indicator Library -->
+            <section class="lg:col-span-5 bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex flex-col h-[80vh]">
+                <div class="flex justify-between items-center mb-3">
+                    <h2 class="font-bold text-slate-800 text-base flex items-center gap-2">
+                        <span>📚 Comprehensive Indicator Library</span>
+                        <span id="library-count" class="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full">0</span>
+                    </h2>
+                    <span class="text-xs text-slate-400">Click to autofill</span>
+                </div>
+
+                <!-- Sector Filter Buttons -->
+                <div class="flex flex-wrap gap-1.5 pb-3 border-b border-slate-100">
+                    <button onclick="filterLibrary('all')" class="lib-filter-btn px-2.5 py-1 bg-indigo-600 text-white text-xs font-semibold rounded-md transition cursor-pointer">All</button>
+                    <button onclick="filterLibrary('Agriculture')" class="lib-filter-btn px-2.5 py-1 bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-semibold rounded-md transition cursor-pointer">🌾 Agri</button>
+                    <button onclick="filterLibrary('Climate')" class="lib-filter-btn px-2.5 py-1 bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-semibold rounded-md transition cursor-pointer">🌱 Climate</button>
+                    <button onclick="filterLibrary('Nutrition')" class="lib-filter-btn px-2.5 py-1 bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-semibold rounded-md transition cursor-pointer">🥗 Nutrition</button>
+                    <button onclick="filterLibrary('Food Security')" class="lib-filter-btn px-2.5 py-1 bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-semibold rounded-md transition cursor-pointer">🍲 Food Sec</button>
+                    <button onclick="filterLibrary('GESI')" class="lib-filter-btn px-2.5 py-1 bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-semibold rounded-md transition cursor-pointer">⚖️ GESI</button>
+                    <button onclick="filterLibrary('GBV')" class="lib-filter-btn px-2.5 py-1 bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-semibold rounded-md transition cursor-pointer">🛡️ GBV</button>
+                    <button onclick="filterLibrary('SBC')" class="lib-filter-btn px-2.5 py-1 bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-semibold rounded-md transition cursor-pointer">🧠 SBC</button>
+                    <button onclick="filterLibrary('Income')" class="lib-filter-btn px-2.5 py-1 bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-semibold rounded-md transition cursor-pointer">💼 Income</button>
+                </div>
+
+                <!-- Search Bar -->
+                <div class="my-3">
+                    <input type="text" id="lib-search" oninput="renderLibrary()" placeholder="Search indicators, codes, definitions..." class="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+
+                <!-- Indicator List -->
+                <div id="indicator-list-container" class="overflow-y-auto flex-grow space-y-2 pr-1">
+                    <!-- Dynamic Items -->
+                </div>
+            </section>
+
+            <!-- Right Section: Automated Form Inputs & Logframe Matrix -->
+            <section class="lg:col-span-7 flex flex-col space-y-6">
+                
+                <!-- Automated Entry Form Card -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+                    <div class="border-b border-slate-100 pb-3 mb-4 flex justify-between items-center">
+                        <h2 class="font-bold text-slate-800 text-base">⚡ Automated Logframe Entry</h2>
+                        <span id="selected-indicator-badge" class="text-xs font-medium bg-amber-50 text-amber-700 px-2.5 py-1 rounded-full border border-amber-200">No indicator selected</span>
+                    </div>
+
+                    <form id="logframe-form" onsubmit="addLogframeRow(event)" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Logframe Level</label>
+                                <select id="input-level" class="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                    <option value="Impact">Impact / Goal</option>
+                                    <option value="Outcome" selected>Outcome / Specific Objective</option>
+                                    <option value="Output">Output / Result</option>
+                                    <option value="Activity">Activity</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Sector / Theme</label>
+                                <input type="text" id="input-sector" readonly placeholder="Auto-populated from library" class="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg bg-slate-100 text-slate-600 cursor-not-allowed">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Indicator Statement & Code *</label>
+                            <input type="text" id="input-indicator" required placeholder="Select an indicator from the library on the left..." class="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium">
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Unit of Measurement</label>
+                                <input type="text" id="input-unit" readonly placeholder="e.g. Percentage (%)" class="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg bg-slate-100 text-slate-600">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Baseline Value</label>
+                                <input type="text" id="input-baseline" placeholder="e.g. 15%" class="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Target Value</label>
+                                <input type="text" id="input-target" placeholder="e.g. 60%" class="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Technical Definition & Calculation Guidance</label>
+                            <textarea id="input-definition" rows="2" readonly placeholder="Detailed calculation methodology will auto-populate here..." class="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg bg-slate-100 text-slate-600"></textarea>
+                        </div>
+
+                        <div class="flex justify-end pt-2">
+                            <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-5 py-2.5 rounded-lg shadow-sm transition cursor-pointer flex items-center gap-1.5">
+                                <span>➕ Add to Logframe Matrix</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Active Logframe Grid Table -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex-grow">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="font-bold text-slate-800 text-base">📊 Active Project Logframe Matrix</h2>
+                        <div class="space-x-2">
+                            <button onclick="exportLogframe()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded font-medium transition cursor-pointer">Export JSON</button>
+                            <button onclick="clearLogframe()" class="text-xs bg-rose-50 hover:bg-rose-100 text-rose-600 px-2.5 py-1 rounded font-medium transition cursor-pointer">Reset</button>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-200 text-slate-500 text-[11px] uppercase tracking-wider bg-slate-50">
+                                    <th class="p-2.5">Level</th>
+                                    <th class="p-2.5">Indicator & Definition</th>
+                                    <th class="p-2.5">Baseline</th>
+                                    <th class="p-2.5">Target</th>
+                                    <th class="p-2.5 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="logframe-table-body" class="text-xs divide-y divide-slate-100">
+                                <tr>
+                                    <td colspan="5" class="text-center py-8 text-slate-400">
+                                        Your logframe matrix is currently empty. Select indicators from the library above to build your project framework.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </section>
+
+        </div>
+
+    </div>
+
+    <!-- Application JavaScript Logic -->
     <script>
-        // Granular Indicator Library matching IndiKit depth and specificity
+        // Full Granular Indicator Dataset across all sectors
         const indicatorLibrary = [
-            // --- GESI & WOMEN'S EMPOWERMENT ---
-            { code: 'GESI-01', sector: 'GESI', name: 'GEM Scale Score (Gender-Equitable Men Scale)', unit: 'Mean Score (1-4)', definition: 'Measures attitudes toward gender norms, equity, and equitable household roles.' },
-            { code: 'GESI-02', sector: 'GESI', name: 'Attitudes Towards Gender Equality', unit: 'Percentage (%)', definition: 'Proportion of target group expressing agreement with gender equality statements.' },
-            { code: 'GESI-03', sector: 'GESI', name: 'Attitudes Towards Women’s Economic Participation', unit: 'Percentage (%)', definition: 'Proportion supporting women working outside the home and owning productive assets.' },
-            { code: 'GESI-04', sector: 'GESI', name: 'Household Decision-Making Index', unit: 'Index (0-1)', definition: 'Measures women’s independent input and decision autonomy in household purchases and livelihoods.' },
-            { code: 'GESI-05', sector: 'GESI', name: 'Women’s Control Over Own Income', unit: 'Percentage (%)', definition: 'Proportion of women who independently decide how cash earned directly by them is utilized.' },
-            { code: 'GESI-06', sector: 'GESI', name: 'Men’s Participation in Household Chores & Care Work', unit: 'Average Hours / Week', definition: 'Measures redistribution of unpaid domestic responsibilities and child care.' },
-            { code: 'GESI-07', sector: 'GESI', name: 'Women’s Participation in Community Leadership & Groups', unit: 'Percentage (%)', definition: 'Proportion of active female members holding designated leadership roles in local committees.' },
+            // --- AGRICULTURE & NRM ---
+            { code: 'AGRI-01', sector: 'Agriculture', name: 'Reported Crop Yield Per Unit', unit: 'kg / Hectare', definition: 'Ratio of harvested crop production weight to cultivated land area unit.' },
+            { code: 'AGRI-02', sector: 'Agriculture', name: 'Adoption of Promoted Agricultural Technologies', unit: 'Percentage (%)', definition: 'Proportion of targeted farmers actively utilizing improved seeds, fertilizers, or irrigation.' },
+            { code: 'AGRI-03', sector: 'Agriculture', name: 'Storage-Related Post-Harvest Losses', unit: 'Percentage (%)', definition: 'Proportion of harvested grain or produce lost due to poor storage or pest infestation.' },
+            { code: 'AGRI-04', sector: 'Agriculture', name: 'Agricultural Productivity Index', unit: 'Ratio Score', definition: 'Ratio of agricultural outputs to invested financial and labor inputs.' },
+            { code: 'AGRI-05', sector: 'Agriculture', name: 'Farmers’ Participation in Cooperatives or Producer Groups', unit: 'Percentage (%)', definition: 'Proportion of active farmers registered in formal marketing or input-sharing cooperatives.' },
 
-            // --- GENDER-BASED VIOLENCE (GBV) ---
-            { code: 'GBV-01', sector: 'GBV', name: 'Acceptability of Gender-Based Violence', unit: 'Percentage (%)', definition: 'Proportion of respondents agreeing that intimate partner violence is justifiable under specific circumstances.' },
-            { code: 'GBV-02', sector: 'GBV', name: 'Willingness to Act on Occurrences of Domestic Violence', unit: 'Percentage (%)', definition: 'Proportion reporting they would actively intervene or report observed domestic violence events.' },
-            { code: 'GBV-03', sector: 'GBV', name: 'Awareness of Available GBV Support Services', unit: 'Percentage (%)', definition: 'Proportion knowing where to physically or digitally access clinical, legal, or psychosocial assistance.' },
-            { code: 'GBV-04', sector: 'GBV', name: 'Completed GBV Case Referrals', unit: 'Count / Percentage (%)', definition: 'Proportion of identified GBV survivors successfully connected to specialized multi-sectoral care services.' },
-            { code: 'GBV-05', sector: 'GBV', name: 'Prevalence of Intimate Partner Violence (IPV)', unit: 'Percentage (%)', definition: 'Proportion reporting physical, sexual, or emotional abuse by an intimate partner over a recall period.' },
+            // --- CLIMATE & ENVIRONMENT ---
+            { code: 'CLIM-01', sector: 'Climate', name: 'Area of Land Under Improved Management Practices', unit: 'Hectares (Ha)', definition: 'Surface area benefiting from climate-resilient agriculture, soil conservation, or reforestation.' },
+            { code: 'CLIM-02', sector: 'Climate', name: 'Increased Access to and Use of Clean Energy Solutions', unit: 'Percentage (%)', definition: 'Proportion of households adopting solar units, energy-efficient cookstoves, or clean fuel.' },
+            { code: 'CLIM-03', sector: 'Climate', name: 'Reduction of Greenhouse Gas Emissions', unit: 'Tons CO2 eq', definition: 'Calculated volume of greenhouse gas emissions saved through green interventions.' },
+            { code: 'CLIM-04', sector: 'Climate', name: 'Adoption of Climate Resilience and Adaptation Measures', unit: 'Percentage (%)', definition: 'Proportion of vulnerable communities implementing approved disaster risk reduction practices.' },
 
-            // --- SOCIAL & BEHAVIOR CHANGE (SBC) ---
-            { code: 'SBC-01', sector: 'SBC', name: 'Percentage demonstrating self-efficacy in promoted practices', unit: 'Percentage (%)', definition: 'Expressed confidence in performing target behavior despite perceived environmental or social obstacles.' },
-            { code: 'SBC-02', sector: 'SBC', name: 'Proportion reporting positive descriptive & injunctive norms', unit: 'Percentage (%)', definition: 'Perception that key reference groups and peers approve and practice the desired behavior.' },
-            { code: 'SBC-03', sector: 'SBC', name: 'Frequency of exposure to interpersonal communication (IPC)', unit: 'Count / Frequency', definition: 'Dosage and reach of community dialogue sessions, home visits, or peer educator messaging.' },
-            { code: 'SBC-04', sector: 'SBC', name: 'Cue-to-action prompt recall score', unit: 'Score / Percentage', definition: 'Recall rate of structural reminders designed to trigger habitual target behaviors.' },
+            // --- NUTRITION ---
+            { code: 'NUT-01', sector: 'Nutrition', name: 'Minimum Dietary Diversity - Women (MDD-W)', unit: 'Percentage (%)', definition: 'Proportion of women aged 15-49 consuming foods from 5 out of 10 designated food groups the previous day.' },
+            { code: 'NUT-02', sector: 'Nutrition', name: 'Exclusive Breastfeeding Under Six Months', unit: 'Percentage (%)', definition: 'Proportion of infants 0-5 months of age who received only breast milk during the previous day.' },
+            { code: 'NUT-03', sector: 'Nutrition', name: 'Minimum Acceptable Diet (MAD) for Children', unit: 'Percentage (%)', definition: 'Proportion of children 6-23 months receiving appropriate dietary diversity and meal frequency.' },
+            { code: 'NUT-04', sector: 'Nutrition', name: 'Prevalence of Global Acute Malnutrition (GAM based on WHZ)', unit: 'Percentage (%)', definition: 'Proportion of children aged 6-59 months suffering from moderate or severe acute malnutrition.' },
+            { code: 'NUT-05', sector: 'Nutrition', name: 'Recovery (Cure) Rate in Acute Malnutrition Treatment', unit: 'Percentage (%)', definition: 'Proportion of admitted malnourished children successfully discharged as cured.' },
 
             // --- FOOD SECURITY ---
-            { code: 'FS-01', sector: 'Food Security', name: 'Percentage of households with acceptable Food Consumption Score (FCS)', unit: 'Percentage (%)', definition: 'Standard WFP composite metric measuring dietary diversity, food frequency, and nutritional weight.' },
-            { code: 'FS-02', sector: 'Food Security', name: 'Household Hunger Scale (HHS) Index', unit: 'Score (0-6)', definition: 'Measures food deprivation levels in households experiencing severe food insecurity.' },
+            { code: 'FS-01', sector: 'Food Security', name: 'Household Dietary Diversity Score (HDDS)', unit: 'Score (0-12)', definition: 'Average number of unique food groups consumed by household members over a 24-hour recall period.' },
+            { code: 'FS-02', sector: 'Food Security', name: 'Food Consumption Score (FCS)', unit: 'Composite Score', definition: 'Standard WFP metric combining dietary diversity, food frequency, and relative nutritional weight.' },
+            { code: 'FS-03', sector: 'Food Security', name: 'Household Hunger Scale (HHS) Index', unit: 'Score (0-6)', definition: 'Measures food deprivation levels in households experiencing severe food insecurity.' },
+            { code: 'FS-04', sector: 'Food Security', name: 'Coping Strategy Index (CSI)', unit: 'Score', definition: 'Measures frequency and severity of behavioral food-shortage coping mechanisms adopted by households.' },
 
-            // --- INCOME & EMPLOYMENT ---
+            // --- GESI ---
+            { code: 'GESI-01', sector: 'GESI', name: 'GEM Scale Score (Gender-Equitable Men Scale)', unit: 'Mean Score (1-4)', definition: 'Measures attitudes toward gender norms, equity, and equitable household roles.' },
+            { code: 'GESI-02', sector: 'GESI', name: 'Household Decision-Making Index', unit: 'Index (0-1)', definition: 'Measures women’s independent input and autonomy in household purchasing and livelihoods.' },
+            { code: 'GESI-03', sector: 'GESI', name: 'Women’s Control Over Own Income', unit: 'Percentage (%)', definition: 'Proportion of women who independently decide how cash earned directly by them is utilized.' },
+            { code: 'GESI-04', sector: 'GESI', name: 'Men’s Participation in Household Chores & Care Work', unit: 'Average Hours / Week', definition: 'Measures redistribution of unpaid domestic responsibilities and child care.' },
+
+            // --- GENDER-BASED VIOLENCE (GBV) ---
+            { code: 'GBV-01', sector: 'GBV', name: 'Acceptability of Gender-Based Violence', unit: 'Percentage (%)', definition: 'Proportion agreeing that intimate partner violence is justifiable under specific circumstances.' },
+            { code: 'GBV-02', sector: 'GBV', name: 'Completed GBV Case Referrals', unit: 'Percentage (%)', definition: 'Proportion of identified GBV survivors successfully connected to multi-sectoral care services.' },
+            { code: 'GBV-03', sector: 'GBV', name: 'Awareness of Available GBV Support Services', unit: 'Percentage (%)', definition: 'Proportion knowing where to physically or digitally access clinical, legal, or psychosocial assistance.' },
+
+            // --- SOCIAL & BEHAVIOR CHANGE (SBC) ---
+            { code: 'SBC-01', sector: 'SBC', name: 'Self-Efficacy in Promoted Practices', unit: 'Percentage (%)', definition: 'Expressed confidence in performing target behavior despite perceived environmental or social barriers.' },
+            { code: 'SBC-02', sector: 'SBC', name: 'Positive Descriptive & Injunctive Norms', unit: 'Percentage (%)', definition: 'Perception that key reference groups and peers approve and practice the desired behavior.' },
+            { code: 'SBC-03', sector: 'SBC', name: 'Frequency of Interpersonal Communication (IPC) Exposure', unit: 'Count / Dosage', definition: 'Reach and dosage of community dialogue sessions, home visits, or educator messaging.' },
+
+            // --- INCOME & LIVELIHOODS ---
             { code: 'INC-01', sector: 'Income', name: 'Increased Income and Economic Well-being', unit: 'Percentage (%)', definition: 'Proportion of target population reporting sustainable net income growth over project lifecycle.' },
-            { code: 'INC-02', sector: 'Income', name: 'Number of Decent Jobs Created', unit: 'Count', definition: 'Total formal and informal jobs created or supported through project enterprise interventions.' },
-            { code: 'INC-03', sector: 'Income', name: 'Improved Access to Formal or Micro-Finance', unit: 'Percentage (%)', definition: 'Proportion of target beneficiaries utilizing savings, credit groups, or digital financial accounts.' },
-
-            // --- ENVIRONMENT & CLIMATE ---
-            { code: 'ENV-01', sector: 'Environment', name: 'Area of Land Under Improved Management Practices', unit: 'Hectares (Ha)', definition: 'Surface area benefiting from climate-resilient agriculture, reforestation, or soil conservation.' },
-            { code: 'ENV-02', sector: 'Environment', name: 'Increased Access to and Use of Clean Energy Solutions', unit: 'Percentage (%)', definition: 'Proportion adopting energy-efficient cookstoves, solar systems, or sustainable fuels.' }
+            { code: 'INC-02', sector: 'Income', name: 'Number of Decent Jobs Created', unit: 'Count', definition: 'Total formal and informal jobs created or supported through enterprise interventions.' },
+            { code: 'INC-03', sector: 'Income', name: 'Improved Access to Micro-Finance or Savings Groups', unit: 'Percentage (%)', definition: 'Proportion of beneficiaries actively utilizing community savings or digital financial services.' }
         ];
 
         let currentFilter = 'all';
         let logframeRows = [];
 
-        // Initialize Library Render on Load
         window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('stat-total-indicators').innerText = indicatorLibrary.length;
             renderLibrary();
         });
 
+        // Navigation Controllers
+        function handleLogin(event) {
+            event.preventDefault();
+            document.getElementById('login-view').classList.remove('active');
+            document.getElementById('app-shell').classList.add('active');
+        }
+
+        function handleLogout() {
+            document.getElementById('app-shell').classList.remove('active');
+            document.getElementById('login-view').classList.add('active');
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('#app-shell .view-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(btn => {
+                btn.classList.remove('bg-indigo-600', 'text-white');
+                btn.classList.add('text-indigo-300');
+            });
+
+            if (tabName === 'dashboard') {
+                document.getElementById('view-dashboard').classList.add('active');
+                document.getElementById('nav-btn-dashboard').classList.add('bg-indigo-600', 'text-white');
+                document.getElementById('nav-btn-dashboard').classList.remove('text-indigo-300');
+            } else {
+                document.getElementById('view-builder').classList.add('active');
+                document.getElementById('nav-btn-builder').classList.add('bg-indigo-600', 'text-white');
+                document.getElementById('nav-btn-builder').classList.remove('text-indigo-300');
+            }
+        }
+
+        // Library & Filtering Logic
         function filterLibrary(sector) {
             currentFilter = sector;
             document.querySelectorAll('.lib-filter-btn').forEach(btn => {
@@ -252,7 +378,7 @@
             `).join('');
         }
 
-        // Automated Form Autofill Function
+        // Automated Form Autofill
         function selectIndicator(code) {
             const ind = indicatorLibrary.find(i => i.code === code);
             if (!ind) return;
@@ -298,7 +424,7 @@
 
         function renderMatrix() {
             const tbody = document.getElementById('logframe-table-body');
-            document.getElementById('matrix-count').innerText = `${logframeRows.length} indicators added`;
+            document.getElementById('stat-active-matrix').innerText = logframeRows.length;
 
             if (logframeRows.length === 0) {
                 tbody.innerHTML = `
