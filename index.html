@@ -77,17 +77,21 @@
             </div>
             
             <div id="project-list" class="space-y-1.5 overflow-y-auto flex-grow pr-1">
-                <div onclick="selectProject('SBC Community Pilot 2026')" class="project-card p-2.5 rounded-lg border border-indigo-500 bg-indigo-50/50 cursor-pointer transition">
+                <div onclick="selectProject('SBC Community Pilot 2026', 'SBC')" class="project-card p-2.5 rounded-lg border border-indigo-500 bg-indigo-50/50 cursor-pointer transition">
                     <p class="text-xs font-bold text-indigo-900">SBC Community Pilot 2026</p>
-                    <span class="text-[10px] text-indigo-600">Active • <span id="proj-count-1">4</span> Indicators</span>
+                    <span class="text-[10px] text-indigo-600">Active • Sector: SBC</span>
                 </div>
-                <div onclick="selectProject('Agri-Resilience Kenya')" class="project-card p-2.5 rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
+                <div onclick="selectProject('Agri-Resilience Kenya', 'Agriculture')" class="project-card p-2.5 rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
                     <p class="text-xs font-bold text-slate-700">Agri-Resilience Kenya</p>
-                    <span class="text-[10px] text-slate-400">Archived • 8 Indicators</span>
+                    <span class="text-[10px] text-slate-400">Archived • Sector: Agriculture</span>
                 </div>
-                <div onclick="selectProject('GESI Economic Empowerment')" class="project-card p-2.5 rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
+                <div onclick="selectProject('GESI Economic Empowerment', 'GESI')" class="project-card p-2.5 rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
                     <p class="text-xs font-bold text-slate-700">GESI Economic Empowerment</p>
-                    <span class="text-[10px] text-slate-400">Draft • 5 Indicators</span>
+                    <span class="text-[10px] text-slate-400">Draft • Sector: GESI</span>
+                </div>
+                <div onclick="selectProject('SGBV Awareness', 'SGBV')" class="project-card p-2.5 rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
+                    <p class="text-xs font-bold text-slate-700">SGBV Awareness</p>
+                    <span class="text-[10px] text-slate-400">Active • Sector: SGBV / Protection</span>
                 </div>
             </div>
 
@@ -107,7 +111,7 @@
                     <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
                         <p class="text-xs font-semibold text-slate-400 uppercase">Active Project Archive</p>
                         <h3 id="dash-active-title" class="text-lg font-bold text-slate-800 mt-1">SBC Community Pilot 2026</h3>
-                        <span class="text-[11px] text-indigo-600 font-medium mt-2 inline-block">Behavioral Architecture Framework</span>
+                        <span id="dash-active-sector" class="text-[11px] text-indigo-600 font-medium mt-2 inline-block">Sector Domain: Social & Behavior Change (SBC)</span>
                     </div>
                     <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
                         <p class="text-xs font-semibold text-slate-400 uppercase">Matrix Indicators</p>
@@ -122,29 +126,26 @@
                 </div>
 
                 <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
-                    <h3 class="font-bold text-slate-800 text-base mb-2">End-to-End Behavioral MEAL Journey</h3>
+                    <h3 class="font-bold text-slate-800 text-base mb-2">Smart Sector-Aware MEAL Suite</h3>
                     <p class="text-xs text-slate-600 leading-relaxed mb-4">
-                        Seamlessly design logframes from standard indicator repositories, digitize survey instruments and participant templates for field enumerators, manage data cleaning pipelines, and run variance and adaptive learning reviews.
+                        LogPulse automatically detects your active project's thematic domain and intelligently filters the indicator repository to suggest the most relevant metrics for your logframe.
                     </p>
                     <div class="flex gap-3">
                         <button onclick="switchTab('builder')" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 py-2.5 rounded-lg transition cursor-pointer">
-                            1. Start Logframe Builder &rarr;
-                        </button>
-                        <button onclick="switchTab('tools')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-4 py-2.5 rounded-lg transition cursor-pointer">
-                            2. Design Surveys & Templates &rarr;
+                            1. Open Smart Logframe Builder &rarr;
                         </button>
                     </div>
                 </div>
             </div>
 
-            <!-- VIEW 2: LOGFRAME BUILDER & COMPREHENSIVE INDICATOR REPOSITORY -->
+            <!-- VIEW 2: LOGFRAME BUILDER & SMART INDICATOR REPOSITORY -->
             <div id="view-builder" class="app-view space-y-6">
                 
                 <!-- Automated Upload Box -->
                 <div class="bg-indigo-900 text-white rounded-xl p-5 shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
                     <div>
-                        <h3 class="font-bold text-sm">📁 Automated Proposal Parsing or Repository Selection</h3>
-                        <p class="text-xs text-indigo-200 mt-0.5">Upload grant proposals or pick instantly from the curated indicator repository below.</p>
+                        <h3 class="font-bold text-sm">📁 Automated Proposal Parsing or Smart Repository Suggestions</h3>
+                        <p id="builder-banner-subtitle" class="text-xs text-indigo-200 mt-0.5">Showing sector-tailored indicators for: <strong class="text-white">SBC Community Pilot 2026</strong></p>
                     </div>
                     <label class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-4 py-2 rounded-lg cursor-pointer transition shadow">
                         Upload Document / Matrix
@@ -153,11 +154,11 @@
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                    <!-- Indicator Repository Sidebar -->
+                    <!-- Smart Indicator Repository Sidebar -->
                     <div class="lg:col-span-5 bg-white rounded-xl border border-slate-200 p-4 flex flex-col h-[70vh]">
                         <div class="flex justify-between items-center mb-2">
-                            <h3 class="font-bold text-slate-800 text-xs uppercase tracking-wider">Indicator Repository</h3>
-                            <span class="text-[10px] text-slate-400">Click to autofill</span>
+                            <h3 class="font-bold text-slate-800 text-xs uppercase tracking-wider">Smart Indicator Library</h3>
+                            <span id="repo-filter-indicator" class="text-[10px] text-indigo-600 font-semibold">Auto-filtered by Sector</span>
                         </div>
                         <div class="flex flex-wrap gap-1 mb-2">
                             <button onclick="filterLibrary('all')" class="lib-btn px-2 py-1 bg-indigo-600 text-white text-[10px] font-bold rounded">All</button>
@@ -168,7 +169,7 @@
                             <button onclick="filterLibrary('Impact')" class="lib-btn px-2 py-1 bg-slate-100 text-slate-600 text-[10px] font-bold rounded">Impact</button>
                         </div>
                         <div id="library-container" class="overflow-y-auto flex-grow space-y-2 pr-1">
-                            <!-- Populated dynamically -->
+                            <!-- Populated dynamically based on active sector -->
                         </div>
                     </div>
 
@@ -195,7 +196,7 @@
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-slate-600 mb-1">Indicator Statement *</label>
-                                    <input type="text" id="form-statement" required placeholder="Select from repository or upload file..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded bg-slate-50">
+                                    <input type="text" id="form-statement" required placeholder="Select from library or upload file..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded bg-slate-50">
                                 </div>
                                 <div class="grid grid-cols-3 gap-2">
                                     <input type="text" id="form-unit" placeholder="Unit (e.g. %, Count)" class="px-2.5 py-1.5 border border-slate-200 rounded bg-slate-100" readonly>
@@ -362,6 +363,16 @@
                 <label class="block font-semibold text-slate-600 mb-1">Project Title *</label>
                 <input type="text" id="new-proj-name" placeholder="e.g. Turkana Resilience Initiative" class="w-full px-3 py-2 border border-slate-200 rounded">
             </div>
+            <div>
+                <label class="block font-semibold text-slate-600 mb-1">Sector / Domain *</label>
+                <select id="new-proj-sector" class="w-full px-3 py-2 border border-slate-200 rounded bg-slate-50">
+                    <option value="SGBV">SGBV / Protection</option>
+                    <option value="SBC">Social & Behavior Change (SBC)</option>
+                    <option value="Agriculture">Agriculture & Resilience</option>
+                    <option value="GESI">GESI & Economic Empowerment</option>
+                    <option value="Health">Public Health & Nutrition</option>
+                </select>
+            </div>
             <div class="flex justify-end space-x-2 pt-2">
                 <button onclick="closeNewProjectModal()" class="px-3 py-1.5 text-slate-600 hover:bg-slate-100 rounded">Cancel</button>
                 <button onclick="saveNewProject()" class="px-4 py-1.5 bg-indigo-600 text-white font-semibold rounded hover:bg-indigo-700">Create Project</button>
@@ -371,27 +382,46 @@
 
     <!-- SCRIPT LOGIC -->
     <script>
-        // Comprehensive Indicator Repository (Indikit-backed content without frontend brand naming)
+        // Comprehensive Sector-Aware Indicator Repository
         const indicatorRepository = [
-            { code: 'IN-01', subcat: 'Input', sector: 'General', name: 'Project Budget Disbursement Rate vs Allocation', unit: '%' },
-            { code: 'PR-01', subcat: 'Process', sector: 'SBC', name: 'Frequency of Community Dialogue Sessions Conducted', unit: 'Count' },
-            { code: 'PR-02', subcat: 'Process', sector: 'Agriculture', name: 'Number of Extension Advisory Visits Completed', unit: 'Count' },
-            { code: 'OUT-01', subcat: 'Output', sector: 'Agriculture', name: 'Smallholder Farmers Trained in Climate-Smart Practices', unit: 'Count' },
-            { code: 'OUT-02', subcat: 'Output', sector: 'GESI', name: 'Women Leader Participants in Local Governance Forums', unit: 'Count' },
-            { code: 'OME-01', subcat: 'Outcome', sector: 'GESI', name: 'Household Decision-Making Autonomy Index', unit: 'Index (0-1)' },
-            { code: 'OME-02', subcat: 'Outcome', sector: 'Nutrition', name: 'Minimum Dietary Diversity Score for Women (MDD-W)', unit: '%' },
-            { code: 'IMP-01', subcat: 'Impact', sector: 'Food Security', name: 'Reduction in Severe Household Hunger Scale (HHS)', unit: '%' }
+            // SGBV / Protection Sector
+            { code: 'SGBV-IN-01', subcat: 'Input', sector: 'SGBV', name: 'Budget Allocated for Psychosocial Support & Legal Aid Services', unit: 'USD' },
+            { code: 'SGBV-PR-01', subcat: 'Process', sector: 'SGBV', name: 'Number of Community Awareness Sessions on SGBV Prevention', unit: 'Count' },
+            { code: 'SGBV-OUT-01', subcat: 'Output', sector: 'SGBV', name: 'Survivors of SGBV Provided with Timely Medical & Legal Assistance', unit: 'Count' },
+            { code: 'SGBV-OME-01', subcat: 'Outcome', sector: 'SGBV', name: 'Percentage Increase in Community Reporting Confidence for SGBV Cases', unit: '%' },
+            { code: 'SGBV-IMP-01', subcat: 'Impact', sector: 'SGBV', name: 'Reduction in Reported Incidence of Gender-Based Violence in Target Communities', unit: '%' },
+
+            // SBC Sector
+            { code: 'SBC-IN-01', subcat: 'Input', sector: 'SBC', name: 'Project Budget Disbursement Rate vs Allocation', unit: '%' },
+            { code: 'SBC-PR-01', subcat: 'Process', sector: 'SBC', name: 'Frequency of Community Dialogue Sessions Conducted', unit: 'Count' },
+            { code: 'SBC-OUT-01', subcat: 'Output', sector: 'SBC', name: 'Community Members Reached through Interpersonal Communication Campaigns', unit: 'Count' },
+            { code: 'SBC-OME-01', subcat: 'Outcome', sector: 'SBC', name: 'Adoption Rate of Targeted Positive Behavioral Practices', unit: '%' },
+            { code: 'SBC-IMP-01', subcat: 'Impact', sector: 'SBC', name: 'Sustained Social Norm Transformation Index Score', unit: 'Index (0-1)' },
+
+            // Agriculture Sector
+            { code: 'AGRI-IN-01', subcat: 'Input', sector: 'Agriculture', name: 'Agricultural Input Subsidy Vouchers Distributed', unit: 'Count' },
+            { code: 'AGRI-PR-01', subcat: 'Process', sector: 'Agriculture', name: 'Number of Farmer Field School Training Sessions Held', unit: 'Count' },
+            { code: 'AGRI-OUT-01', subcat: 'Output', sector: 'Agriculture', name: 'Smallholder Farmers Trained in Climate-Smart Agronomy', unit: 'Count' },
+            { code: 'AGRI-OME-01', subcat: 'Outcome', sector: 'Agriculture', name: 'Percentage Increase in Crop Yields among Beneficiary Households', unit: '%' },
+            { code: 'AGRI-IMP-01', subcat: 'Impact', sector: 'Agriculture', name: 'Reduction in Severe Household Hunger Scale (HHS)', unit: '%' },
+
+            // GESI Sector
+            { code: 'GESI-IN-01', subcat: 'Input', sector: 'GESI', name: 'Dedicated GESI Mainstreaming Grant Allocation', unit: 'USD' },
+            { code: 'GESI-PR-01', subcat: 'Process', sector: 'GESI', name: 'Leadership Mentorship Circles Conducted for Marginalized Groups', unit: 'Count' },
+            { code: 'GESI-OUT-01', subcat: 'Output', sector: 'GESI', name: 'Women and Youth Leaders Participating in Local Governance Committees', unit: 'Count' },
+            { code: 'GESI-OME-01', subcat: 'Outcome', sector: 'GESI', name: 'Household Decision-Making Autonomy Index', unit: 'Index (0-1)' }
         ];
 
         let activeMatrix = [
-            { id: 1, subcat: 'Input', statement: 'Project Budget Disbursement Rate vs Allocation', baseline: '0%', target: '90%' },
-            { id: 2, subcat: 'Process', statement: 'Frequency of Community Dialogue Sessions Conducted', baseline: '0', target: '12' },
-            { id: 3, subcat: 'Output', statement: 'Smallholder Farmers Trained in Climate-Smart Practices', baseline: '0', target: '500' },
-            { id: 4, subcat: 'Impact', statement: 'Reduction in Severe Household Hunger Scale (HHS)', baseline: '25%', target: '5%' }
+            { id: 1, subcat: 'Input', statement: 'Budget Allocated for Psychosocial Support & Legal Aid Services', baseline: '$0', target: '$45,000' },
+            { id: 2, subcat: 'Process', statement: 'Number of Community Awareness Sessions on SGBV Prevention', baseline: '0', target: '24' },
+            { id: 3, subcat: 'Output', statement: 'Survivors of SGBV Provided with Timely Medical & Legal Assistance', baseline: '0', target: '180' },
+            { id: 4, subcat: 'Outcome', statement: 'Percentage Increase in Community Reporting Confidence for SGBV Cases', baseline: '15%', target: '75%' }
         ];
 
         let currentFilter = 'all';
-        let currentProjectName = 'SBC Community Pilot 2026';
+        let currentProjectName = 'SGBV Awareness';
+        let currentSector = 'SGBV';
 
         window.addEventListener('DOMContentLoaded', () => {
             renderLibrary();
@@ -422,16 +452,23 @@
             document.getElementById('nav-' + tabId).classList.remove('text-slate-300');
         }
 
-        // Project Archive Selection
-        function selectProject(name) {
+        // Project Archive Selection with Smart Sector Filtering
+        function selectProject(name, sector) {
             currentProjectName = name;
+            currentSector = sector;
             document.getElementById('dash-active-title').innerText = name;
+            document.getElementById('dash-active-sector').innerText = `Sector Domain: ${sector}`;
             document.getElementById('header-workspace').innerText = name;
+            document.getElementById('builder-banner-subtitle').innerHTML = `Showing sector-tailored indicators for: <strong class="text-white">${name} (${sector})</strong>`;
+            
             document.querySelectorAll('.project-card').forEach(c => {
                 c.classList.remove('border-indigo-500', 'bg-indigo-50/50');
                 c.classList.add('border-slate-200');
             });
             event.currentTarget.classList.add('border-indigo-500', 'bg-indigo-50/50');
+            
+            // Re-render library with smart sector suggestions
+            renderLibrary();
         }
 
         function openNewProjectModal() {
@@ -446,21 +483,22 @@
 
         function saveNewProject() {
             const nameInput = document.getElementById('new-proj-name');
+            const sectorSelect = document.getElementById('new-proj-sector');
             if(!nameInput.value) return;
             const list = document.getElementById('project-list');
             const newDiv = document.createElement('div');
             newDiv.className = "project-card p-2.5 rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer transition";
-            newDiv.setAttribute('onclick', `selectProject('${nameInput.value}')`);
-            newDiv.innerHTML = `<p class="text-xs font-bold text-slate-700">${nameInput.value}</p><span class="text-[10px] text-slate-400">Active • 0 Indicators</span>`;
+            newDiv.setAttribute('onclick', `selectProject('${nameInput.value}', '${sectorSelect.value}')`);
+            newDiv.innerHTML = `<p class="text-xs font-bold text-slate-700">${nameInput.value}</p><span class="text-[10px] text-slate-400">Active • Sector: ${sectorSelect.value}</span>`;
             list.appendChild(newDiv);
-            selectProject(nameInput.value);
+            selectProject(nameInput.value, sectorSelect.value);
             activeMatrix = [];
             renderMatrix();
             nameInput.value = '';
             closeNewProjectModal();
         }
 
-        // Library Filters & Rendering
+        // Smart Library Filters & Rendering
         function filterLibrary(subcat) {
             currentFilter = subcat;
             renderLibrary();
@@ -468,8 +506,18 @@
 
         function renderLibrary() {
             const container = document.getElementById('library-container');
-            const filtered = indicatorRepository.filter(item => currentFilter === 'all' || item.subcat === currentFilter);
+            // Filter by active project sector AND active subcategory tab
+            const filtered = indicatorRepository.filter(item => {
+                const matchesSector = item.sector === currentSector;
+                const matchesSubcat = currentFilter === 'all' || item.subcat === currentFilter;
+                return matchesSector && matchesSubcat;
+            });
             
+            if(filtered.length === 0) {
+                container.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs">No tailored indicators found for sector '${currentSector}' under subcategory '${currentFilter}'. Try 'All' or upload a matrix.</div>`;
+                return;
+            }
+
             container.innerHTML = filtered.map(item => `
                 <div onclick="autofillForm('${item.code}')" class="p-2.5 rounded border border-slate-200 hover:border-indigo-500 cursor-pointer text-xs bg-slate-50 transition">
                     <div class="flex justify-between font-bold text-[10px] text-slate-500 mb-0.5">
@@ -508,7 +556,7 @@
             const tbody = document.getElementById('matrix-table-body');
             document.getElementById('dash-matrix-count').innerText = activeMatrix.length;
             if (activeMatrix.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-slate-400">No indicators added yet.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-slate-400">No indicators added yet. Select from the smart repository on the left or upload a file.</td></tr>`;
                 return;
             }
             tbody.innerHTML = activeMatrix.map(r => `
@@ -532,9 +580,9 @@
             activeMatrix.push({
                 id: Date.now(),
                 subcat: 'Outcome',
-                statement: 'Parsed Indicator: Community Resilience Index Score',
-                baseline: '15%',
-                target: '80%'
+                statement: 'Parsed Indicator: Community Resilience & Protection Index Score',
+                baseline: '20%',
+                target: '85%'
             });
             renderMatrix();
             switchTab('builder');
@@ -547,7 +595,7 @@
             box.classList.remove('hidden');
             content.innerHTML = `
                 <span class="text-indigo-300">>> KOBO / ODK XLSFORM SCHEMA GENERATED</span><br>
-                Successfully converted ${activeMatrix.length} active logframe indicators into survey question groups:<br><br>
+                Successfully converted ${activeMatrix.length} active logframe indicators into survey question groups for sector <strong class="text-white">${currentSector}</strong>:<br><br>
                 ${activeMatrix.map(i => `• type: text | name: <code>ind_${i.id}</code> | label: "Record observation for: ${i.statement}"`).join('<br>')}<br><br>
                 <span class="text-emerald-400 font-bold">XLSForm schema ready for deployment to field tablets.</span>
             `;
@@ -559,7 +607,7 @@
             box.classList.remove('hidden');
             content.innerHTML = `
                 <span class="text-indigo-300">>> PARTICIPANT & GESI REGISTER TEMPLATE</span><br>
-                Generated standardized Excel register for project: <strong class="text-white">${currentProjectName}</strong><br>
+                Generated standardized Excel register for project: <strong class="text-white">${currentProjectName} (${currentSector})</strong><br>
                 Includes: Participant ID, Full Name, Age Group, Gender (GESI Compliance), Community Unit, and Feedback/Complaint Logging columns.<br>
                 <span class="text-emerald-400 font-bold">Excel attendance template successfully downloaded.</span>
             `;
@@ -585,8 +633,8 @@
             if(step === 'ingestion') {
                 logContent.innerHTML = `
                     <span class="text-indigo-300">>> STEP 3.1: RAW DATA INGESTION & ANOMALY SCAN</span><br>
-                    Pulled 340 submissions across ${activeMatrix.length} active indicators.<br>
-                    <span class="text-emerald-400">Scanned for missing variables and duplicate IDs: 2 duplicate submissions purged. Outliers flagged against baseline parameters. Data integrity verified at 99.1%.</span>
+                    Pulled field submissions across ${activeMatrix.length} active indicators for <strong class="text-white">${currentSector}</strong>.<br>
+                    <span class="text-emerald-400">Scanned for missing variables and duplicate IDs: 0 duplicate submissions purged. Outliers flagged against baseline parameters. Data integrity verified at 99.4%.</span>
                 `;
             } else if(step === 'aggregation') {
                 logContent.innerHTML = `
@@ -601,19 +649,27 @@
         function executeAnalysis(step) {
             const out = document.getElementById('analysis-output');
             const logContent = document.getElementById('analysis-log-content');
+            out.classList.add('hidden');
+
+            if(activeMatrix.length === 0) {
+                out.classList.remove('hidden');
+                logContent.innerHTML = `<span class="text-rose-400">Error: No active indicators found in logframe matrix.</span>`;
+                return;
+            }
+
             out.classList.remove('hidden');
 
             if(step === 'variance') {
                 logContent.innerHTML = `
                     <span class="text-indigo-300">>> STEP 4.1: VARIANCE TRACKING & FEEDBACK LOOPS</span><br>
-                    Comparing actual field performance against baseline values and project targets:<br><br>
-                    ${activeMatrix.map(ind => `✔ ${ind.statement}: Baseline (${ind.baseline}) vs Target (${ind.target}) -> Performance Variance: +14.2% (On Track)`).join('<br>')}<br><br>
+                    Comparing actual field performance against baseline values and project targets for <strong class="text-white">${currentProjectName}</strong>:<br><br>
+                    ${activeMatrix.map(ind => `✔ ${ind.statement}: Baseline (${ind.baseline}) vs Target (${ind.target}) -> Performance Variance: +12.5% (On Track)`).join('<br>')}<br><br>
                     <span class="text-emerald-400">Community feedback & complaint mechanism review: 0 unresolved grievances logged.</span>
                 `;
             } else if(step === 'report') {
                 logContent.innerHTML = `
                     <span class="text-indigo-300">>> STEP 5.1: DONOR REPORT & ADAPTIVE LEARNING REVIEWS</span><br>
-                    Compiling processed metrics into executive donor summary tables...<br>
+                    Compiling processed metrics into executive donor summary tables for <strong class="text-white">${currentSector}</strong>...<br>
                     Triggering adaptive learning review for next-quarter implementation strategy.<br>
                     <span class="text-emerald-400 font-bold">Executive donor report PDF and quarterly learning review framework successfully compiled.</span>
                 `;
