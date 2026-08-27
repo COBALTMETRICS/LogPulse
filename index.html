@@ -18,15 +18,20 @@
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
 
-    <!-- VIEW 0: AUTHENTICATION SCREEN -->
+    <!-- VIEW 0: AUTHENTICATION & USER MANAGEMENT -->
     <div id="view-auth" class="app-view active fixed inset-0 bg-slate-900 z-50 justify-center items-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 space-y-6">
             <div class="text-center space-y-2">
                 <div class="bg-indigo-600 text-white w-12 h-12 rounded-xl mx-auto flex items-center justify-center font-bold text-xl shadow">LP</div>
-                <h2 class="text-xl font-bold text-slate-900">LogPulse Enterprise Edition</h2>
+                <h2 id="auth-form-title" class="text-xl font-bold text-slate-900">LogPulse Enterprise Sign In</h2>
                 <p class="text-xs text-slate-500">Cobalt Metrics & Research • Behavioral MEAL Suite</p>
             </div>
-            <form onsubmit="handleLogin(event)" class="space-y-4 text-xs">
+            
+            <form id="auth-form-element" onsubmit="handleAuthSubmit(event)" class="space-y-4 text-xs">
+                <div id="auth-name-field" class="hidden">
+                    <label class="block font-semibold text-slate-700 mb-1">Full Name</label>
+                    <input type="text" id="auth-name" placeholder="Rehema Yusuf" class="w-full px-3 py-2 border border-slate-200 rounded-lg bg-slate-50">
+                </div>
                 <div>
                     <label class="block font-semibold text-slate-700 mb-1">Professional Email</label>
                     <input type="email" id="auth-email" required value="director@cobaltmetrics.com" class="w-full px-3 py-2 border border-slate-200 rounded-lg bg-slate-50">
@@ -35,12 +40,18 @@
                     <label class="block font-semibold text-slate-700 mb-1">Secure Password</label>
                     <input type="password" id="auth-pass" required value="password123" class="w-full px-3 py-2 border border-slate-200 rounded-lg bg-slate-50">
                 </div>
-                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-lg transition cursor-pointer shadow">
+                <button type="submit" id="auth-submit-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-lg transition cursor-pointer shadow">
                     Sign In to Workspace
                 </button>
             </form>
-            <div class="text-center text-[11px] text-slate-400">
-                Protected by enterprise-grade behavioral compliance security.
+
+            <div class="flex justify-between items-center text-xs pt-2 border-t border-slate-100">
+                <button type="button" onclick="toggleAuthMode()" id="auth-toggle-btn" class="text-indigo-600 hover:underline font-medium">
+                    Need an account? Sign Up
+                </button>
+                <button type="button" onclick="openAdminModal()" class="text-slate-400 hover:text-slate-600">
+                    🔒 Dev Admin Portal
+                </button>
             </div>
         </div>
     </div>
@@ -64,7 +75,7 @@
             </div>
 
             <div class="flex items-center space-x-3 text-xs">
-                <span class="text-slate-400 hidden md:inline">Workspace: <strong id="header-workspace" class="text-slate-200">Adolescents Mental Wellness</strong></span>
+                <span class="text-slate-400 hidden md:inline">User: <strong id="header-user-email" class="text-slate-200">director@cobaltmetrics.com</strong></span>
                 <button onclick="logout()" class="text-rose-400 hover:underline ml-2">Sign Out</button>
             </div>
         </div>
@@ -99,8 +110,8 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
                         <p class="text-xs font-semibold text-slate-400 uppercase">Active Project Archive</p>
-                        <h3 id="dash-active-title" class="text-lg font-bold text-slate-800 mt-1">Adolescents Mental Wellness</h3>
-                        <span id="dash-active-sector" class="text-[11px] text-indigo-600 font-medium mt-2 inline-block">Sector Domain: Health</span>
+                        <h3 id="dash-active-title" class="text-lg font-bold text-slate-800 mt-1">Girl's 360. Keeping Girls in School</h3>
+                        <span id="dash-active-sector" class="text-[11px] text-indigo-600 font-medium mt-2 inline-block">Sectors: SBC, Education, GESI</span>
                     </div>
                     <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
                         <p class="text-xs font-semibold text-slate-400 uppercase">Matrix Indicators</p>
@@ -115,9 +126,9 @@
                 </div>
 
                 <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
-                    <h3 class="font-bold text-slate-800 text-base mb-2">Smart Sector-Aware MEAL Suite</h3>
+                    <h3 class="font-bold text-slate-800 text-base mb-2">Smart Multi-Sector MEAL Suite</h3>
                     <p class="text-xs text-slate-600 leading-relaxed mb-4">
-                        LogPulse automatically detects your active project's thematic domain and intelligently filters the indicator repository to suggest the most relevant metrics for your logframe.
+                        LogPulse allows you to combine multiple thematic sectors into a single project logframe, automatically pulling and filtering relevant behavioral indicators across domains.
                     </p>
                     <div class="flex gap-3">
                         <button onclick="switchTab('builder')" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 py-2.5 rounded-lg transition cursor-pointer">
@@ -132,8 +143,8 @@
                 
                 <div class="bg-indigo-900 text-white rounded-xl p-5 shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
                     <div>
-                        <h3 class="font-bold text-sm">📁 Automated Proposal Parsing or Smart Repository Suggestions</h3>
-                        <p id="builder-banner-subtitle" class="text-xs text-indigo-200 mt-0.5">Showing sector-tailored indicators for: <strong class="text-white">Adolescents Mental Wellness (Health)</strong></p>
+                        <h3 class="font-bold text-sm">📁 Automated Proposal Parsing or Multi-Sector Repository</h3>
+                        <p id="builder-banner-subtitle" class="text-xs text-indigo-200 mt-0.5">Showing indicators for active sectors: <strong class="text-white">SBC, Education, GESI</strong></p>
                     </div>
                     <label class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-4 py-2 rounded-lg cursor-pointer transition shadow">
                         Upload Document / Matrix
@@ -145,7 +156,10 @@
                     <div class="lg:col-span-5 bg-white rounded-xl border border-slate-200 p-4 flex flex-col h-[70vh]">
                         <div class="flex justify-between items-center mb-2">
                             <h3 class="font-bold text-slate-800 text-xs uppercase tracking-wider">Smart Indicator Library</h3>
-                            <span id="repo-filter-indicator" class="text-[10px] text-indigo-600 font-semibold">Auto-filtered by Sector</span>
+                            <!-- Sector filter dropdown for library -->
+                            <select id="library-sector-filter" onchange="renderLibrary()" class="text-[10px] bg-slate-100 border border-slate-200 rounded px-1.5 py-1 font-semibold text-indigo-700">
+                                <option value="all">All Project Sectors</option>
+                            </select>
                         </div>
                         <div class="flex flex-wrap gap-1 mb-2">
                             <button onclick="filterLibrary('all')" class="lib-btn px-2 py-1 bg-indigo-600 text-white text-[10px] font-bold rounded">All</button>
@@ -199,6 +213,7 @@
                                 <table class="w-full text-left text-xs">
                                     <thead>
                                         <tr class="border-b border-slate-200 text-slate-400 uppercase text-[10px]">
+                                            <th class="py-2">Sector</th>
                                             <th class="py-2">Subcategory</th>
                                             <th class="py-2">Indicator Statement</th>
                                             <th class="py-2">Baseline</th>
@@ -255,11 +270,6 @@
                                 Download Register (.csv)
                             </button>
                         </div>
-                    </div>
-
-                    <div id="tool-preview-box" class="p-4 rounded-lg bg-slate-900 text-slate-200 font-mono text-xs space-y-2 hidden">
-                        <p class="text-indigo-400 font-bold">[Tool Design Studio Action Log]</p>
-                        <div id="tool-preview-content"></div>
                     </div>
                 </div>
             </div>
@@ -318,7 +328,7 @@
                 </div>
             </div>
 
-            <!-- VIEW 5: ANALYSIS, VISUALS & LEARNING (FULLY CONNECTED) -->
+            <!-- VIEW 5: ANALYSIS, VISUALS & LEARNING -->
             <div id="view-analysis" class="app-view space-y-6">
                 <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-6">
                     <div class="flex justify-between items-center">
@@ -331,7 +341,6 @@
                         </button>
                     </div>
 
-                    <!-- Visual Graphs Container -->
                     <div id="analysis-visuals-section" class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2 hidden">
                         <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
                             <h4 class="font-bold text-xs text-slate-700 uppercase mb-3">📊 Indicator Baseline vs. Target Performance</h4>
@@ -347,7 +356,6 @@
                         </div>
                     </div>
 
-                    <!-- Synthesis & Download Box -->
                     <div id="analysis-output" class="p-5 rounded-xl bg-slate-900 text-slate-200 font-mono text-xs space-y-4 hidden">
                         <div class="flex justify-between items-center border-b border-slate-800 pb-3">
                             <p class="text-indigo-400 font-bold text-sm">[Synthesis & Adaptive Learning Engine Active]</p>
@@ -363,24 +371,42 @@
         </main>
     </div>
 
-    <!-- NEW PROJECT MODAL -->
+    <!-- NEW PROJECT MODAL (WITH MULTI-SECTOR CHECKBOXES) -->
     <div id="modal-project" class="fixed inset-0 bg-slate-900/50 z-50 hidden justify-center items-center p-4">
-        <div class="bg-white rounded-xl shadow-xl max-w-sm w-full p-6 space-y-4 text-xs">
-            <h3 class="font-bold text-slate-900 text-sm">Create New Project Logframe</h3>
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4 text-xs">
+            <h3 class="font-bold text-slate-900 text-sm">Create New Multi-Sector Project Logframe</h3>
             <div>
                 <label class="block font-semibold text-slate-600 mb-1">Project Title *</label>
-                <input type="text" id="new-proj-name" placeholder="e.g. Turkana Resilience Initiative" class="w-full px-3 py-2 border border-slate-200 rounded">
+                <input type="text" id="new-proj-name" placeholder="e.g. Girl's 360. Keeping Girls in School" class="w-full px-3 py-2 border border-slate-200 rounded">
             </div>
             <div>
-                <label class="block font-semibold text-slate-600 mb-1">Sector / Domain *</label>
-                <select id="new-proj-sector" class="w-full px-3 py-2 border border-slate-200 rounded bg-slate-50">
-                    <option value="Health">Health & Psychosocial Support</option>
-                    <option value="SGBV">SGBV / Protection</option>
-                    <option value="SBC">Social & Behavior Change (SBC)</option>
-                    <option value="Agriculture">Agriculture & Resilience</option>
-                    <option value="GESI">GESI & Economic Empowerment</option>
-                    <option value="Education">Education & Youth Development</option>
-                </select>
+                <label class="block font-semibold text-slate-600 mb-2">Select Applicable Sectors / Domains * (Choose one or more)</label>
+                <div class="grid grid-cols-2 gap-2 bg-slate-50 p-3 rounded border border-slate-200">
+                    <label class="flex items-center space-x-2 cursor-pointer">
+                        <input type="checkbox" name="proj-sector" value="SBC" checked class="rounded text-indigo-600">
+                        <span class="font-medium text-slate-700">SBC</span>
+                    </label>
+                    <label class="flex items-center space-x-2 cursor-pointer">
+                        <input type="checkbox" name="proj-sector" value="Education" checked class="rounded text-indigo-600">
+                        <span class="font-medium text-slate-700">Education</span>
+                    </label>
+                    <label class="flex items-center space-x-2 cursor-pointer">
+                        <input type="checkbox" name="proj-sector" value="GESI" checked class="rounded text-indigo-600">
+                        <span class="font-medium text-slate-700">GESI & Empowerment</span>
+                    </label>
+                    <label class="flex items-center space-x-2 cursor-pointer">
+                        <input type="checkbox" name="proj-sector" value="Health" class="rounded text-indigo-600">
+                        <span class="font-medium text-slate-700">Health & Psychosocial</span>
+                    </label>
+                    <label class="flex items-center space-x-2 cursor-pointer">
+                        <input type="checkbox" name="proj-sector" value="SGBV" class="rounded text-indigo-600">
+                        <span class="font-medium text-slate-700">SGBV / Protection</span>
+                    </label>
+                    <label class="flex items-center space-x-2 cursor-pointer">
+                        <input type="checkbox" name="proj-sector" value="Agriculture" class="rounded text-indigo-600">
+                        <span class="font-medium text-slate-700">Agriculture & Resilience</span>
+                    </label>
+                </div>
             </div>
             <div class="flex justify-end space-x-2 pt-2">
                 <button onclick="closeNewProjectModal()" class="px-3 py-1.5 text-slate-600 hover:bg-slate-100 rounded">Cancel</button>
@@ -389,79 +415,180 @@
         </div>
     </div>
 
+    <!-- DEV ADMIN BACKEND DASHBOARD MODAL -->
+    <div id="modal-admin" class="fixed inset-0 bg-slate-900/60 z-50 hidden justify-center items-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-6 space-y-4 text-xs">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <div>
+                    <h3 class="font-bold text-slate-900 text-sm">🔒 Developer Admin Dashboard</h3>
+                    <p class="text-[11px] text-slate-500">System user accounts, emails, and platform registration logs.</p>
+                </div>
+                <button onclick="closeAdminModal()" class="text-slate-400 hover:text-slate-600 font-bold text-sm">&times;</button>
+            </div>
+            <div class="overflow-x-auto max-h-80">
+                <table class="w-full text-left text-xs">
+                    <thead>
+                        <tr class="border-b border-slate-200 text-slate-400 uppercase text-[10px]">
+                            <th class="py-2">User Full Name</th>
+                            <th class="py-2">Email Address</th>
+                            <th class="py-2">Account Role</th>
+                            <th class="py-2">Registered On</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-user-table-body" class="divide-y divide-slate-100">
+                        <!-- Populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="flex justify-between items-center pt-2 border-t border-slate-100 text-[11px] text-slate-500">
+                <span>Total Registered Users: <strong id="admin-user-count" class="text-indigo-600">2</strong></span>
+                <button onclick="closeAdminModal()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded">Close Dashboard</button>
+            </div>
+        </div>
+    </div>
+
     <!-- SCRIPT LOGIC -->
     <script>
         const indicatorRepository = [
-            { code: 'HLT-IN-01', subcat: 'Input', sector: 'Health', name: 'Dedicated Budget Allocation for Clinical & Mental Health Services', unit: 'USD' },
-            { code: 'HLT-PR-01', subcat: 'Process', sector: 'Health', name: 'Number of Psychosocial Support & Counseling Sessions Conducted', unit: 'Count' },
-            { code: 'HLT-OUT-01', subcat: 'Output', sector: 'Health', name: 'Adolescents Reached with Mental Health Screening & Wellness Support', unit: 'Count' },
-            { code: 'HLT-OME-01', subcat: 'Outcome', sector: 'Health', name: 'Percentage Reduction in Reported Psychological Distress Scores', unit: '%' },
-            { code: 'HLT-IMP-01', subcat: 'Impact', sector: 'Health', name: 'Long-term Psychosocial Well-being Index Score', unit: 'Index (0-1)' },
-
-            { code: 'SGBV-IN-01', subcat: 'Input', sector: 'SGBV', name: 'Budget Allocated for Psychosocial Support & Legal Aid Services', unit: 'USD' },
-            { code: 'SGBV-PR-01', subcat: 'Process', sector: 'SGBV', name: 'Number of Community Awareness Sessions on SGBV Prevention', unit: 'Count' },
-            { code: 'SGBV-OUT-01', subcat: 'Output', sector: 'SGBV', name: 'Survivors of SGBV Provided with Timely Medical & Legal Assistance', unit: 'Count' },
-            { code: 'SGBV-OME-01', subcat: 'Outcome', sector: 'SGBV', name: 'Percentage Increase in Community Reporting Confidence for SGBV Cases', unit: '%' },
-            { code: 'SGBV-IMP-01', subcat: 'Impact', sector: 'SGBV', name: 'Reduction in Reported Incidence of Gender-Based Violence in Target Communities', unit: '%' },
-
             { code: 'SBC-IN-01', subcat: 'Input', sector: 'SBC', name: 'Project Budget Disbursement Rate vs Allocation', unit: '%' },
             { code: 'SBC-PR-01', subcat: 'Process', sector: 'SBC', name: 'Frequency of Community Dialogue Sessions Conducted', unit: 'Count' },
             { code: 'SBC-OUT-01', subcat: 'Output', sector: 'SBC', name: 'Community Members Reached through Interpersonal Communication Campaigns', unit: 'Count' },
             { code: 'SBC-OME-01', subcat: 'Outcome', sector: 'SBC', name: 'Adoption Rate of Targeted Positive Behavioral Practices', unit: '%' },
             { code: 'SBC-IMP-01', subcat: 'Impact', sector: 'SBC', name: 'Sustained Social Norm Transformation Index Score', unit: 'Index (0-1)' },
 
-            { code: 'AGRI-IN-01', subcat: 'Input', sector: 'Agriculture', name: 'Agricultural Input Subsidy Vouchers Distributed', unit: 'Count' },
-            { code: 'AGRI-PR-01', subcat: 'Process', sector: 'Agriculture', name: 'Number of Farmer Field School Training Sessions Held', unit: 'Count' },
-            { code: 'AGRI-OUT-01', subcat: 'Output', sector: 'Agriculture', name: 'Smallholder Farmers Trained in Climate-Smart Agronomy', unit: 'Count' },
-            { code: 'AGRI-OME-01', subcat: 'Outcome', sector: 'Agriculture', name: 'Percentage Increase in Crop Yields among Beneficiary Households', unit: '%' },
-            { code: 'AGRI-IMP-01', subcat: 'Impact', sector: 'Agriculture', name: 'Reduction in Severe Household Hunger Scale (HHS)', unit: '%' },
+            { code: 'EDU-IN-01', subcat: 'Input', sector: 'Education', name: 'School Retention Grants & Bursaries Distributed', unit: 'USD' },
+            { code: 'EDU-PR-01', subcat: 'Process', sector: 'Education', name: 'Mentorship & Life-Skills Coaching Sessions Held for Girls', unit: 'Count' },
+            { code: 'EDU-OUT-01', subcat: 'Output', sector: 'Education', name: 'At-Risk Girls Provided with School Uniforms & Learning Kits', unit: 'Count' },
+            { code: 'EDU-OME-01', subcat: 'Outcome', sector: 'Education', name: 'Percentage Increase in Term-over-Term School Attendance Rate', unit: '%' },
+            { code: 'EDU-IMP-01', subcat: 'Impact', sector: 'Education', name: 'Lowered School Dropout Rate Among Adolescent Girls', unit: '%' },
 
             { code: 'GESI-IN-01', subcat: 'Input', sector: 'GESI', name: 'Dedicated GESI Mainstreaming Grant Allocation', unit: 'USD' },
             { code: 'GESI-PR-01', subcat: 'Process', sector: 'GESI', name: 'Leadership Mentorship Circles Conducted for Marginalized Groups', unit: 'Count' },
             { code: 'GESI-OUT-01', subcat: 'Output', sector: 'GESI', name: 'Women and Youth Leaders Participating in Local Governance Committees', unit: 'Count' },
             { code: 'GESI-OME-01', subcat: 'Outcome', sector: 'GESI', name: 'Household Decision-Making Autonomy Index', unit: 'Index (0-1)' },
 
-            { code: 'UNI-IN-01', subcat: 'Input', sector: 'Universal', name: 'Total Project Expenditure vs Approved Budget', unit: '%' },
-            { code: 'UNI-PR-01', subcat: 'Process', sector: 'Universal', name: 'Number of Stakeholder Coordination Meetings Conducted', unit: 'Count' },
-            { code: 'UNI-OUT-01', subcat: 'Output', sector: 'Universal', name: 'Total Target Beneficiaries Reached by Project Activities', unit: 'Count' },
-            { code: 'UNI-OME-01', subcat: 'Outcome', sector: 'Universal', name: 'Beneficiary Satisfaction Rate with Project Services', unit: '%' },
-            { code: 'UNI-IMP-01', subcat: 'Impact', sector: 'Universal', name: 'Overall Quality of Life & Resilience Improvement Index', unit: 'Index (0-1)' }
+            { code: 'HLT-IN-01', subcat: 'Input', sector: 'Health', name: 'Dedicated Budget Allocation for Clinical & Mental Health Services', unit: 'USD' },
+            { code: 'HLT-PR-01', subcat: 'Process', sector: 'Health', name: 'Number of Psychosocial Support & Counseling Sessions Conducted', unit: 'Count' },
+            { code: 'HLT-OUT-01', subcat: 'Output', sector: 'Health', name: 'Adolescents Reached with Mental Health Screening & Wellness Support', unit: 'Count' },
+            { code: 'HLT-OME-01', subcat: 'Outcome', sector: 'Health', name: 'Percentage Reduction in Reported Psychological Distress Scores', unit: '%' },
+
+            { code: 'SGBV-IN-01', subcat: 'Input', sector: 'SGBV', name: 'Budget Allocated for Psychosocial Support & Legal Aid Services', unit: 'USD' },
+            { code: 'SGBV-PR-01', subcat: 'Process', sector: 'SGBV', name: 'Number of Community Awareness Sessions on SGBV Prevention', unit: 'Count' },
+            { code: 'SGBV-OUT-01', subcat: 'Output', sector: 'SGBV', name: 'Survivors of SGBV Provided with Timely Medical & Legal Assistance', unit: 'Count' },
+            { code: 'SGBV-OME-01', subcat: 'Outcome', sector: 'SGBV', name: 'Percentage Increase in Community Reporting Confidence', unit: '%' },
+
+            { code: 'AGRI-IN-01', subcat: 'Input', sector: 'Agriculture', name: 'Agricultural Input Subsidy Vouchers Distributed', unit: 'Count' },
+            { code: 'AGRI-PR-01', subcat: 'Process', sector: 'Agriculture', name: 'Number of Farmer Field School Training Sessions Held', unit: 'Count' },
+            { code: 'AGRI-OUT-01', subcat: 'Output', sector: 'Agriculture', name: 'Smallholder Farmers Trained in Climate-Smart Agronomy', unit: 'Count' },
+            { code: 'AGRI-OME-01', subcat: 'Outcome', sector: 'Agriculture', name: 'Percentage Increase in Crop Yields among Beneficiary Households', unit: '%' }
+        ];
+
+        // Registered users list for backend management
+        let registeredUsers = [
+            { name: 'Rehema Yusuf', email: 'director@cobaltmetrics.com', role: 'System Administrator', date: '2026-01-15' },
+            { name: 'Field Evaluator User', email: 'evaluator@cobaltmetrics.com', role: 'Standard MEAL Officer', date: '2026-08-27' }
         ];
 
         let projects = [
-            { id: 1, name: 'SBC Community Pilot 2026', sector: 'SBC', status: 'Active' },
-            { id: 2, name: 'Agri-Resilience Kenya', sector: 'Agriculture', status: 'Archived' },
-            { id: 3, name: 'GESI Economic Empowerment', sector: 'GESI', status: 'Draft' },
-            { id: 4, name: 'SGBV Awareness', sector: 'SGBV', status: 'Active' },
-            { id: 5, name: 'Adolescents Mental Wellness', sector: 'Health', status: 'Active' }
+            { id: 1, name: "Girl's 360. Keeping Girls in School", sectors: ['SBC', 'Education', 'GESI'], status: 'Active' },
+            { id: 2, name: 'Adolescents Mental Wellness', sectors: ['Health'], status: 'Active' },
+            { id: 3, name: 'SGBV Community Protection', sectors: ['SGBV', 'GESI'], status: 'Active' }
         ];
 
         let activeMatrix = [
-            { id: 101, subcat: 'Process', statement: 'Number of Psychosocial Support & Counseling Sessions Conducted', baseline: 15, target: 120 },
-            { id: 102, subcat: 'Output', statement: 'Adolescents Reached with Mental Health Screening & Wellness Support', baseline: 50, target: 500 },
-            { id: 103, subcat: 'Outcome', statement: 'Percentage Reduction in Reported Psychological Distress Scores', baseline: 10, target: 45 }
+            { id: 101, sector: 'Education', subcat: 'Outcome', statement: 'Percentage Increase in Term-over-Term School Attendance Rate', baseline: 45, target: 85 },
+            { id: 102, sector: 'SBC', subcat: 'Output', statement: 'Community Members Reached through Interpersonal Communication Campaigns', baseline: 120, target: 1200 },
+            { id: 103, sector: 'GESI', subcat: 'Outcome', statement: 'Household Decision-Making Autonomy Index', baseline: 0.35, target: 0.75 }
         ];
 
         let currentFilter = 'all';
-        let currentProjectName = 'Adolescents Mental Wellness';
-        let currentSector = 'Health';
+        let currentProjectName = "Girl's 360. Keeping Girls in School";
+        let currentSectors = ['SBC', 'Education', 'GESI'];
         let ingestedDataCount = 485;
+        let isSignUpMode = false;
         let barChartInstance = null;
         let pieChartInstance = null;
 
         window.addEventListener('DOMContentLoaded', () => {
             renderProjectsList();
+            updateLibrarySectorsDropdown();
             renderLibrary();
             renderMatrix();
         });
 
-        function handleLogin(e) {
+        function toggleAuthMode() {
+            isSignUpMode = !isSignUpMode;
+            const title = document.getElementById('auth-form-title');
+            const nameField = document.getElementById('auth-name-field');
+            const submitBtn = document.getElementById('auth-submit-btn');
+            const toggleBtn = document.getElementById('auth-toggle-btn');
+
+            if (isSignUpMode) {
+                title.innerText = "Create LogPulse Account";
+                nameField.classList.remove('hidden');
+                submitBtn.innerText = "Sign Up & Access Workspace";
+                toggleBtn.innerText = "Already have an account? Sign In";
+            } else {
+                title.innerText = "LogPulse Enterprise Sign In";
+                nameField.classList.add('hidden');
+                submitBtn.innerText = "Sign In to Workspace";
+                toggleBtn.innerText = "Need an account? Sign Up";
+            }
+        }
+
+        function handleAuthSubmit(e) {
             e.preventDefault();
+            const email = document.getElementById('auth-email').value;
+            const nameInput = document.getElementById('auth-name').value || 'Registered User';
+
+            if (isSignUpMode) {
+                if (!registeredUsers.some(u => u.email === email)) {
+                    registeredUsers.push({
+                        name: nameInput,
+                        email: email,
+                        role: email === 'director@cobaltmetrics.com' ? 'System Administrator' : 'Standard MEAL Officer',
+                        date: new Date().toISOString().split('T')[0]
+                    });
+                }
+                alert("Account successfully created! Welcome to LogPulse Enterprise MEAL.");
+            } else {
+                if (!registeredUsers.some(u => u.email === email)) {
+                    // Auto-register on sign in for demo convenience if not present
+                    registeredUsers.push({
+                        name: nameInput,
+                        email: email,
+                        role: email === 'director@cobaltmetrics.com' ? 'System Administrator' : 'Standard MEAL Officer',
+                        date: new Date().toISOString().split('T')[0]
+                    });
+                }
+            }
+
+            document.getElementById('header-user-email').innerText = email;
             document.getElementById('view-auth').classList.remove('active');
         }
 
         function logout() {
             document.getElementById('view-auth').classList.add('active');
+        }
+
+        function openAdminModal() {
+            const tbody = document.getElementById('admin-user-table-body');
+            document.getElementById('admin-user-count').innerText = registeredUsers.length;
+            tbody.innerHTML = registeredUsers.map(u => `
+                <tr class="hover:bg-slate-50">
+                    <td class="py-2 font-bold text-slate-800">${u.name}</td>
+                    <td class="py-2 text-indigo-600">${u.email}</td>
+                    <td class="py-2"><span class="px-2 py-0.5 bg-indigo-100 text-indigo-800 rounded font-semibold text-[10px]">${u.role}</span></td>
+                    <td class="py-2 text-slate-500">${u.date}</td>
+                </tr>
+            `).join('');
+            document.getElementById('modal-admin').classList.remove('hidden');
+            document.getElementById('modal-admin').classList.add('flex');
+        }
+
+        function closeAdminModal() {
+            document.getElementById('modal-admin').classList.remove('flex');
+            document.getElementById('modal-admin').classList.add('hidden');
         }
 
         function switchTab(tabId) {
@@ -481,11 +608,12 @@
             const list = document.getElementById('project-list');
             list.innerHTML = projects.map(p => {
                 const isSelected = p.name === currentProjectName;
+                const sectorsStr = p.sectors.join(', ');
                 return `
                     <div class="project-card p-2.5 rounded-lg border ${isSelected ? 'border-indigo-500 bg-indigo-50/50' : 'border-slate-200 hover:bg-slate-50'} cursor-pointer transition flex justify-between items-center group">
-                        <div onclick="selectProject('${p.name}', '${p.sector}')" class="flex-grow">
+                        <div onclick="selectProject('${p.name}', ${JSON.stringify(p.sectors).replace(/"/g, '&quot;')})" class="flex-grow">
                             <p class="text-xs font-bold ${isSelected ? 'text-indigo-900' : 'text-slate-700'}">${p.name}</p>
-                            <span class="text-[10px] text-slate-400">${p.status} • Sector: ${p.sector}</span>
+                            <span class="text-[10px] text-slate-400">${p.status} • Sectors: ${sectorsStr}</span>
                         </div>
                         <button onclick="deleteProject(event, ${p.id})" class="text-slate-400 hover:text-rose-600 p-1 rounded transition opacity-60 group-hover:opacity-100" title="Delete Project">
                             🗑️
@@ -495,14 +623,14 @@
             }).join('');
         }
 
-        function selectProject(name, sector) {
+        function selectProject(name, sectors) {
             currentProjectName = name;
-            currentSector = sector;
+            currentSectors = sectors;
             document.getElementById('dash-active-title').innerText = name;
-            document.getElementById('dash-active-sector').innerText = `Sector Domain: ${sector}`;
-            document.getElementById('header-workspace').innerText = name;
-            document.getElementById('builder-banner-subtitle').innerHTML = `Showing sector-tailored indicators for: <strong class="text-white">${name} (${sector})</strong>`;
+            document.getElementById('dash-active-sector').innerText = `Sectors: ${sectors.join(', ')}`;
+            document.getElementById('builder-banner-subtitle').innerHTML = `Showing indicators for active sectors: <strong class="text-white">${sectors.join(', ')}</strong>`;
             renderProjectsList();
+            updateLibrarySectorsDropdown();
             renderLibrary();
         }
 
@@ -515,7 +643,7 @@
             if(confirm("Are you sure you want to delete this project archive?")) {
                 projects = projects.filter(p => p.id !== id);
                 if(!projects.some(p => p.name === currentProjectName)) {
-                    selectProject(projects[0].name, projects[0].sector);
+                    selectProject(projects[0].name, projects[0].sectors);
                 } else {
                     renderProjectsList();
                 }
@@ -534,19 +662,37 @@
 
         function saveNewProject() {
             const nameInput = document.getElementById('new-proj-name');
-            const sectorSelect = document.getElementById('new-proj-sector');
-            if(!nameInput.value) return;
-            projects.push({
+            if(!nameInput.value) {
+                alert("Please enter a project title.");
+                return;
+            }
+            const checkboxes = document.querySelectorAll('input[name="proj-sector"]:checked');
+            const selectedSectors = Array.from(checkboxes).map(cb => cb.value);
+            
+            if(selectedSectors.length === 0) {
+                alert("Please select at least one sector for the project.");
+                return;
+            }
+
+            const newProj = {
                 id: Date.now(),
                 name: nameInput.value,
-                sector: sectorSelect.value,
+                sectors: selectedSectors,
                 status: 'Active'
-            });
-            selectProject(nameInput.value, sectorSelect.value);
+            };
+
+            projects.push(newProj);
+            selectProject(newProj.name, newProj.sectors);
             activeMatrix = [];
             renderMatrix();
             nameInput.value = '';
             closeNewProjectModal();
+        }
+
+        function updateLibrarySectorsDropdown() {
+            const dropdown = document.getElementById('library-sector-filter');
+            dropdown.innerHTML = `<option value="all">All Project Sectors (${currentSectors.join(', ')})</option>` +
+                currentSectors.map(s => `<option value="${s}">Sector: ${s}</option>`).join('');
         }
 
         function filterLibrary(subcat) {
@@ -556,17 +702,25 @@
 
         function renderLibrary() {
             const container = document.getElementById('library-container');
+            const sectorFilter = document.getElementById('library-sector-filter').value;
+
             const filtered = indicatorRepository.filter(item => {
-                const matchesSector = item.sector === currentSector || item.sector === 'Universal';
+                const matchesProjectSectors = currentSectors.includes(item.sector);
+                const matchesSectorDropdown = sectorFilter === 'all' || item.sector === sectorFilter;
                 const matchesSubcat = currentFilter === 'all' || item.subcat === currentFilter;
-                return matchesSector && matchesSubcat;
+                return matchesProjectSectors && matchesSectorDropdown && matchesSubcat;
             });
             
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="p-4 text-center text-slate-400 text-xs">No indicators found for the selected filters.</div>`;
+                return;
+            }
+
             container.innerHTML = filtered.map(item => `
                 <div onclick="autofillForm('${item.code}')" class="p-2.5 rounded border border-slate-200 hover:border-indigo-500 cursor-pointer text-xs bg-slate-50 transition">
                     <div class="flex justify-between font-bold text-[10px] text-slate-500 mb-0.5">
                         <span>${item.code} (${item.subcat})</span>
-                        <span class="text-indigo-600">${item.sector}</span>
+                        <span class="text-indigo-600 px-1.5 py-0.5 bg-indigo-50 rounded">${item.sector}</span>
                     </div>
                     <p class="font-semibold text-slate-800">${item.name}</p>
                 </div>
@@ -584,10 +738,16 @@
 
         function addMatrixRow(e) {
             e.preventDefault();
+            const statement = document.getElementById('form-statement').value;
+            // Determine sector from form or default to first project sector
+            let sector = document.getElementById('form-sector').value;
+            if(!sector) sector = currentSectors[0];
+
             const row = {
                 id: Date.now(),
+                sector: sector,
                 subcat: document.getElementById('form-subcat').value,
-                statement: document.getElementById('form-statement').value,
+                statement: statement,
                 baseline: parseFloat(document.getElementById('form-baseline').value) || 0,
                 target: parseFloat(document.getElementById('form-target').value) || 100
             };
@@ -600,11 +760,12 @@
             const tbody = document.getElementById('matrix-table-body');
             document.getElementById('dash-matrix-count').innerText = activeMatrix.length;
             if (activeMatrix.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-slate-400">No indicators added yet. Select from the smart repository on the left or upload a file.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-slate-400">No indicators added yet. Select from the smart repository on the left or upload a file.</td></tr>`;
                 return;
             }
             tbody.innerHTML = activeMatrix.map(r => `
                 <tr class="hover:bg-slate-50">
+                    <td class="py-2"><span class="px-2 py-0.5 bg-slate-200 text-slate-800 rounded font-bold text-[10px]">${r.sector}</span></td>
                     <td class="py-2"><span class="px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded font-bold text-[10px]">${r.subcat}</span></td>
                     <td class="py-2 font-medium text-slate-800">${r.statement}</td>
                     <td class="py-2 text-slate-600">${r.baseline}</td>
@@ -620,12 +781,13 @@
         }
 
         function handleFileUpload(e) {
-            alert("File successfully parsed! Grant proposal matrix converted into MEAL subcategories.");
+            alert("File successfully parsed! Multi-sector grant proposal matrix converted into MEAL subcategories.");
             activeMatrix.push({
                 id: Date.now(),
+                sector: currentSectors[0] || 'SBC',
                 subcat: 'Outcome',
-                statement: 'Parsed Indicator: Mental Health Resilience Score',
-                baseline: 30,
+                statement: 'Parsed Multi-Sector Resilience & Retention Score',
+                baseline: 25,
                 target: 90
             });
             renderMatrix();
@@ -647,7 +809,7 @@
                         surveyData.push({
                             type: 'text',
                             name: `ind_${idx + 1}_${i.subcat.toLowerCase()}`,
-                            label: `[Indicator - ${i.subcat}] ${i.statement}`
+                            label: `[${i.sector} - ${i.subcat}] ${i.statement}`
                         });
                     });
                 } else {
@@ -671,26 +833,21 @@
                 XLSX.utils.book_append_sheet(wb, wsChoices, 'choices');
 
                 const settingsData = [
-                    { form_title: `${currentProjectName} - XLSForm`, form_id: `logpulse_${currentProjectName.toLowerCase().replace(/[^a-z0-9]/g, '_')}`, version: '20260827' }
+                    { form_title: `${currentProjectName} - Multi-Sector XLSForm`, form_id: `logpulse_${currentProjectName.toLowerCase().replace(/[^a-z0-9]/g, '_')}`, version: '20260827' }
                 ];
                 const wsSettings = XLSX.utils.json_to_sheet(settingsData);
                 XLSX.utils.book_append_sheet(wb, wsSettings, 'settings');
 
                 const filename = `${currentProjectName.replace(/\s+/g, '_')}_XLSForm.xlsx`;
                 XLSX.writeFile(wb, filename);
-
-                const box = document.getElementById('tool-preview-box');
-                const contentBox = document.getElementById('tool-preview-content');
-                box.classList.remove('hidden');
-                contentBox.innerHTML = `<span class="text-emerald-400 font-bold">[SUCCESS] Valid multi-sheet XLSForm "${filename}" successfully generated and downloaded! Ready for KoboToolbox import.</span>`;
-
+                alert(`Multi-sector XLSForm "${filename}" successfully generated and downloaded!`);
             } else if (type === 'qualitative') {
                 const filename = `${currentProjectName.replace(/\s+/g, '_')}_KII_FGD_Guides.txt`;
-                const content = `LOGPULSE QUALITATIVE DATA COLLECTION GUIDES\nProject: ${currentProjectName} (${currentSector})\n\n=== 1. KEY INFORMANT INTERVIEW (KII) GUIDE ===\n- Target Stakeholders: Health Workers, Community Leaders\n- Core Questions on Behavioral Drivers & Outcomes...\n\n=== 2. FOCUS GROUP DISCUSSION (FGD) GUIDE ===\n- Target Cohorts: Youth & Adolescents\n- Discussion Prompts & Community Norm Mapping...`;
+                const content = `LOGPULSE MULTI-SECTOR QUALITATIVE DATA COLLECTION GUIDES\nProject: ${currentProjectName}\nSectors: ${currentSectors.join(', ')}\n\n=== 1. KEY INFORMANT INTERVIEW (KII) GUIDE ===\n- Target Stakeholders: Teachers, Community Leaders, Health Officers\n- Multi-Sector Behavioral Drivers & Cross-Cutting Outcomes...`;
                 triggerTextDownload(filename, content);
             } else if (type === 'register') {
                 const filename = `${currentProjectName.replace(/\s+/g, '_')}_GESI_Participant_Register.csv`;
-                const content = `Participant_ID,Full_Name,Age_Cohort,Gender_GESI,Community_Unit,Attendance_Status,Feedback_Log\nLOG-001,Participant Alpha,15-19,Female,Unit A,Attended,None\nLOG-002,Participant Beta,20-24,Male,Unit B,Attended,Requested follow-up session`;
+                const content = `Participant_ID,Full_Name,Age_Cohort,Gender_GESI,Community_Unit,Sectors_Covered,Attendance_Status\nLOG-001,Participant Alpha,15-19,Female,Unit A,SBC & Education,Attended\nLOG-002,Participant Beta,20-24,Male,Unit B,GESI,Attended`;
                 triggerTextDownload(filename, content);
             }
         }
@@ -721,7 +878,7 @@
             const out = document.getElementById('pipeline-output');
             const logContent = document.getElementById('pipeline-log-content');
             out.classList.remove('hidden');
-            logContent.innerHTML = `<span class="text-indigo-300">>> KoboToolbox / ODK API Handshake Successful</span><br><span class="text-emerald-400">Successfully linked endpoint: ${url}<br>Fetched 485 live field submissions ready for data cleaning and outlier detection.</span>`;
+            logContent.innerHTML = `<span class="text-indigo-300">>> KoboToolbox / ODK API Handshake Successful</span><br><span class="text-emerald-400">Successfully linked multi-sector endpoint: ${url}<br>Fetched 485 live field submissions across sectors: ${currentSectors.join(', ')}.</span>`;
         }
 
         function handleDatasetUpload(e) {
@@ -733,7 +890,7 @@
             const out = document.getElementById('pipeline-output');
             const logContent = document.getElementById('pipeline-log-content');
             out.classList.remove('hidden');
-            logContent.innerHTML = `<span class="text-indigo-300">>> Dataset File Uploaded & Parsed</span><br><span class="text-emerald-400">Successfully ingested 312 rows of raw survey data. Data pipeline primed for outlier scan and GESI disaggregation.</span>`;
+            logContent.innerHTML = `<span class="text-indigo-300">>> Dataset File Uploaded & Parsed</span><br><span class="text-emerald-400">Successfully ingested 312 rows of multi-sector survey data. Ready for analysis.</span>`;
         }
 
         function executePipeline(step) {
@@ -745,13 +902,12 @@
             badge.className = "px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded font-bold text-[10px]";
 
             if(step === 'ingestion') {
-                logContent.innerHTML = `<span class="text-indigo-300">>> STEP 3.1: RAW DATA INGESTION & ANOMALY SCAN</span><br>Pulled ${ingestedDataCount} field submissions across active indicators for <strong class="text-white">${currentSector}</strong>.<br><span class="text-emerald-400">0 duplicate submissions purged. Data integrity verified at 99.8%.</span>`;
+                logContent.innerHTML = `<span class="text-indigo-300">>> STEP 3.1: RAW DATA INGESTION & ANOMALY SCAN</span><br>Pulled ${ingestedDataCount} field submissions across sectors: <strong class="text-white">${currentSectors.join(', ')}</strong>.<br><span class="text-emerald-400">0 duplicate submissions purged. Data integrity verified at 99.8%.</span>`;
             } else if(step === 'aggregation') {
-                logContent.innerHTML = `<span class="text-indigo-300">>> STEP 3.2: DATA TRANSFORMATION & GESI DISAGGREGATION</span><br>Disaggregating cleaned dataset by GESI compliance parameters...<br><span class="text-emerald-400 font-bold">Aggregation matrix successfully computed across all active logframe subcategories.</span>`;
+                logContent.innerHTML = `<span class="text-indigo-300">>> STEP 3.2: DATA TRANSFORMATION & GESI DISAGGREGATION</span><br>Disaggregating multi-sector cleaned dataset by GESI compliance parameters...<br><span class="text-emerald-400 font-bold">Cross-sector aggregation matrix successfully computed.</span>`;
             }
         }
 
-        // FULL ANALYSIS, CHARTS & LEARNING SYNTHESIS
         function runFullAnalysisAndVisuals() {
             if(activeMatrix.length === 0) {
                 alert("Please add at least one indicator to your logframe matrix before running analysis.");
@@ -759,15 +915,13 @@
                 return;
             }
 
-            // Reveal Visuals and Output Containers
             document.getElementById('analysis-visuals-section').classList.remove('hidden');
             document.getElementById('analysis-output').classList.remove('hidden');
 
-            const labels = activeMatrix.map(i => i.statement.length > 35 ? i.statement.substring(0, 32) + '...' : i.statement);
+            const labels = activeMatrix.map(i => `[${i.sector}] ${i.statement.length > 25 ? i.statement.substring(0, 22) + '...' : i.statement}`);
             const baselines = activeMatrix.map(i => i.baseline);
             const targets = activeMatrix.map(i => i.target);
 
-            // Render Bar Chart (Baseline vs Target)
             const ctxBar = document.getElementById('performanceBarChart').getContext('2d');
             if(barChartInstance) barChartInstance.destroy();
             barChartInstance = new Chart(ctxBar, {
@@ -787,7 +941,6 @@
                 }
             });
 
-            // Render GESI Pie Chart
             const ctxPie = document.getElementById('gesiPieChart').getContext('2d');
             if(pieChartInstance) pieChartInstance.destroy();
             pieChartInstance = new Chart(ctxPie, {
@@ -806,27 +959,27 @@
                 }
             });
 
-            // Populate Synthesis & Learning Text Logs
             const logContent = document.getElementById('analysis-log-content');
             logContent.innerHTML = `
-                <span class="text-indigo-300 font-bold">>> COMPREHENSIVE MEAL SYNTHESIS & ADAPTIVE LEARNING REPORT</span><br>
-                <strong>Project Archive:</strong> ${currentProjectName} (${currentSector})<br>
+                <span class="text-indigo-300 font-bold">>> MULTI-SECTOR MEAL SYNTHESIS & ADAPTIVE LEARNING REPORT</span><br>
+                <strong>Project Archive:</strong> ${currentProjectName}<br>
+                <strong>Active Sectors:</strong> ${currentSectors.join(', ')}<br>
                 <strong>Total Field Records Analyzed:</strong> ${ingestedDataCount} verified submissions.<br><br>
-                <span class="text-emerald-400 font-bold">Key Variance & Performance Findings:</span><br>
-                ${activeMatrix.map(i => `• [${i.subcat}] ${i.statement} — Baseline: ${i.baseline} | Target: ${i.target} | Variance: <span class="text-emerald-300">+18.4% (Positive Trend)</span>`).join('<br>')}<br><br>
-                <span class="text-indigo-300 font-bold">Adaptive Learning Feedback Loop:</span><br>
-                Community feedback logs indicate high engagement among female youth cohorts. Recommend reallocating 15% of mobile outreach frequency to weekend sessions to capture male participant segments effectively.
+                <span class="text-emerald-400 font-bold">Cross-Sector Performance Findings:</span><br>
+                ${activeMatrix.map(i => `• [${i.sector} | ${i.subcat}] ${i.statement} — Baseline: ${i.baseline} | Target: ${i.target} | Variance: <span class="text-emerald-300">+19.2% (Positive Trend)</span>`).join('<br>')}<br><br>
+                <span class="text-indigo-300 font-bold">Adaptive Learning Synthesis:</span><br>
+                Cross-tabulation between Education retention metrics and SBC community outreach shows strong positive correlation. Recommend combining school-based club meetings with community dialogue sessions in the next implementation phase.
             `;
         }
 
         function downloadDonorReport() {
-            const filename = `${currentProjectName.replace(/\s+/g, '_')}_Comprehensive_Donor_Report.txt`;
-            const reportContent = `LOGPULSE ENTERPRISE MEAL SUITE - COMPREHENSIVE DONOR REPORT\nProject: ${currentProjectName}\nSector Domain: ${currentSector}\nTotal Ingested Records: ${ingestedDataCount}\n\n=== 1. LOGFRAME PERFORMANCE MATRIX ===\n` +
-                activeMatrix.map(i => `[${i.subcat}] ${i.statement}\n  - Baseline: ${i.baseline}\n  - Target: ${i.target}\n  - Status: On Track (+18.4% variance)`).join('\n\n') +
-                `\n\n=== 2. GESI DISAGGREGATION SUMMARY ===\n- Female Participation: 54%\n- Male Participation: 42%\n- Non-Binary / Other: 4%\n\n=== 3. ADAPTIVE LEARNING RECOMMENDATIONS ===\n- Recommended scheduling adjustment for community dialogue sessions.\n- Enhanced feedback loop integration for upcoming implementation quarters.`;
+            const filename = `${currentProjectName.replace(/\s+/g, '_')}_MultiSector_Donor_Report.txt`;
+            const reportContent = `LOGPULSE ENTERPRISE MEAL SUITE - MULTI-SECTOR DONOR REPORT\nProject: ${currentProjectName}\nSectors: ${currentSectors.join(', ')}\nTotal Ingested Records: ${ingestedDataCount}\n\n=== 1. MULTI-SECTOR LOGFRAME PERFORMANCE MATRIX ===\n` +
+                activeMatrix.map(i => `[Sector: ${i.sector} | ${i.subcat}] ${i.statement}\n  - Baseline: ${i.baseline}\n  - Target: ${i.target}\n  - Status: On Track (+19.2% variance)`).join('\n\n') +
+                `\n\n=== 2. GESI DISAGGREGATION SUMMARY ===\n- Female Participation: 54%\n- Male Participation: 42%\n- Non-Binary / Other: 4%\n\n=== 3. ADAPTIVE LEARNING & RECOMMENDATIONS ===\n- Cross-sector integration between SBC and Education yields accelerated behavioral outcomes.\n- Recommended scaling joint community-school outreach frameworks.`;
             
             triggerTextDownload(filename, reportContent);
-            alert("Comprehensive donor report successfully compiled and downloaded!");
+            alert("Comprehensive multi-sector donor report successfully compiled and downloaded!");
         }
     </script>
 </body>
