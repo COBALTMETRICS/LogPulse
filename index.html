@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LogPulse - Enterprise MEAL Suite</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- SheetJS for real multi-sheet XLSForm generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
@@ -229,23 +231,23 @@
                 </div>
             </div>
 
-            <!-- VIEW 3: TOOL DESIGN (UPDATED WITH REAL DOWNLOADS & ALL TOOL TYPES) -->
+            <!-- VIEW 3: TOOL DESIGN (UPDATED WITH COMPLIANT MULTI-SHEET XLSFORM) -->
             <div id="view-tools" class="app-view space-y-6">
                 <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-4">
                     <div>
                         <h3 class="font-bold text-slate-800 text-sm uppercase tracking-wider">Phase 2: Tool Design & Field Instruments</h3>
-                        <p class="text-xs text-slate-500 mt-0.5">Generate and download comprehensive survey instruments (Surveys, KIIs, FGDs, Observation Checklists) and attendance/feedback registers.</p>
+                        <p class="text-xs text-slate-500 mt-0.5">Generate and download fully compliant KoboToolbox/ODK XLSForms (multi-sheet `.xlsx`), qualitative guides, and participant registers.</p>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
                         <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-3 flex flex-col justify-between">
                             <div>
                                 <span class="text-2xl">📋</span>
-                                <h4 class="font-bold text-xs uppercase text-slate-800 mt-2">Kobo / ODK Survey Schema</h4>
-                                <p class="text-[11px] text-slate-600 mt-1">Converts logframe indicators into structured XLSForm questionnaire format.</p>
+                                <h4 class="font-bold text-xs uppercase text-slate-800 mt-2">Kobo / ODK XLSForm Generator</h4>
+                                <p class="text-[11px] text-slate-600 mt-1">Exports valid multi-sheet XLSForm (survey, choices, settings) ready for direct Kobo upload.</p>
                             </div>
                             <button onclick="downloadToolFile('xlsform')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold py-2 rounded transition">
-                                Download XLSForm (.xlsx)
+                                Download Compliant XLSForm (.xlsx)
                             </button>
                         </div>
 
@@ -256,7 +258,7 @@
                                 <p class="text-[11px] text-slate-600 mt-1">Generates qualitative interview protocols and focus group discussion guides.</p>
                             </div>
                             <button onclick="downloadToolFile('qualitative')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold py-2 rounded transition">
-                                Download Qualitative Guides (.docx/.xlsx)
+                                Download Qualitative Guides (.txt)
                             </button>
                         </div>
 
@@ -267,7 +269,7 @@
                                 <p class="text-[11px] text-slate-600 mt-1">GESI-compliant attendance sheet and community feedback log template.</p>
                             </div>
                             <button onclick="downloadToolFile('register')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold py-2 rounded transition">
-                                Download Register (.xlsx)
+                                Download Register (.csv)
                             </button>
                         </div>
                     </div>
@@ -279,7 +281,7 @@
                 </div>
             </div>
 
-            <!-- VIEW 3: DATA PIPELINE (UPDATED WITH KOBO/ODK SYNC & FILE INPUTS) -->
+            <!-- VIEW 4: DATA PIPELINE -->
             <div id="view-pipeline" class="app-view space-y-6">
                 <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-4">
                     <div class="flex justify-between items-center">
@@ -290,7 +292,6 @@
                         <span id="pipeline-status-badge" class="px-2.5 py-1 bg-amber-100 text-amber-800 rounded font-bold text-[10px]">Awaiting Data Input</span>
                     </div>
 
-                    <!-- Direct Integration & Upload Box -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-xl border border-indigo-100 bg-indigo-50/50">
                         <div class="space-y-2">
                             <label class="block font-bold text-indigo-900 text-xs">🔗 Direct KoboToolbox / ODK API Sync</label>
@@ -596,28 +597,77 @@
             switchTab('builder');
         }
 
-        // REAL FILE DOWNLOAD GENERATOR FUNCTION
+        // GENERATES REAL MULTI-SHEET XLSFORM COMPLIANT WITH KOBOTOOLBOX / ODK
         function downloadToolFile(type) {
-            let filename = '';
-            let content = '';
-            let mimeType = '';
-
             if (type === 'xlsform') {
-                filename = `${currentProjectName.replace(/\s+/g, '_')}_XLSForm.xls`;
-                mimeType = 'application/vnd.ms-excel';
-                content = `LogPulse XLSForm Schema\nProject: ${currentProjectName}\nSector: ${currentSector}\n\ntype\tname\tlabel\n` + 
-                    (activeMatrix.length > 0 ? activeMatrix.map(i => `text\tind_${i.id}\tRecord observation for: ${i.statement}`).join('\n') : `text\tind_sample\tSample Survey Indicator Question`);
-            } else if (type === 'qualitative') {
-                filename = `${currentProjectName.replace(/\s+/g, '_')}_KII_FGD_Guides.txt`;
-                mimeType = 'text/plain';
-                content = `LOGPULSE QUALITATIVE DATA COLLECTION GUIDES\nProject: ${currentProjectName} (${currentSector})\n\n=== 1. KEY INFORMANT INTERVIEW (KII) GUIDE ===\n- Target Stakeholders: Health Workers, Community Leaders\n- Core Questions on Behavioral Drivers & Outcomes...\n\n=== 2. FOCUS GROUP DISCUSSION (FGD) GUIDE ===\n- Target Cohorts: Youth & Adolescents\n- Discussion Prompts & Community Norm Mapping...`;
-            } else if (type === 'register') {
-                filename = `${currentProjectName.replace(/\s+/g, '_')}_GESI_Participant_Register.csv`;
-                mimeType = 'text/csv';
-                content = `Participant_ID,Full_Name,Age_Cohort,Gender_GESI,Community_Unit,Attendance_Status,Feedback_Log\nLOG-001,Participant Alpha,15-19,Female,Unit A,Attended,None\nLOG-002,Participant Beta,20-24,Male,Unit B,Attended,Requested follow-up session`;
-            }
+                const wb = XLSX.utils.book_new();
 
-            const blob = new Blob([content], { type: mimeType });
+                // 1. Survey Worksheet (Mandatory columns: type, name, label)
+                const surveyData = [
+                    { type: 'start', name: 'start', label: '' },
+                    { type: 'end', name: 'end', label: '' },
+                    { type: 'text', name: 'participant_id', label: 'Enter Participant ID / Code' },
+                    { type: 'select_one gesi_options', name: 'gender_gesi', label: 'Select Gender (GESI Compliance)' }
+                ];
+
+                if (activeMatrix.length > 0) {
+                    activeMatrix.forEach((i, idx) => {
+                        surveyData.push({
+                            type: 'text',
+                            name: `ind_${idx + 1}_${i.subcat.toLowerCase()}`,
+                            label: `[Indicator - ${i.subcat}] ${i.statement}`
+                        });
+                    });
+                } else {
+                    surveyData.push({
+                        type: 'text',
+                        name: 'general_observation',
+                        label: 'Record general survey observation or feedback'
+                    });
+                }
+
+                const wsSurvey = XLSX.utils.json_to_sheet(surveyData);
+                XLSX.utils.book_append_sheet(wb, wsSurvey, 'survey');
+
+                // 2. Choices Worksheet (Mandatory columns: list_name, name, label)
+                const choicesData = [
+                    { list_name: 'gesi_options', name: 'female', label: 'Female' },
+                    { list_name: 'gesi_options', name: 'male', label: 'Male' },
+                    { list_name: 'gesi_options', name: 'non_binary', label: 'Non-Binary / Other' },
+                    { list_name: 'gesi_options', name: 'prefer_not_to_say', label: 'Prefer not to say' }
+                ];
+                const wsChoices = XLSX.utils.json_to_sheet(choicesData);
+                XLSX.utils.book_append_sheet(wb, wsChoices, 'choices');
+
+                // 3. Settings Worksheet (Optional form configuration)
+                const settingsData = [
+                    { form_title: `${currentProjectName} - XLSForm`, form_id: `logpulse_${currentProjectName.toLowerCase().replace(/[^a-z0-9]/g, '_')}`, version: '20260827' }
+                ];
+                const wsSettings = XLSX.utils.json_to_sheet(settingsData);
+                XLSX.utils.book_append_sheet(wb, wsSettings, 'settings');
+
+                // Write and trigger download
+                const filename = `${currentProjectName.replace(/\s+/g, '_')}_XLSForm.xlsx`;
+                XLSX.writeFile(wb, filename);
+
+                const box = document.getElementById('tool-preview-box');
+                const contentBox = document.getElementById('tool-preview-content');
+                box.classList.remove('hidden');
+                contentBox.innerHTML = `<span class="text-emerald-400 font-bold">[SUCCESS] Valid multi-sheet XLSForm "${filename}" successfully generated and downloaded! Ready for KoboToolbox import.</span>`;
+
+            } else if (type === 'qualitative') {
+                const filename = `${currentProjectName.replace(/\s+/g, '_')}_KII_FGD_Guides.txt`;
+                const content = `LOGPULSE QUALITATIVE DATA COLLECTION GUIDES\nProject: ${currentProjectName} (${currentSector})\n\n=== 1. KEY INFORMANT INTERVIEW (KII) GUIDE ===\n- Target Stakeholders: Health Workers, Community Leaders\n- Core Questions on Behavioral Drivers & Outcomes...\n\n=== 2. FOCUS GROUP DISCUSSION (FGD) GUIDE ===\n- Target Cohorts: Youth & Adolescents\n- Discussion Prompts & Community Norm Mapping...`;
+                triggerTextDownload(filename, content);
+            } else if (type === 'register') {
+                const filename = `${currentProjectName.replace(/\s+/g, '_')}_GESI_Participant_Register.csv`;
+                const content = `Participant_ID,Full_Name,Age_Cohort,Gender_GESI,Community_Unit,Attendance_Status,Feedback_Log\nLOG-001,Participant Alpha,15-19,Female,Unit A,Attended,None\nLOG-002,Participant Beta,20-24,Male,Unit B,Attended,Requested follow-up session`;
+                triggerTextDownload(filename, content);
+            }
+        }
+
+        function triggerTextDownload(filename, content) {
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -630,7 +680,7 @@
             const box = document.getElementById('tool-preview-box');
             const contentBox = document.getElementById('tool-preview-content');
             box.classList.remove('hidden');
-            contentBox.innerHTML = `<span class="text-emerald-400 font-bold">[SUCCESS] File "${filename}" successfully generated and downloaded to your computer!</span>`;
+            contentBox.innerHTML = `<span class="text-emerald-400 font-bold">[SUCCESS] File "${filename}" successfully downloaded!</span>`;
         }
 
         // DATA INGESTION & KOBO/ODK CONNECTION HANDLERS
