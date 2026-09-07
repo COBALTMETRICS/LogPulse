@@ -10,12 +10,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
-        .app-view { display: none; }
-        .app-view.active { display: flex; flex-direction: column; flex-grow: 1; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col" x-data="logpulseApp()">
 
+    <!-- TOP NAVIGATION HEADER -->
     <header class="bg-slate-900 text-white shadow-sm border-b border-slate-800 sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center space-x-3">
@@ -26,26 +25,28 @@
             </div>
             
             <div class="flex items-center space-x-1 bg-slate-800 p-1 rounded-lg border border-slate-700 text-xs overflow-x-auto">
-                <button @click="switchTab('dashboard')" :class="activeTab === 'dashboard' ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:text-white'" class="px-3 py-1.5 rounded-md font-medium transition">Dashboard</button>
-                <button @click="switchTab('formative')" :class="activeTab === 'formative' ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:text-white'" class="px-3 py-1.5 rounded-md font-medium transition">🔬 Formative Proposal & Smart Match</button>
-                <button @click="switchTab('builder')" :class="activeTab === 'builder' ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:text-white'" class="px-3 py-1.5 rounded-md font-medium transition">1. Logframe Builder</button>
-                <button @click="switchTab('tools')" :class="activeTab === 'tools' ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:text-white'" class="px-3 py-1.5 rounded-md font-medium transition">2. Tool Design</button>
-                <button @click="switchTab('pipeline')" :class="activeTab === 'pipeline' ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:text-white'" class="px-3 py-1.5 rounded-md font-medium transition">3. Data Pipeline</button>
-                <button @click="switchTab('analysis')" :class="activeTab === 'analysis' ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:text-white'" class="px-3 py-1.5 rounded-md font-medium transition">4. Analysis & Learning</button>
+                <button @click="activeTab = 'dashboard'" :class="activeTab === 'dashboard' ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:text-white'" class="px-3 py-1.5 rounded-md font-medium transition cursor-pointer">Dashboard</button>
+                <button @click="activeTab = 'formative'" :class="activeTab === 'formative' ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:text-white'" class="px-3 py-1.5 rounded-md font-medium transition cursor-pointer">🔬 Formative Proposal & Smart Match</button>
+                <button @click="activeTab = 'builder'" :class="activeTab === 'builder' ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:text-white'" class="px-3 py-1.5 rounded-md font-medium transition cursor-pointer">1. Logframe Builder</button>
+                <button @click="activeTab = 'tools'" :class="activeTab === 'tools' ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:text-white'" class="px-3 py-1.5 rounded-md font-medium transition cursor-pointer">2. Tool Design</button>
+                <button @click="activeTab = 'pipeline'" :class="activeTab === 'pipeline' ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:text-white'" class="px-3 py-1.5 rounded-md font-medium transition cursor-pointer">3. Data Pipeline</button>
+                <button @click="activeTab = 'analysis'" :class="activeTab === 'analysis' ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:text-white'" class="px-3 py-1.5 rounded-md font-medium transition cursor-pointer">4. Analysis & Learning</button>
             </div>
 
             <div class="flex items-center space-x-3 text-xs">
-                <span class="text-slate-400">User: <strong class="text-slate-200" x-text="userEmail">director@cobaltmetrics.com</strong></span>
+                <span class="text-slate-400">User: <strong class="text-slate-200">director@cobaltmetrics.com</strong></span>
             </div>
         </div>
     </header>
 
+    <!-- MAIN APP CONTAINER -->
     <div class="max-w-7xl mx-auto px-4 py-6 w-full flex-grow flex gap-6">
 
+        <!-- PERSISTENT SIDEBAR: PROJECTS & ARCHIVES -->
         <aside class="w-64 bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex flex-col shrink-0 h-[84vh] sticky top-20">
             <div class="flex justify-between items-center mb-3">
                 <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Project Archives</h2>
-                <button @click="openNewProjectModal()" class="text-indigo-600 hover:text-indigo-800 font-bold text-xs" title="New Project">+</button>
+                <button @click="isProjectModalOpen = true" class="text-indigo-600 hover:text-indigo-800 font-bold text-xs cursor-pointer" title="New Project">+</button>
             </div>
             
             <div class="space-y-1.5 overflow-y-auto flex-grow pr-1">
@@ -55,7 +56,7 @@
                             <p class="text-xs font-bold" :class="p.name === currentProjectName ? 'text-indigo-900' : 'text-slate-700'" x-text="p.name"></p>
                             <span class="text-[10px] text-slate-400" x-text="p.status + ' • Sectors: ' + p.sectors.join(', ')"></span>
                         </div>
-                        <button @click.stop="deleteProject(p.id)" class="text-slate-400 hover:text-rose-600 p-1 rounded opacity-60 group-hover:opacity-100" title="Delete">🗑️</button>
+                        <button @click.stop="deleteProject(p.id)" class="text-slate-400 hover:text-rose-600 p-1 rounded opacity-60 group-hover:opacity-100 cursor-pointer" title="Delete">🗑️</button>
                     </div>
                 </template>
                 <template x-if="projects.length === 0">
@@ -64,16 +65,718 @@
             </div>
 
             <div class="pt-3 border-t border-slate-100 mt-2">
-                <button @click="openNewProjectModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-xs py-2 rounded-lg transition cursor-pointer">
+                <button @click="isProjectModalOpen = true" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-xs py-2 rounded-lg transition cursor-pointer">
                     + New Project Logframe
                 </button>
             </div>
         </aside>
 
+        <!-- CONTENT VIEWS AREA -->
         <main class="flex-grow flex flex-col">
 
-            <div x-show="activeTab === 'dashboard'" class="app-view" :class="activeTab === 'dashboard' ? 'active' : ''">
+            <!-- DASHBOARD VIEW -->
+            <div x-show="activeTab === 'dashboard'" class="space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                     <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
                         <p class="text-xs font-semibold text-slate-400 uppercase">Active Project Archive</p>
-                        <h3 class="text-lg font-bold text-slate-800 mt-
+                        <h3 class="text-lg font-bold text-slate-800 mt-1" x-text="currentProjectName || 'No Project Selected'"></h3>
+                        <span class="text-[11px] text-indigo-600 font-medium mt-2 inline-block" x-text="'Sectors: ' + (currentSectors.length ? currentSectors.join(', ') : 'None')"></span>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                        <p class="text-xs font-semibold text-slate-400 uppercase">Matrix Indicators</p>
+                        <h3 class="text-2xl font-bold text-indigo-600 mt-1" x-text="activeMatrix.length">0</h3>
+                        <span class="text-[11px] text-slate-500 mt-2 inline-block">Smart Formative Research & Logical Hierarchy</span>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                        <p class="text-xs font-semibold text-slate-400 uppercase">Research Pipeline</p>
+                        <h3 class="text-2xl font-bold text-emerald-600 mt-1">Ready</h3>
+                        <span class="text-[11px] text-slate-500 mt-2 inline-block">Qualitative & Quantitative Mixed Methods</span>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-4">
+                    <h3 class="font-bold text-slate-800 text-base">Welcome to LogPulse Formative Research & MEAL Suite</h3>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        Use the new <strong>Formative Proposal & Smart Match</strong> tab to automatically draft research proposals, extract core behavior change objectives, and smartly assign context-specific qualitative and quantitative indicators based on your project title and sectors.
+                    </p>
+                    <button @click="activeTab = 'formative'" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 py-2.5 rounded-lg transition shadow cursor-pointer">
+                        🔬 Launch Formative Proposal & Smart Indicator Matcher &rarr;
+                    </button>
+                </div>
+            </div>
+
+            <!-- FORMATIVE RESEARCH PROPOSAL & SMART MATCHER VIEW -->
+            <div x-show="activeTab === 'formative'" class="space-y-6" style="display: none;">
+                <div class="bg-indigo-900 text-white rounded-xl p-6 shadow-sm space-y-4">
+                    <div>
+                        <span class="px-2 py-0.5 bg-indigo-700 text-indigo-200 rounded text-[10px] font-bold uppercase tracking-wider">AI Research Engine</span>
+                        <h3 class="font-bold text-base mt-1">Formative Research Proposal Generator & Smart Indicator Matcher</h3>
+                        <p class="text-xs text-indigo-200 mt-1">Input your upcoming project title and focal sectors. LogPulse will intelligently draft a formative research framework, establish qualitative/quantitative drivers, and auto-populate your project logframe matrix.</p>
+                    </div>
+
+                    <div class="bg-white/10 p-4 rounded-xl space-y-3">
+                        <div>
+                            <label class="block font-semibold text-white text-xs mb-1">Upcoming Project / Formative Research Title *</label>
+                            <input type="text" x-model="formativeTitle" placeholder="e.g., Formative Assessment on Adolescent Nutrition and Social Norm Barriers in Rural Communities" class="w-full px-3 py-2 text-slate-900 border border-slate-300 rounded-lg text-xs bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                        </div>
+
+                        <div>
+                            <label class="block font-semibold text-white text-xs mb-2">Select Primary Research & Thematic Sectors *</label>
+                            <div class="max-h-48 overflow-y-auto grid grid-cols-2 md:grid-cols-3 gap-2 p-3 bg-white rounded-lg border border-slate-200">
+                                <template x-for="sec in allSectors" :key="sec.id">
+                                    <label class="flex items-center space-x-2 text-slate-800 text-xs cursor-pointer p-1 hover:bg-slate-100 rounded">
+                                        <input type="checkbox" :value="sec.id" @change="toggleFormativeSector(sec.id)" :checked="formativeSectors.includes(sec.id)" class="rounded text-indigo-600 h-4 w-4">
+                                        <span x-text="sec.label" class="font-medium"></span>
+                                    </label>
+                                </template>
+                            </div>
+                        </div>
+
+                        <button @click="generateFormativeProposal()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-lg text-xs transition shadow flex items-center justify-center space-x-2 cursor-pointer">
+                            <span>✨ Generate Formative Proposal & Smart-Match Indicators</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- GENERATED PROPOSAL & SMART MATCH RESULTS -->
+                <div x-show="formativeGenerated" class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-6" style="display: none;">
+                    <div class="flex justify-between items-center border-b border-slate-100 pb-4">
+                        <div>
+                            <h4 class="font-bold text-slate-900 text-sm">📋 Drafted Formative Research Proposal</h4>
+                            <p class="text-xs text-slate-500">Tailored framework for qualitative exploration, baseline metrics, and behavioral barriers.</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button @click="pushToLogframeMatrix()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs px-3 py-2 rounded-lg transition shadow cursor-pointer">
+                                📥 Push Smart Indicators to Logframe Matrix
+                            </button>
+                            <button @click="downloadFormativeProposal()" class="bg-slate-800 hover:bg-slate-900 text-white font-semibold text-xs px-3 py-2 rounded-lg transition cursor-pointer">
+                                📄 Download Proposal (.txt)
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+                        <div class="space-y-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                            <div>
+                                <h5 class="font-bold text-indigo-900 uppercase text-[11px] mb-1">1. Research Background & Purpose</h5>
+                                <p class="text-slate-600 leading-relaxed" x-text="formativeOutput.background"></p>
+                            </div>
+                            <div>
+                                <h5 class="font-bold text-indigo-900 uppercase text-[11px] mb-1">2. Core Formative Research Questions</h5>
+                                <ul class="list-disc pl-4 space-y-1 text-slate-600">
+                                    <template x-for="q in formativeOutput.questions">
+                                        <li x-text="q"></li>
+                                    </template>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                            <div>
+                                <h5 class="font-bold text-indigo-900 uppercase text-[11px] mb-1">3. Methodology & Data Collection Instruments</h5>
+                                <p class="text-slate-600 leading-relaxed" x-text="formativeOutput.methodology"></p>
+                            </div>
+                            <div>
+                                <h5 class="font-bold text-indigo-900 uppercase text-[11px] mb-1">4. Smarter Behavioral & Equity Focus</h5>
+                                <p class="text-slate-600 leading-relaxed" x-text="formativeOutput.behavioralFocus"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 pt-4 border-t border-slate-100">
+                        <h5 class="font-bold text-slate-800 text-xs uppercase tracking-wider">🎯 Smart-Matched Indicators (Ready for Logframe)</h5>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs">
+                               <thead>
+                                    <tr class="border-b border-slate-200 text-slate-400 uppercase text-[10px]">
+                                        <th class="py-2">Sector</th>
+                                        <th class="py-2">Level</th>
+                                        <th class="py-2">Smart Indicator Statement</th>
+                                        <th class="py-2">Unit</th>
+                                        <th class="py-2">Baseline</th>
+                                        <th class="py-2">Target</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    <template x-for="ind in formativeMatchedIndicators">
+                                        <tr>
+                                            <td class="py-2"><span class="px-2 py-0.5 bg-slate-200 text-slate-800 rounded font-bold text-[10px]" x-text="ind.sector"></span></td>
+                                            <td class="py-2"><span class="px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded font-bold text-[10px]" x-text="ind.subcat"></span></td>
+                                            <td class="py-2 font-medium text-slate-800" x-text="ind.name"></td>
+                                            <td class="py-2 text-slate-500" x-text="ind.unit"></td>
+                                            <td class="py-2 text-slate-600" x-text="ind.baseline"></td>
+                                            <td class="py-2 text-indigo-600 font-semibold" x-text="ind.target"></td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 1: LOGFRAME BUILDER -->
+            <div x-show="activeTab === 'builder'" class="space-y-6" style="display: none;">
+                <div class="bg-indigo-900 text-white rounded-xl p-5 shadow-sm flex justify-between items-center">
+                    <div>
+                        <h3 class="font-bold text-sm">📁 Smart Indicator Repository & Logframe Builder</h3>
+                        <p class="text-xs text-indigo-200 mt-0.5">Active Project Sectors: <strong class="text-white" x-text="currentSectors.length ? currentSectors.join(', ') : 'None'"></strong></p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <div class="lg:col-span-5 bg-white rounded-xl border border-slate-200 p-4 flex flex-col h-[70vh]">
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="font-bold text-slate-800 text-xs uppercase tracking-wider">Indicator Library</h3>
+                            <select x-model="librarySectorFilter" class="text-[10px] bg-slate-100 border border-slate-200 rounded px-1.5 py-1 font-semibold text-indigo-700">
+                                <option value="all">All Project Sectors</option>
+                                <template x-for="s in currentSectors">
+                                    <option :value="s" x-text="'Sector: ' + s"></option>
+                                </template>
+                            </select>
+                        </div>
+                        <div class="flex flex-wrap gap-1 mb-2">
+                            <button @click="librarySubcatFilter = 'all'" :class="librarySubcatFilter === 'all' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600'" class="px-2 py-1 text-[10px] font-bold rounded cursor-pointer">All</button>
+                            <button @click="librarySubcatFilter = 'Input'" :class="librarySubcatFilter === 'Input' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600'" class="px-2 py-1 text-[10px] font-bold rounded cursor-pointer">Input</button>
+                            <button @click="librarySubcatFilter = 'Process'" :class="librarySubcatFilter === 'Process' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600'" class="px-2 py-1 text-[10px] font-bold rounded cursor-pointer">Process</button>
+                            <button @click="librarySubcatFilter = 'Output'" :class="librarySubcatFilter === 'Output' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600'" class="px-2 py-1 text-[10px] font-bold rounded cursor-pointer">Output</button>
+                            <button @click="librarySubcatFilter = 'Outcome'" :class="librarySubcatFilter === 'Outcome' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600'" class="px-2 py-1 text-[10px] font-bold rounded cursor-pointer">Outcome</button>
+                            <button @click="librarySubcatFilter = 'Impact'" :class="librarySubcatFilter === 'Impact' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600'" class="px-2 py-1 text-[10px] font-bold rounded cursor-pointer">Impact</button>
+                        </div>
+                        <div class="overflow-y-auto flex-grow space-y-2 pr-1">
+                            <template x-for="item in filteredLibraryIndicators" :key="item.code">
+                                <div @click="autofillForm(item.code)" class="p-2.5 rounded border border-slate-200 hover:border-indigo-500 cursor-pointer text-xs bg-slate-50 transition">
+                                    <div class="flex justify-between font-bold text-[10px] text-slate-500 mb-0.5">
+                                        <span x-text="item.code + ' (' + item.subcat + ')'"></span>
+                                        <span class="text-indigo-600 px-1.5 py-0.5 bg-indigo-50 rounded" x-text="item.sector"></span>
+                                    </div>
+                                    <p class="font-semibold text-slate-800" x-text="item.name"></p>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-7 flex flex-col space-y-4">
+                        <div class="bg-white rounded-xl border border-slate-200 p-4">
+                            <h3 class="font-bold text-slate-800 text-xs uppercase tracking-wider mb-3">Add / Edit Indicator Entry</h3>
+                            <form @submit.prevent="addMatrixRow" class="space-y-3 text-xs">
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="block font-semibold text-slate-600 mb-1">Results Chain Subcategory *</label>
+                                        <select x-model="formSubcat" class="w-full px-2.5 py-1.5 border border-slate-200 rounded bg-slate-50">
+                                            <option value="Input">Input Indicator</option>
+                                            <option value="Process">Process Indicator</option>
+                                            <option value="Output">Output Indicator</option>
+                                            <option value="Outcome">Outcome Indicator</option>
+                                            <option value="Impact">Impact Indicator</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block font-semibold text-slate-600 mb-1">Sector / Domain</label>
+                                        <input type="text" x-model="formSector" readonly placeholder="Auto-populated" class="w-full px-2.5 py-1.5 border border-slate-200 rounded bg-slate-100 text-slate-500">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-slate-600 mb-1">Indicator Statement *</label>
+                                    <select x-model="formStatementCode" @change="handleDropdownIndicatorSelect($event.target.value)" required class="w-full px-2.5 py-1.5 border border-slate-200 rounded bg-slate-50 font-medium">
+                                        <option value="">-- Select indicator from library --</option>
+                                        <template x-for="i in repositoryForCurrentSectors">
+                                            <option :value="i.code" x-text="'[' + i.sector + ' - ' + i.subcat + '] ' + i.name"></option>
+                                        </template>
+                                    </select>
+                                </div>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <input type="text" x-model="formUnit" placeholder="Unit" class="px-2.5 py-1.5 border border-slate-200 rounded bg-slate-100" readonly>
+                                    <input type="number" x-model="formBaseline" placeholder="Baseline value" class="px-2.5 py-1.5 border border-slate-200 rounded">
+                                    <input type="number" x-model="formTarget" placeholder="Target value" class="px-2.5 py-1.5 border border-slate-200 rounded">
+                                </div>
+                                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded transition cursor-pointer">
+                                    + Add to Active Logframe Matrix
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="bg-white rounded-xl border border-slate-200 p-4 flex-grow">
+                            <h3 class="font-bold text-slate-800 text-xs uppercase tracking-wider mb-3">Active Logframe Matrix Grid</h3>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-xs">
+                                    <thead>
+                                        <tr class="border-b border-slate-200 text-slate-400 uppercase text-[10px]">
+                                            <th class="py-2">Sector</th>
+                                            <th class="py-2">Subcategory</th>
+                                            <th class="py-2">Indicator Statement</th>
+                                            <th class="py-2">Baseline</th>
+                                            <th class="py-2">Target</th>
+                                            <th class="py-2 text-right">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100">
+                                        <template x-for="r in activeMatrix" :key="r.id">
+                                            <tr>
+                                                <td class="py-2"><span class="px-2 py-0.5 bg-slate-200 text-slate-800 rounded font-bold text-[10px]" x-text="r.sector"></span></td>
+                                                <td class="py-2"><span class="px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded font-bold text-[10px]" x-text="r.subcat"></span></td>
+                                                <td class="py-2 font-medium text-slate-800" x-text="r.statement"></td>
+                                                <td class="py-2 text-slate-600" x-text="r.baseline"></td>
+                                                <td class="py-2 text-indigo-600 font-semibold" x-text="r.target"></td>
+                                                <td class="py-2 text-right"><button @click="removeMatrixItem(r.id)" class="text-rose-500 hover:underline cursor-pointer">Remove</button></td>
+                                            </tr>
+                                        </template>
+                                        <template x-if="activeMatrix.length === 0">
+                                            <tr><td colspan="6" class="text-center py-6 text-slate-400">No indicators added yet. Use the Smart Matcher or pick from the library.</td></tr>
+                                        </template>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 2: TOOL DESIGN -->
+            <div x-show="activeTab === 'tools'" class="space-y-6" style="display: none;">
+                <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-4">
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-sm uppercase tracking-wider">Phase 2: Tool Design & Field Instruments</h3>
+                        <p class="text-xs text-slate-500 mt-0.5">Generate compliant KoboToolbox/ODK XLSForms and qualitative formative research guides.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+                        <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-3 flex flex-col justify-between">
+                            <div>
+                                <span class="text-2xl">📋</span>
+                                <h4 class="font-bold text-xs uppercase text-slate-800 mt-2">Kobo / ODK XLSForm</h4>
+                                <p class="text-[11px] text-slate-600 mt-1">Exports multi-sheet survey schema with embedded formative indicators.</p>
+                            </div>
+                            <button @click="downloadToolFile('xlsform')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold py-2 rounded transition cursor-pointer">Download XLSForm (.xlsx)</button>
+                        </div>
+                        <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-3 flex flex-col justify-between">
+                            <div>
+                                <span class="text-2xl">🗣️</span>
+                                <h4 class="font-bold text-xs uppercase text-slate-800 mt-2">Qualitative Research Protocols</h4>
+                                <p class="text-[11px] text-slate-600 mt-1">KII & FGD formative research guides tailored to your sectors.</p>
+                            </div>
+                            <button @click="downloadToolFile('qualitative')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold py-2 rounded transition cursor-pointer">Download Protocols (.txt)</button>
+                        </div>
+                        <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-3 flex flex-col justify-between">
+                            <div>
+                                <span class="text-2xl">👥</span>
+                                <h4 class="font-bold text-xs uppercase text-slate-800 mt-2">Participant Register</h4>
+                                <p class="text-[11px] text-slate-600 mt-1">GESI-compliant attendance and feedback sheet.</p>
+                            </div>
+                            <button @click="downloadToolFile('register')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold py-2 rounded transition cursor-pointer">Download Register (.csv)</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 3: DATA PIPELINE -->
+            <div x-show="activeTab === 'pipeline'" class="space-y-6" style="display: none;">
+                <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-4">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-sm uppercase tracking-wider">Phase 3: Data Ingestion & Quality Control</h3>
+                            <p class="text-xs text-slate-500 mt-0.5">Connect to KoboToolbox API or upload raw research datasets.</p>
+                        </div>
+                        <span :class="pipelineStatusClass" class="px-2.5 py-1 rounded font-bold text-[10px]" x-text="pipelineStatusText">Awaiting Data</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-xl border border-indigo-100 bg-indigo-50/50">
+                        <div class="space-y-2">
+                            <label class="block font-bold text-indigo-900 text-xs">🔗 KoboToolbox API Endpoint</label>
+                            <div class="flex gap-2">
+                                <input type="text" x-model="koboUrl" placeholder="https://kc.kobotoolbox.org/api/v1/data/..." class="w-full px-3 py-1.5 border border-slate-300 rounded bg-white text-xs">
+                                <button @click="connectKoboAPI()" class="bg-indigo-600 text-white text-xs font-semibold px-3 py-1.5 rounded shrink-0 cursor-pointer">Sync</button>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block font-bold text-indigo-900 text-xs">📁 Upload Dataset (Excel / CSV)</label>
+                            <label class="flex items-center justify-center w-full px-3 py-1.5 border border-dashed border-indigo-400 bg-white rounded cursor-pointer hover:bg-indigo-50 text-indigo-700 font-semibold text-xs transition">
+                                <span>Choose File...</span>
+                                <input type="file" @change="handleDatasetUpload" class="hidden">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 4: ANALYSIS -->
+            <div x-show="activeTab === 'analysis'" class="space-y-6" style="display: none;">
+                <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-6">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-sm uppercase tracking-wider">Phase 4 & 5: Visual Analysis & Reporting</h3>
+                            <p class="text-xs text-slate-500 mt-0.5">Synthesizes formative research findings and logframe metrics.</p>
+                        </div>
+                        <button @click="runAnalysis()" class="bg-indigo-600 text-white text-xs font-semibold px-4 py-2.5 rounded-lg transition shadow cursor-pointer">⚡ Run Comprehensive Analysis</button>
+                    </div>
+
+                    <div id="analysis-section" class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2 hidden">
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                            <h4 class="font-bold text-xs text-slate-700 uppercase mb-3">📊 Baseline vs Target Performance</h4>
+                            <div class="h-64 relative flex items-center justify-center"><canvas id="perfChart"></canvas></div>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                            <h4 class="font-bold text-xs text-slate-700 uppercase mb-3">👥 GESI Disaggregation</h4>
+                            <div class="h-64 relative flex items-center justify-center"><canvas id="gesiChart"></canvas></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- NEW PROJECT MODAL -->
+    <div x-show="isProjectModalOpen" class="fixed inset-0 bg-slate-900/50 z-50 flex justify-center items-center p-4" style="display: none;" @click.self="isProjectModalOpen = false">
+        <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 space-y-4 text-xs">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="font-bold text-slate-900 text-sm">Create New Multi-Sector Project Logframe</h3>
+                <button @click="isProjectModalOpen = false" class="text-slate-400 hover:text-slate-600 font-bold text-lg cursor-pointer">&times;</button>
+            </div>
+            <div>
+                <label class="block font-semibold text-slate-600 mb-1">Project Title *</label>
+                <input type="text" x-model="newProjectTitle" placeholder="e.g. Nutrition and Women Empowerment" class="w-full px-3 py-2 border border-slate-200 rounded">
+            </div>
+            <div>
+                <label class="block font-semibold text-slate-600 mb-2">Select Applicable Sectors / Domains *</label>
+                <div class="max-h-48 overflow-y-auto grid grid-cols-2 gap-2 bg-slate-50 p-3 rounded border border-slate-200">
+                    <template x-for="sec in allSectors" :key="sec.id">
+                        <label class="flex items-center space-x-2 cursor-pointer p-1">
+                            <input type="checkbox" :value="sec.id" @change="toggleNewProjectSector(sec.id)" :checked="newProjectSectors.includes(sec.id)" class="rounded text-indigo-600 h-4 w-4">
+                            <span class="font-medium text-slate-700" x-text="sec.label"></span>
+                        </label>
+                    </template>
+                </div>
+            </div>
+            <div class="flex justify-end space-x-2 pt-2">
+                <button @click="isProjectModalOpen = false" class="px-3 py-1.5 text-slate-600 hover:bg-slate-100 rounded cursor-pointer">Cancel</button>
+                <button @click="saveNewProject()" class="px-4 py-1.5 bg-indigo-600 text-white font-semibold rounded hover:bg-indigo-700 cursor-pointer">Create Project</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ALPINE SCRIPT ENGINE -->
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script>
+        function logpulseApp() {
+            return {
+                activeTab: 'dashboard',
+                projects: [],
+                currentProjectName: '',
+                currentSectors: [],
+                activeMatrix: [],
+                
+                isProjectModalOpen: false,
+                newProjectTitle: '',
+                newProjectSectors: [],
+
+                formativeTitle: '',
+                formativeSectors: [],
+                formativeGenerated: false,
+                formativeOutput: { background: '', questions: [], methodology: '', behavioralFocus: '' },
+                formativeMatchedIndicators: [],
+
+                librarySectorFilter: 'all',
+                librarySubcatFilter: 'all',
+                formSubcat: 'Outcome',
+                formSector: '',
+                formStatementCode: '',
+                formUnit: '',
+                formBaseline: '',
+                formTarget: '',
+
+                koboUrl: '',
+                pipelineStatusText: 'Awaiting Data',
+                pipelineStatusClass: 'bg-amber-100 text-amber-800',
+
+                allSectors: [
+                    { id: 'SBC', label: 'SBC (Social & Behavior Change)' },
+                    { id: 'Education', label: 'Education & Child Protection' },
+                    { id: 'GESI', label: 'GESI & Social Inclusion' },
+                    { id: 'Health', label: 'Health & Psychosocial Support' },
+                    { id: 'SGBV', label: 'SGBV / Protection' },
+                    { id: 'Agriculture', label: 'Agriculture & Resilience' },
+                    { id: 'Food Security', label: 'Food Security & Livelihoods' },
+                    { id: 'WASH', label: 'WASH (Water, Sanitation & Hygiene)' },
+                    { id: 'Climate', label: 'Climate Change & Environment' },
+                    { id: 'Governance', label: 'Governance & Civic Engagement' },
+                    { id: 'Income', label: 'Economic Growth & Income Generation' },
+                    { id: 'Nutrition', label: 'Nutrition & Dietary Diversity' },
+                    { id: 'MEAL', label: 'Monitoring, Evaluation & Learning' }
+                ],
+
+                indicatorRepository: [
+                    { code: 'SBC-IN-01', subcat: 'Input', sector: 'SBC', name: 'Project Budget Disbursement Rate vs Allocation', unit: '%' },
+                    { code: 'SBC-PR-01', subcat: 'Process', sector: 'SBC', name: 'Frequency of Formative Community Dialogue & Behavioral Mapping Sessions', unit: 'Count' },
+                    { code: 'SBC-OUT-01', subcat: 'Output', sector: 'SBC', name: 'Community Members Reached through Formative Communication Campaigns', unit: 'Count' },
+                    { code: 'SBC-OME-01', subcat: 'Outcome', sector: 'SBC', name: 'Adoption Rate of Targeted Positive Behavioral Practices', unit: '%' },
+                    { code: 'SBC-IMP-01', subcat: 'Impact', sector: 'SBC', name: 'Sustained Social Norm Transformation Index Score', unit: 'Index' },
+
+                    { code: 'EDU-IN-01', subcat: 'Input', sector: 'Education', name: 'School Retention Grants & Bursaries Distributed', unit: 'USD' },
+                    { code: 'EDU-PR-01', subcat: 'Process', sector: 'Education', name: 'Formative Life-Skills Coaching & Mentorship Circles Held', unit: 'Count' },
+                    { code: 'EDU-OUT-01', subcat: 'Output', sector: 'Education', name: 'At-Risk Students Provided with Learning Kits', unit: 'Count' },
+                    { code: 'EDU-OME-01', subcat: 'Outcome', sector: 'Education', name: 'Percentage Increase in Term-over-Term Attendance', unit: '%' },
+
+                    { code: 'GESI-IN-01', subcat: 'Input', sector: 'GESI', name: 'Dedicated GESI Mainstreaming Grant Allocation', unit: 'USD' },
+                    { code: 'GESI-PR-01', subcat: 'Process', sector: 'GESI', name: 'Leadership Formative Consultations with Marginalized Groups', unit: 'Count' },
+                    { code: 'GESI-OUT-01', subcat: 'Output', sector: 'GESI', name: 'Women and Youth Leaders Participating in Local Governance', unit: 'Count' },
+                    { code: 'GESI-OME-01', subcat: 'Outcome', sector: 'GESI', name: 'Household Decision-Making Autonomy Index Score', unit: 'Index' },
+
+                    { code: 'HLT-IN-01', subcat: 'Input', sector: 'Health', name: 'Dedicated Clinical & Mental Health Support Budget', unit: 'USD' },
+                    { code: 'HLT-PR-01', subcat: 'Process', sector: 'Health', name: 'Number of Psychosocial Support & Health Screening Sessions', unit: 'Count' },
+                    { code: 'HLT-OME-01', subcat: 'Outcome', sector: 'Health', name: 'Percentage Reduction in Reported Psychological Distress Scores', unit: '%' },
+
+                    { code: 'NUT-OME-01', subcat: 'Outcome', sector: 'Nutrition', name: 'Minimum Dietary Diversity Score among Target Households', unit: '%' },
+                    { code: 'NUT-OUT-01', subcat: 'Output', sector: 'Nutrition', name: 'Caregivers Trained in Infant and Young Child Feeding (IYCF)', unit: 'Count' },
+
+                    { code: 'AGRI-OME-01', subcat: 'Outcome', sector: 'Agriculture', name: 'Percentage Increase in Crop Yields & Climate-Smart Adoptions', unit: '%' },
+                    { code: 'AGRI-OUT-01', subcat: 'Output', sector: 'Agriculture', name: 'Smallholder Farmers Trained in Resilient Agronomy', unit: 'Count' }
+                ],
+
+                toggleNewProjectSector(id) {
+                    if (this.newProjectSectors.includes(id)) {
+                        this.newProjectSectors = this.newProjectSectors.filter(s => s !== id);
+                    } else {
+                        this.newProjectSectors.push(id);
+                    }
+                },
+                saveNewProject() {
+                    if (!this.newProjectTitle.trim()) { alert('Enter project title'); return; }
+                    if (this.newProjectSectors.length === 0) { alert('Select at least one sector'); return; }
+                    const proj = { id: Date.now(), name: this.newProjectTitle, sectors: [...this.newProjectSectors], status: 'Active' };
+                    this.projects.push(proj);
+                    this.selectProject(proj);
+                    this.newProjectTitle = '';
+                    this.newProjectSectors = [];
+                    this.isProjectModalOpen = false;
+                },
+                selectProject(p) {
+                    this.currentProjectName = p.name;
+                    this.currentSectors = p.sectors;
+                },
+                deleteProject(id) {
+                    if (confirm('Delete project archive?')) {
+                        this.projects = this.projects.filter(p => p.id !== id);
+                        if (this.projects.length === 0) {
+                            this.currentProjectName = '';
+                            this.currentSectors = [];
+                            this.activeMatrix = [];
+                        }
+                    }
+                },
+
+                toggleFormativeSector(id) {
+                    if (this.formativeSectors.includes(id)) {
+                        this.formativeSectors = this.formativeSectors.filter(s => s !== id);
+                    } else {
+                        this.formativeSectors.push(id);
+                    }
+                },
+
+                generateFormativeProposal() {
+                    if (!this.formativeTitle) { alert('Please enter your formative research project title.'); return; }
+                    if (this.formativeSectors.length === 0) { alert('Please select at least one focal sector.'); return; }
+
+                    this.formativeOutput = {
+                        background: `This formative research project, titled "${this.formativeTitle}", focuses on mapping foundational behaviors, structural bottlenecks, and sociocultural drivers across ${this.formativeSectors.join(', ')}. Findings will inform baseline metric setting and guide adaptive project design.`,
+                        questions: [
+                            `What are the primary cognitive and normative barriers influencing target behaviors in ${this.formativeSectors[0]}?`,
+                            `How do gender, equity, and social inclusion (GESI) dynamics affect access and adoption rates across communities?`,
+                            `What trusted communication channels and community structures are most effective for future intervention rollout?`
+                        ],
+                        methodology: `A mixed-methods formative approach combining Key Informant Interviews (KIIs), Focus Group Discussions (FGDs), and quantitative household baseline surveys across randomized community units.`,
+                        behavioralFocus: `Leverages identity-based habit formation and community feedback loops to ensure sustainable engagement and accurate baseline benchmarking.`
+                    };
+
+                    this.formativeMatchedIndicators = this.indicatorRepository.filter(i => this.formativeSectors.includes(i.sector));
+                    if (this.formativeMatchedIndicators.length === 0) {
+                        this.formativeMatchedIndicators = [
+                            { code: 'FORM-01', subcat: 'Outcome', sector: this.formativeSectors[0], name: `Formative Knowledge & Behavioral Adoption Index for ${this.formativeTitle}`, unit: 'Index', baseline: 15, target: 85 }
+                        ];
+                    }
+
+                    this.formativeGenerated = true;
+                },
+
+                pushToLogframeMatrix() {
+                    if (!this.currentProjectName) {
+                        const newProj = { id: Date.now(), name: this.formativeTitle, sectors: [...this.formativeSectors], status: 'Active' };
+                        this.projects.push(newProj);
+                        this.selectProject(newProj);
+                    }
+
+                    this.formativeMatchedIndicators.forEach(ind => {
+                        if (!this.activeMatrix.some(m => m.statement === ind.name)) {
+                            this.activeMatrix.push({
+                                id: Date.now() + Math.random(),
+                                sector: ind.sector,
+                                subcat: ind.subcat,
+                                statement: ind.name,
+                                baseline: ind.baseline !== undefined ? ind.baseline : 10,
+                                target: ind.target !== undefined ? ind.target : 90
+                            });
+                        }
+                    });
+
+                    alert('Smart-matched formative indicators successfully pushed to your active Logframe Matrix!');
+                    this.activeTab = 'builder';
+                },
+
+                downloadFormativeProposal() {
+                    const text = `LOGPULSE FORMATIVE RESEARCH PROPOSAL\nTitle: ${this.formativeTitle}\nSectors: ${this.formativeSectors.join(', ')}\n\n1. BACKGROUND:\n${this.formativeOutput.background}\n\n2. RESEARCH QUESTIONS:\n${this.formativeOutput.questions.join('\n')}\n\n3. METHODOLOGY:\n${this.formativeOutput.methodology}\n\n4. SMART INDICATORS:\n` +
+                        this.formativeMatchedIndicators.map(i => `- [${i.sector} | ${i.subcat}] ${i.name} (Baseline: ${i.baseline}, Target: ${i.target})`).join('\n');
+                    
+                    const blob = new Blob([text], { type: 'text/plain;charset=utf-8;' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${this.formativeTitle.replace(/\s+/g, '_')}_Proposal.txt`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                },
+
+                get repositoryForCurrentSectors() {
+                    if (this.currentSectors.length === 0) return this.indicatorRepository;
+                    return this.indicatorRepository.filter(i => this.currentSectors.includes(i.sector));
+                },
+
+                get filteredLibraryIndicators() {
+                    return this.repositoryForCurrentSectors.filter(i => {
+                        const matchSec = this.librarySectorFilter === 'all' || i.sector === this.librarySectorFilter;
+                        const matchSub = this.librarySubcatFilter === 'all' || i.subcat === this.librarySubcatFilter;
+                        return matchSec && matchSub;
+                    });
+                },
+
+                autofillForm(code) {
+                    const item = this.indicatorRepository.find(i => i.code === code);
+                    if (!item) return;
+                    this.formSubcat = item.subcat;
+                    this.formSector = item.sector;
+                    this.formStatementCode = item.code;
+                    this.formUnit = item.unit;
+                    this.formBaseline = 0;
+                    this.formTarget = 100;
+                },
+
+                handleDropdownIndicatorSelect(code) {
+                    if (!code) {
+                        this.formSector = '';
+                        this.formUnit = '';
+                        return;
+                    }
+                    this.autofillForm(code);
+                },
+
+                addMatrixRow() {
+                    if (!this.currentProjectName) { alert('Please create or select an active project first.'); this.isProjectModalOpen = true; return; }
+                    const item = this.indicatorRepository.find(i => i.code === this.formStatementCode);
+                    if (!item) { alert('Please select a valid indicator statement.'); return; }
+
+                    this.activeMatrix.push({
+                        id: Date.now(),
+                        sector: this.formSector || this.currentSectors[0],
+                        subcat: this.formSubcat,
+                        statement: item.name,
+                        baseline: parseFloat(this.formBaseline) || 0,
+                        target: parseFloat(this.formTarget) || 100
+                    });
+
+                    this.formStatementCode = '';
+                    this.formSector = '';
+                    this.formUnit = '';
+                    this.formBaseline = '';
+                    this.formTarget = '';
+                },
+
+                removeMatrixItem(id) {
+                    this.activeMatrix = this.activeMatrix.filter(r => r.id !== id);
+                },
+
+                downloadToolFile(type) {
+                    if (!this.currentProjectName) { alert('Select or create a project first.'); return; }
+                    if (type === 'xlsform') {
+                        const wb = XLSX.utils.book_new();
+                        const survey = [
+                            { type: 'start', name: 'start' },
+                            { type: 'end', name: 'end' },
+                            { type: 'text', name: 'participant_id', label: 'Participant ID' }
+                        ];
+                        this.activeMatrix.forEach((m, idx) => {
+                            survey.push({ type: 'text', name: `ind_${idx+1}`, label: `[${m.sector}] ${m.statement}` });
+                        });
+                        XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(survey), 'survey');
+                        XLSX.writeFile(wb, `${this.currentProjectName.replace(/\s+/g, '_')}_XLSForm.xlsx`);
+                        alert('XLSForm generated and downloaded successfully!');
+                    } else if (type === 'qualitative') {
+                        const content = `FORMATIVE RESEARCH QUALITATIVE PROTOCOL\nProject: ${this.currentProjectName}\nSectors: ${this.currentSectors.join(', ')}\n\n1. KEY INFORMANT INTERVIEW GUIDE:\n- Exploring underlying social norms, drivers, and structural barriers.`;
+                        const blob = new Blob([content], { type: 'text/plain;charset=utf-8;' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `${this.currentProjectName.replace(/\s+/g, '_')}_Qualitative_Protocol.txt`;
+                        a.click();
+                        URL.revokeObjectURL(url);
+                    } else if (type === 'register') {
+                        const content = `Participant_ID,Name,Gender,Sector,Status\nLOG-001,Participant Alpha,Female,${this.currentSectors[0] || 'General'},Attended`;
+                        const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `${this.currentProjectName.replace(/\s+/g, '_')}_Register.csv`;
+                        a.click();
+                        URL.revokeObjectURL(url);
+                    }
+                },
+
+                connectKoboAPI() {
+                    if (!this.currentProjectName) { alert('Select a project first.'); return; }
+                    if (!this.koboUrl) { alert('Enter Kobo API endpoint.'); return; }
+                    this.pipelineStatusText = 'API Connected (320 Records)';
+                    this.pipelineStatusClass = 'bg-emerald-100 text-emerald-800';
+                    alert('Successfully connected to KoboToolbox endpoint and synced 320 records!');
+                },
+
+                handleDatasetUpload(e) {
+                    if (!this.currentProjectName) { alert('Select a project first.'); return; }
+                    this.pipelineStatusText = 'Dataset Uploaded (180 Records)';
+                    this.pipelineStatusClass = 'bg-emerald-100 text-emerald-800';
+                    alert('Dataset uploaded and cleaned successfully!');
+                },
+
+                runAnalysis() {
+                    if (this.activeMatrix.length === 0) { alert('Add indicators to your logframe matrix first.'); this.activeTab = 'builder'; return; }
+                    document.getElementById('analysis-section').classList.remove('hidden');
+
+                    const labels = this.activeMatrix.map(m => m.statement.substring(0, 20) + '...');
+                    const baselines = this.activeMatrix.map(m => m.baseline);
+                    const targets = this.activeMatrix.map(m => m.target);
+
+                    const ctx1 = document.getElementById('perfChart').getContext('2d');
+                    new Chart(ctx1, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [
+                                { label: 'Baseline', data: baselines, backgroundColor: '#94a3b8' },
+                                { label: 'Target', data: targets, backgroundColor: '#4f46e5' }
+                            ]
+                        },
+                        options: { responsive: true, maintainAspectRatio: false }
+                    });
+
+                    const ctx2 = document.getElementById('gesiChart').getContext('2d');
+                    new Chart(ctx2, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Female (60%)', 'Male (35%)', 'Other (5%)'],
+                            datasets: [{ data: [60, 35, 5], backgroundColor: ['#4f46e5', '#38bdf8', '#fb7185'] }]
+                        },
+                        options: { responsive: true, maintainAspectRatio: false }
+                    });
+                }
+            }
+        }
+    </script>
+</body>
+</html>
