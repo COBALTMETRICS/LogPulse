@@ -7,10 +7,332 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
     </style>
+    <script>
+        function logpulseApp() {
+            return {
+                activeTab: 'dashboard',
+                projects: [],
+                currentProjectName: '',
+                currentSectors: [],
+                activeMatrix: [],
+                
+                isProjectModalOpen: false,
+                newProjectTitle: '',
+                newProjectSectors: [],
+
+                formativeTitle: '',
+                formativeSectors: [],
+                formativeGenerated: false,
+                formativeOutput: { background: '', questions: [], methodology: '', behavioralFocus: '' },
+                formativeMatchedIndicators: [],
+
+                librarySectorFilter: 'all',
+                librarySubcatFilter: 'all',
+                formSubcat: 'Outcome',
+                formSector: '',
+                formStatementCode: '',
+                formUnit: '',
+                formBaseline: '',
+                formTarget: '',
+
+                koboUrl: '',
+                pipelineStatusText: 'Awaiting Data',
+                pipelineStatusClass: 'bg-amber-100 text-amber-800',
+
+                allSectors: [
+                    { id: 'SBC', label: 'SBC (Social & Behavior Change)' },
+                    { id: 'Education', label: 'Education & Child Protection' },
+                    { id: 'GESI', label: 'GESI & Social Inclusion' },
+                    { id: 'Health', label: 'Health & Psychosocial Support' },
+                    { id: 'SGBV', label: 'SGBV / Protection' },
+                    { id: 'Agriculture', label: 'Agriculture & Resilience' },
+                    { id: 'Food Security', label: 'Food Security & Livelihoods' },
+                    { id: 'WASH', label: 'WASH (Water, Sanitation & Hygiene)' },
+                    { id: 'Climate', label: 'Climate Change & Environment' },
+                    { id: 'Governance', label: 'Governance & Civic Engagement' },
+                    { id: 'Income', label: 'Economic Growth & Income Generation' },
+                    { id: 'Nutrition', label: 'Nutrition & Dietary Diversity' },
+                    { id: 'MEAL', label: 'Monitoring, Evaluation & Learning' }
+                ],
+
+                indicatorRepository: [
+                    { code: 'SBC-IN-01', subcat: 'Input', sector: 'SBC', name: 'Project Budget Disbursement Rate vs Allocation', unit: '%' },
+                    { code: 'SBC-PR-01', subcat: 'Process', sector: 'SBC', name: 'Frequency of Formative Community Dialogue & Behavioral Mapping Sessions', unit: 'Count' },
+                    { code: 'SBC-OUT-01', subcat: 'Output', sector: 'SBC', name: 'Community Members Reached through Formative Communication Campaigns', unit: 'Count' },
+                    { code: 'SBC-OME-01', subcat: 'Outcome', sector: 'SBC', name: 'Adoption Rate of Targeted Positive Behavioral Practices', unit: '%' },
+                    { code: 'SBC-IMP-01', subcat: 'Impact', sector: 'SBC', name: 'Sustained Social Norm Transformation Index Score', unit: 'Index' },
+
+                    { code: 'EDU-IN-01', subcat: 'Input', sector: 'Education', name: 'School Retention Grants & Bursaries Distributed', unit: 'USD' },
+                    { code: 'EDU-PR-01', subcat: 'Process', sector: 'Education', name: 'Formative Life-Skills Coaching & Mentorship Circles Held', unit: 'Count' },
+                    { code: 'EDU-OUT-01', subcat: 'Output', sector: 'Education', name: 'At-Risk Students Provided with Learning Kits', unit: 'Count' },
+                    { code: 'EDU-OME-01', subcat: 'Outcome', sector: 'Education', name: 'Percentage Increase in Term-over-Term Attendance', unit: '%' },
+
+                    { code: 'GESI-IN-01', subcat: 'Input', sector: 'GESI', name: 'Dedicated GESI Mainstreaming Grant Allocation', unit: 'USD' },
+                    { code: 'GESI-PR-01', subcat: 'Process', sector: 'GESI', name: 'Leadership Formative Consultations with Marginalized Groups', unit: 'Count' },
+                    { code: 'GESI-OUT-01', subcat: 'Output', sector: 'GESI', name: 'Women and Youth Leaders Participating in Local Governance', unit: 'Count' },
+                    { code: 'GESI-OME-01', subcat: 'Outcome', sector: 'GESI', name: 'Household Decision-Making Autonomy Index Score', unit: 'Index' },
+
+                    { code: 'HLT-IN-01', subcat: 'Input', sector: 'Health', name: 'Dedicated Clinical & Mental Health Support Budget', unit: 'USD' },
+                    { code: 'HLT-PR-01', subcat: 'Process', sector: 'Health', name: 'Number of Psychosocial Support & Health Screening Sessions', unit: 'Count' },
+                    { code: 'HLT-OME-01', subcat: 'Outcome', sector: 'Health', name: 'Percentage Reduction in Reported Psychological Distress Scores', unit: '%' },
+
+                    { code: 'NUT-OME-01', subcat: 'Outcome', sector: 'Nutrition', name: 'Minimum Dietary Diversity Score among Target Households', unit: '%' },
+                    { code: 'NUT-OUT-01', subcat: 'Output', sector: 'Nutrition', name: 'Caregivers Trained in Infant and Young Child Feeding (IYCF)', unit: 'Count' },
+
+                    { code: 'AGRI-OME-01', subcat: 'Outcome', sector: 'Agriculture', name: 'Percentage Increase in Crop Yields & Climate-Smart Adoptions', unit: '%' },
+                    { code: 'AGRI-OUT-01', subcat: 'Output', sector: 'Agriculture', name: 'Smallholder Farmers Trained in Resilient Agronomy', unit: 'Count' }
+                ],
+
+                toggleNewProjectSector(id) {
+                    if (this.newProjectSectors.includes(id)) {
+                        this.newProjectSectors = this.newProjectSectors.filter(s => s !== id);
+                    } else {
+                        this.newProjectSectors.push(id);
+                    }
+                },
+                saveNewProject() {
+                    if (!this.newProjectTitle.trim()) { alert('Enter project title'); return; }
+                    if (this.newProjectSectors.length === 0) { alert('Select at least one sector'); return; }
+                    const proj = { id: Date.now(), name: this.newProjectTitle, sectors: [...this.newProjectSectors], status: 'Active' };
+                    this.projects.push(proj);
+                    this.selectProject(proj);
+                    this.newProjectTitle = '';
+                    this.newProjectSectors = [];
+                    this.isProjectModalOpen = false;
+                },
+                selectProject(p) {
+                    this.currentProjectName = p.name;
+                    this.currentSectors = p.sectors;
+                },
+                deleteProject(id) {
+                    if (confirm('Delete project archive?')) {
+                        this.projects = this.projects.filter(p => p.id !== id);
+                        if (this.projects.length === 0) {
+                            this.currentProjectName = '';
+                            this.currentSectors = [];
+                            this.activeMatrix = [];
+                        }
+                    }
+                },
+
+                toggleFormativeSector(id) {
+                    if (this.formativeSectors.includes(id)) {
+                        this.formativeSectors = this.formativeSectors.filter(s => s !== id);
+                    } else {
+                        this.formativeSectors.push(id);
+                    }
+                },
+
+                generateFormativeProposal() {
+                    if (!this.formativeTitle) { alert('Please enter your formative research project title.'); return; }
+                    if (this.formativeSectors.length === 0) { alert('Please select at least one focal sector.'); return; }
+
+                    this.formativeOutput = {
+                        background: `This formative research project, titled "${this.formativeTitle}", focuses on mapping foundational behaviors, structural bottlenecks, and sociocultural drivers across ${this.formativeSectors.join(', ')}. Findings will inform baseline metric setting and guide adaptive project design.`,
+                        questions: [
+                            `What are the primary cognitive and normative barriers influencing target behaviors in ${this.formativeSectors[0]}?`,
+                            `How do gender, equity, and social inclusion (GESI) dynamics affect access and adoption rates across communities?`,
+                            `What trusted communication channels and community structures are most effective for future intervention rollout?`
+                        ],
+                        methodology: `A mixed-methods formative approach combining Key Informant Interviews (KIIs), Focus Group Discussions (FGDs), and quantitative household baseline surveys across randomized community units.`,
+                        behavioralFocus: `Leverages identity-based habit formation and community feedback loops to ensure sustainable engagement and accurate baseline benchmarking.`
+                    };
+
+                    this.formativeMatchedIndicators = this.indicatorRepository.filter(i => this.formativeSectors.includes(i.sector));
+                    if (this.formativeMatchedIndicators.length === 0) {
+                        this.formativeMatchedIndicators = [
+                            { code: 'FORM-01', subcat: 'Outcome', sector: this.formativeSectors[0], name: `Formative Knowledge & Behavioral Adoption Index for ${this.formativeTitle}`, unit: 'Index', baseline: 15, target: 85 }
+                        ];
+                    }
+
+                    this.formativeGenerated = true;
+                },
+
+                pushToLogframeMatrix() {
+                    if (!this.currentProjectName) {
+                        const newProj = { id: Date.now(), name: this.formativeTitle, sectors: [...this.formativeSectors], status: 'Active' };
+                        this.projects.push(newProj);
+                        this.selectProject(newProj);
+                    }
+
+                    this.formativeMatchedIndicators.forEach(ind => {
+                        if (!this.activeMatrix.some(m => m.statement === ind.name)) {
+                            this.activeMatrix.push({
+                                id: Date.now() + Math.random(),
+                                sector: ind.sector,
+                                subcat: ind.subcat,
+                                statement: ind.name,
+                                baseline: ind.baseline !== undefined ? ind.baseline : 10,
+                                target: ind.target !== undefined ? ind.target : 90
+                            });
+                        }
+                    });
+
+                    alert('Smart-matched formative indicators successfully pushed to your active Logframe Matrix!');
+                    this.activeTab = 'builder';
+                },
+
+                downloadFormativeProposal() {
+                    const text = `LOGPULSE FORMATIVE RESEARCH PROPOSAL\nTitle: ${this.formativeTitle}\nSectors: ${this.formativeSectors.join(', ')}\n\n1. BACKGROUND:\n${this.formativeOutput.background}\n\n2. RESEARCH QUESTIONS:\n${this.formativeOutput.questions.join('\n')}\n\n3. METHODOLOGY:\n${this.formativeOutput.methodology}\n\n4. SMART INDICATORS:\n` +
+                        this.formativeMatchedIndicators.map(i => `- [${i.sector} | ${i.subcat}] ${i.name} (Baseline: ${i.baseline}, Target: ${i.target})`).join('\n');
+                    
+                    const blob = new Blob([text], { type: 'text/plain;charset=utf-8;' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${this.formativeTitle.replace(/\s+/g, '_')}_Proposal.txt`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                },
+
+                get repositoryForCurrentSectors() {
+                    if (this.currentSectors.length === 0) return this.indicatorRepository;
+                    return this.indicatorRepository.filter(i => this.currentSectors.includes(i.sector));
+                },
+
+                get filteredLibraryIndicators() {
+                    return this.repositoryForCurrentSectors.filter(i => {
+                        const matchSec = this.librarySectorFilter === 'all' || i.sector === this.librarySectorFilter;
+                        const matchSub = this.librarySubcatFilter === 'all' || i.subcat === this.librarySubcatFilter;
+                        return matchSec && matchSub;
+                    });
+                },
+
+                autofillForm(code) {
+                    const item = this.indicatorRepository.find(i => i.code === code);
+                    if (!item) return;
+                    this.formSubcat = item.subcat;
+                    this.formSector = item.sector;
+                    this.formStatementCode = item.code;
+                    this.formUnit = item.unit;
+                    this.formBaseline = 0;
+                    this.formTarget = 100;
+                },
+
+                handleDropdownIndicatorSelect(code) {
+                    if (!code) {
+                        this.formSector = '';
+                        this.formUnit = '';
+                        return;
+                    }
+                    this.autofillForm(code);
+                },
+
+                addMatrixRow() {
+                    if (!this.currentProjectName) { alert('Please create or select an active project first.'); this.isProjectModalOpen = true; return; }
+                    const item = this.indicatorRepository.find(i => i.code === this.formStatementCode);
+                    if (!item) { alert('Please select a valid indicator statement.'); return; }
+
+                    this.activeMatrix.push({
+                        id: Date.now(),
+                        sector: this.formSector || this.currentSectors[0],
+                        subcat: this.formSubcat,
+                        statement: item.name,
+                        baseline: parseFloat(this.formBaseline) || 0,
+                        target: parseFloat(this.formTarget) || 100
+                    });
+
+                    this.formStatementCode = '';
+                    this.formSector = '';
+                    this.formUnit = '';
+                    this.formBaseline = '';
+                    this.formTarget = '';
+                },
+
+                removeMatrixItem(id) {
+                    this.activeMatrix = this.activeMatrix.filter(r => r.id !== id);
+                },
+
+                downloadToolFile(type) {
+                    if (!this.currentProjectName) { alert('Select or create a project first.'); return; }
+                    if (type === 'xlsform') {
+                        const wb = XLSX.utils.book_new();
+                        const survey = [
+                            { type: 'start', name: 'start' },
+                            { type: 'end', name: 'end' },
+                            { type: 'text', name: 'participant_id', label: 'Participant ID' }
+                        ];
+                        this.activeMatrix.forEach((m, idx) => {
+                            survey.push({ type: 'text', name: `ind_${idx+1}`, label: `[${m.sector}] ${m.statement}` });
+                        });
+                        XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(survey), 'survey');
+                        XLSX.writeFile(wb, `${this.currentProjectName.replace(/\s+/g, '_')}_XLSForm.xlsx`);
+                        alert('XLSForm generated and downloaded successfully!');
+                    } else if (type === 'qualitative') {
+                        const content = `FORMATIVE RESEARCH QUALITATIVE PROTOCOL\nProject: ${this.currentProjectName}\nSectors: ${this.currentSectors.join(', ')}\n\n1. KEY INFORMANT INTERVIEW GUIDE:\n- Exploring underlying social norms, drivers, and structural barriers.`;
+                        const blob = new Blob([content], { type: 'text/plain;charset=utf-8;' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `${this.currentProjectName.replace(/\s+/g, '_')}_Qualitative_Protocol.txt`;
+                        a.click();
+                        URL.revokeObjectURL(url);
+                    } else if (type === 'register') {
+                        const content = `Participant_ID,Name,Gender,Sector,Status\nLOG-001,Participant Alpha,Female,${this.currentSectors[0] || 'General'},Attended`;
+                        const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `${this.currentProjectName.replace(/\s+/g, '_')}_Register.csv`;
+                        a.click();
+                        URL.revokeObjectURL(url);
+                    }
+                },
+
+                connectKoboAPI() {
+                    if (!this.currentProjectName) { alert('Select a project first.'); return; }
+                    if (!this.koboUrl) { alert('Enter Kobo API endpoint.'); return; }
+                    this.pipelineStatusText = 'API Connected (320 Records)';
+                    this.pipelineStatusClass = 'bg-emerald-100 text-emerald-800';
+                    alert('Successfully connected to KoboToolbox endpoint and synced 320 records!');
+                },
+
+                handleDatasetUpload(e) {
+                    if (!this.currentProjectName) { alert('Select a project first.'); return; }
+                    this.pipelineStatusText = 'Dataset Uploaded (180 Records)';
+                    this.pipelineStatusClass = 'bg-emerald-100 text-emerald-800';
+                    alert('Dataset uploaded and cleaned successfully!');
+                },
+
+                runAnalysis() {
+                    if (this.activeMatrix.length === 0) { alert('Add indicators to your logframe matrix first.'); this.activeTab = 'builder'; return; }
+                    document.getElementById('analysis-section').classList.remove('hidden');
+
+                    const labels = this.activeMatrix.map(m => m.statement.substring(0, 20) + '...');
+                    const baselines = this.activeMatrix.map(m => m.baseline);
+                    const targets = this.activeMatrix.map(m => m.target);
+
+                    const ctx1 = document.getElementById('perfChart').getContext('2d');
+                    new Chart(ctx1, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [
+                                { label: 'Baseline', data: baselines, backgroundColor: '#94a3b8' },
+                                { label: 'Target', data: targets, backgroundColor: '#4f46e5' }
+                            ]
+                        },
+                        options: { responsive: true, maintainAspectRatio: false }
+                    });
+
+                    const ctx2 = document.getElementById('gesiChart').getContext('2d');
+                    new Chart(ctx2, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Female (60%)', 'Male (35%)', 'Other (5%)'],
+                            datasets: [{ data: [60, 35, 5], backgroundColor: ['#4f46e5', '#38bdf8', '#fb7185'] }]
+                        },
+                        options: { responsive: true, maintainAspectRatio: false }
+                    });
+                }
+            }
+        }
+    </script>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col" x-data="logpulseApp()">
 
@@ -455,328 +777,5 @@
         </div>
     </div>
 
-    <!-- ALPINE SCRIPT ENGINE -->
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <script>
-        function logpulseApp() {
-            return {
-                activeTab: 'dashboard',
-                projects: [],
-                currentProjectName: '',
-                currentSectors: [],
-                activeMatrix: [],
-                
-                isProjectModalOpen: false,
-                newProjectTitle: '',
-                newProjectSectors: [],
-
-                formativeTitle: '',
-                formativeSectors: [],
-                formativeGenerated: false,
-                formativeOutput: { background: '', questions: [], methodology: '', behavioralFocus: '' },
-                formativeMatchedIndicators: [],
-
-                librarySectorFilter: 'all',
-                librarySubcatFilter: 'all',
-                formSubcat: 'Outcome',
-                formSector: '',
-                formStatementCode: '',
-                formUnit: '',
-                formBaseline: '',
-                formTarget: '',
-
-                koboUrl: '',
-                pipelineStatusText: 'Awaiting Data',
-                pipelineStatusClass: 'bg-amber-100 text-amber-800',
-
-                allSectors: [
-                    { id: 'SBC', label: 'SBC (Social & Behavior Change)' },
-                    { id: 'Education', label: 'Education & Child Protection' },
-                    { id: 'GESI', label: 'GESI & Social Inclusion' },
-                    { id: 'Health', label: 'Health & Psychosocial Support' },
-                    { id: 'SGBV', label: 'SGBV / Protection' },
-                    { id: 'Agriculture', label: 'Agriculture & Resilience' },
-                    { id: 'Food Security', label: 'Food Security & Livelihoods' },
-                    { id: 'WASH', label: 'WASH (Water, Sanitation & Hygiene)' },
-                    { id: 'Climate', label: 'Climate Change & Environment' },
-                    { id: 'Governance', label: 'Governance & Civic Engagement' },
-                    { id: 'Income', label: 'Economic Growth & Income Generation' },
-                    { id: 'Nutrition', label: 'Nutrition & Dietary Diversity' },
-                    { id: 'MEAL', label: 'Monitoring, Evaluation & Learning' }
-                ],
-
-                indicatorRepository: [
-                    { code: 'SBC-IN-01', subcat: 'Input', sector: 'SBC', name: 'Project Budget Disbursement Rate vs Allocation', unit: '%' },
-                    { code: 'SBC-PR-01', subcat: 'Process', sector: 'SBC', name: 'Frequency of Formative Community Dialogue & Behavioral Mapping Sessions', unit: 'Count' },
-                    { code: 'SBC-OUT-01', subcat: 'Output', sector: 'SBC', name: 'Community Members Reached through Formative Communication Campaigns', unit: 'Count' },
-                    { code: 'SBC-OME-01', subcat: 'Outcome', sector: 'SBC', name: 'Adoption Rate of Targeted Positive Behavioral Practices', unit: '%' },
-                    { code: 'SBC-IMP-01', subcat: 'Impact', sector: 'SBC', name: 'Sustained Social Norm Transformation Index Score', unit: 'Index' },
-
-                    { code: 'EDU-IN-01', subcat: 'Input', sector: 'Education', name: 'School Retention Grants & Bursaries Distributed', unit: 'USD' },
-                    { code: 'EDU-PR-01', subcat: 'Process', sector: 'Education', name: 'Formative Life-Skills Coaching & Mentorship Circles Held', unit: 'Count' },
-                    { code: 'EDU-OUT-01', subcat: 'Output', sector: 'Education', name: 'At-Risk Students Provided with Learning Kits', unit: 'Count' },
-                    { code: 'EDU-OME-01', subcat: 'Outcome', sector: 'Education', name: 'Percentage Increase in Term-over-Term Attendance', unit: '%' },
-
-                    { code: 'GESI-IN-01', subcat: 'Input', sector: 'GESI', name: 'Dedicated GESI Mainstreaming Grant Allocation', unit: 'USD' },
-                    { code: 'GESI-PR-01', subcat: 'Process', sector: 'GESI', name: 'Leadership Formative Consultations with Marginalized Groups', unit: 'Count' },
-                    { code: 'GESI-OUT-01', subcat: 'Output', sector: 'GESI', name: 'Women and Youth Leaders Participating in Local Governance', unit: 'Count' },
-                    { code: 'GESI-OME-01', subcat: 'Outcome', sector: 'GESI', name: 'Household Decision-Making Autonomy Index Score', unit: 'Index' },
-
-                    { code: 'HLT-IN-01', subcat: 'Input', sector: 'Health', name: 'Dedicated Clinical & Mental Health Support Budget', unit: 'USD' },
-                    { code: 'HLT-PR-01', subcat: 'Process', sector: 'Health', name: 'Number of Psychosocial Support & Health Screening Sessions', unit: 'Count' },
-                    { code: 'HLT-OME-01', subcat: 'Outcome', sector: 'Health', name: 'Percentage Reduction in Reported Psychological Distress Scores', unit: '%' },
-
-                    { code: 'NUT-OME-01', subcat: 'Outcome', sector: 'Nutrition', name: 'Minimum Dietary Diversity Score among Target Households', unit: '%' },
-                    { code: 'NUT-OUT-01', subcat: 'Output', sector: 'Nutrition', name: 'Caregivers Trained in Infant and Young Child Feeding (IYCF)', unit: 'Count' },
-
-                    { code: 'AGRI-OME-01', subcat: 'Outcome', sector: 'Agriculture', name: 'Percentage Increase in Crop Yields & Climate-Smart Adoptions', unit: '%' },
-                    { code: 'AGRI-OUT-01', subcat: 'Output', sector: 'Agriculture', name: 'Smallholder Farmers Trained in Resilient Agronomy', unit: 'Count' }
-                ],
-
-                toggleNewProjectSector(id) {
-                    if (this.newProjectSectors.includes(id)) {
-                        this.newProjectSectors = this.newProjectSectors.filter(s => s !== id);
-                    } else {
-                        this.newProjectSectors.push(id);
-                    }
-                },
-                saveNewProject() {
-                    if (!this.newProjectTitle.trim()) { alert('Enter project title'); return; }
-                    if (this.newProjectSectors.length === 0) { alert('Select at least one sector'); return; }
-                    const proj = { id: Date.now(), name: this.newProjectTitle, sectors: [...this.newProjectSectors], status: 'Active' };
-                    this.projects.push(proj);
-                    this.selectProject(proj);
-                    this.newProjectTitle = '';
-                    this.newProjectSectors = [];
-                    this.isProjectModalOpen = false;
-                },
-                selectProject(p) {
-                    this.currentProjectName = p.name;
-                    this.currentSectors = p.sectors;
-                },
-                deleteProject(id) {
-                    if (confirm('Delete project archive?')) {
-                        this.projects = this.projects.filter(p => p.id !== id);
-                        if (this.projects.length === 0) {
-                            this.currentProjectName = '';
-                            this.currentSectors = [];
-                            this.activeMatrix = [];
-                        }
-                    }
-                },
-
-                toggleFormativeSector(id) {
-                    if (this.formativeSectors.includes(id)) {
-                        this.formativeSectors = this.formativeSectors.filter(s => s !== id);
-                    } else {
-                        this.formativeSectors.push(id);
-                    }
-                },
-
-                generateFormativeProposal() {
-                    if (!this.formativeTitle) { alert('Please enter your formative research project title.'); return; }
-                    if (this.formativeSectors.length === 0) { alert('Please select at least one focal sector.'); return; }
-
-                    this.formativeOutput = {
-                        background: `This formative research project, titled "${this.formativeTitle}", focuses on mapping foundational behaviors, structural bottlenecks, and sociocultural drivers across ${this.formativeSectors.join(', ')}. Findings will inform baseline metric setting and guide adaptive project design.`,
-                        questions: [
-                            `What are the primary cognitive and normative barriers influencing target behaviors in ${this.formativeSectors[0]}?`,
-                            `How do gender, equity, and social inclusion (GESI) dynamics affect access and adoption rates across communities?`,
-                            `What trusted communication channels and community structures are most effective for future intervention rollout?`
-                        ],
-                        methodology: `A mixed-methods formative approach combining Key Informant Interviews (KIIs), Focus Group Discussions (FGDs), and quantitative household baseline surveys across randomized community units.`,
-                        behavioralFocus: `Leverages identity-based habit formation and community feedback loops to ensure sustainable engagement and accurate baseline benchmarking.`
-                    };
-
-                    this.formativeMatchedIndicators = this.indicatorRepository.filter(i => this.formativeSectors.includes(i.sector));
-                    if (this.formativeMatchedIndicators.length === 0) {
-                        this.formativeMatchedIndicators = [
-                            { code: 'FORM-01', subcat: 'Outcome', sector: this.formativeSectors[0], name: `Formative Knowledge & Behavioral Adoption Index for ${this.formativeTitle}`, unit: 'Index', baseline: 15, target: 85 }
-                        ];
-                    }
-
-                    this.formativeGenerated = true;
-                },
-
-                pushToLogframeMatrix() {
-                    if (!this.currentProjectName) {
-                        const newProj = { id: Date.now(), name: this.formativeTitle, sectors: [...this.formativeSectors], status: 'Active' };
-                        this.projects.push(newProj);
-                        this.selectProject(newProj);
-                    }
-
-                    this.formativeMatchedIndicators.forEach(ind => {
-                        if (!this.activeMatrix.some(m => m.statement === ind.name)) {
-                            this.activeMatrix.push({
-                                id: Date.now() + Math.random(),
-                                sector: ind.sector,
-                                subcat: ind.subcat,
-                                statement: ind.name,
-                                baseline: ind.baseline !== undefined ? ind.baseline : 10,
-                                target: ind.target !== undefined ? ind.target : 90
-                            });
-                        }
-                    });
-
-                    alert('Smart-matched formative indicators successfully pushed to your active Logframe Matrix!');
-                    this.activeTab = 'builder';
-                },
-
-                downloadFormativeProposal() {
-                    const text = `LOGPULSE FORMATIVE RESEARCH PROPOSAL\nTitle: ${this.formativeTitle}\nSectors: ${this.formativeSectors.join(', ')}\n\n1. BACKGROUND:\n${this.formativeOutput.background}\n\n2. RESEARCH QUESTIONS:\n${this.formativeOutput.questions.join('\n')}\n\n3. METHODOLOGY:\n${this.formativeOutput.methodology}\n\n4. SMART INDICATORS:\n` +
-                        this.formativeMatchedIndicators.map(i => `- [${i.sector} | ${i.subcat}] ${i.name} (Baseline: ${i.baseline}, Target: ${i.target})`).join('\n');
-                    
-                    const blob = new Blob([text], { type: 'text/plain;charset=utf-8;' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `${this.formativeTitle.replace(/\s+/g, '_')}_Proposal.txt`;
-                    a.click();
-                    URL.revokeObjectURL(url);
-                },
-
-                get repositoryForCurrentSectors() {
-                    if (this.currentSectors.length === 0) return this.indicatorRepository;
-                    return this.indicatorRepository.filter(i => this.currentSectors.includes(i.sector));
-                },
-
-                get filteredLibraryIndicators() {
-                    return this.repositoryForCurrentSectors.filter(i => {
-                        const matchSec = this.librarySectorFilter === 'all' || i.sector === this.librarySectorFilter;
-                        const matchSub = this.librarySubcatFilter === 'all' || i.subcat === this.librarySubcatFilter;
-                        return matchSec && matchSub;
-                    });
-                },
-
-                autofillForm(code) {
-                    const item = this.indicatorRepository.find(i => i.code === code);
-                    if (!item) return;
-                    this.formSubcat = item.subcat;
-                    this.formSector = item.sector;
-                    this.formStatementCode = item.code;
-                    this.formUnit = item.unit;
-                    this.formBaseline = 0;
-                    this.formTarget = 100;
-                },
-
-                handleDropdownIndicatorSelect(code) {
-                    if (!code) {
-                        this.formSector = '';
-                        this.formUnit = '';
-                        return;
-                    }
-                    this.autofillForm(code);
-                },
-
-                addMatrixRow() {
-                    if (!this.currentProjectName) { alert('Please create or select an active project first.'); this.isProjectModalOpen = true; return; }
-                    const item = this.indicatorRepository.find(i => i.code === this.formStatementCode);
-                    if (!item) { alert('Please select a valid indicator statement.'); return; }
-
-                    this.activeMatrix.push({
-                        id: Date.now(),
-                        sector: this.formSector || this.currentSectors[0],
-                        subcat: this.formSubcat,
-                        statement: item.name,
-                        baseline: parseFloat(this.formBaseline) || 0,
-                        target: parseFloat(this.formTarget) || 100
-                    });
-
-                    this.formStatementCode = '';
-                    this.formSector = '';
-                    this.formUnit = '';
-                    this.formBaseline = '';
-                    this.formTarget = '';
-                },
-
-                removeMatrixItem(id) {
-                    this.activeMatrix = this.activeMatrix.filter(r => r.id !== id);
-                },
-
-                downloadToolFile(type) {
-                    if (!this.currentProjectName) { alert('Select or create a project first.'); return; }
-                    if (type === 'xlsform') {
-                        const wb = XLSX.utils.book_new();
-                        const survey = [
-                            { type: 'start', name: 'start' },
-                            { type: 'end', name: 'end' },
-                            { type: 'text', name: 'participant_id', label: 'Participant ID' }
-                        ];
-                        this.activeMatrix.forEach((m, idx) => {
-                            survey.push({ type: 'text', name: `ind_${idx+1}`, label: `[${m.sector}] ${m.statement}` });
-                        });
-                        XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(survey), 'survey');
-                        XLSX.writeFile(wb, `${this.currentProjectName.replace(/\s+/g, '_')}_XLSForm.xlsx`);
-                        alert('XLSForm generated and downloaded successfully!');
-                    } else if (type === 'qualitative') {
-                        const content = `FORMATIVE RESEARCH QUALITATIVE PROTOCOL\nProject: ${this.currentProjectName}\nSectors: ${this.currentSectors.join(', ')}\n\n1. KEY INFORMANT INTERVIEW GUIDE:\n- Exploring underlying social norms, drivers, and structural barriers.`;
-                        const blob = new Blob([content], { type: 'text/plain;charset=utf-8;' });
-                        const url = URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = `${this.currentProjectName.replace(/\s+/g, '_')}_Qualitative_Protocol.txt`;
-                        a.click();
-                        URL.revokeObjectURL(url);
-                    } else if (type === 'register') {
-                        const content = `Participant_ID,Name,Gender,Sector,Status\nLOG-001,Participant Alpha,Female,${this.currentSectors[0] || 'General'},Attended`;
-                        const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
-                        const url = URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = `${this.currentProjectName.replace(/\s+/g, '_')}_Register.csv`;
-                        a.click();
-                        URL.revokeObjectURL(url);
-                    }
-                },
-
-                connectKoboAPI() {
-                    if (!this.currentProjectName) { alert('Select a project first.'); return; }
-                    if (!this.koboUrl) { alert('Enter Kobo API endpoint.'); return; }
-                    this.pipelineStatusText = 'API Connected (320 Records)';
-                    this.pipelineStatusClass = 'bg-emerald-100 text-emerald-800';
-                    alert('Successfully connected to KoboToolbox endpoint and synced 320 records!');
-                },
-
-                handleDatasetUpload(e) {
-                    if (!this.currentProjectName) { alert('Select a project first.'); return; }
-                    this.pipelineStatusText = 'Dataset Uploaded (180 Records)';
-                    this.pipelineStatusClass = 'bg-emerald-100 text-emerald-800';
-                    alert('Dataset uploaded and cleaned successfully!');
-                },
-
-                runAnalysis() {
-                    if (this.activeMatrix.length === 0) { alert('Add indicators to your logframe matrix first.'); this.activeTab = 'builder'; return; }
-                    document.getElementById('analysis-section').classList.remove('hidden');
-
-                    const labels = this.activeMatrix.map(m => m.statement.substring(0, 20) + '...');
-                    const baselines = this.activeMatrix.map(m => m.baseline);
-                    const targets = this.activeMatrix.map(m => m.target);
-
-                    const ctx1 = document.getElementById('perfChart').getContext('2d');
-                    new Chart(ctx1, {
-                        type: 'bar',
-                        data: {
-                            labels: labels,
-                            datasets: [
-                                { label: 'Baseline', data: baselines, backgroundColor: '#94a3b8' },
-                                { label: 'Target', data: targets, backgroundColor: '#4f46e5' }
-                            ]
-                        },
-                        options: { responsive: true, maintainAspectRatio: false }
-                    });
-
-                    const ctx2 = document.getElementById('gesiChart').getContext('2d');
-                    new Chart(ctx2, {
-                        type: 'doughnut',
-                        data: {
-                            labels: ['Female (60%)', 'Male (35%)', 'Other (5%)'],
-                            datasets: [{ data: [60, 35, 5], backgroundColor: ['#4f46e5', '#38bdf8', '#fb7185'] }]
-                        },
-                        options: { responsive: true, maintainAspectRatio: false }
-                    });
-                }
-            }
-        }
-    </script>
 </body>
 </html>
