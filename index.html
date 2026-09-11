@@ -133,7 +133,7 @@
                     if (this.formativeSectors.length === 0) { alert('Please select at least one focal sector.'); return; }
 
                     this.formativeOutput = {
-                        background: `This formative research project, titled "${this.formativeTitle}", focuses on mapping foundational behaviors, structural bottlenecks, and sociocultural drivers across ${this.formativeSectors.join(', ')}. Findings will inform baseline metric setting and guide adaptive project design.`,
+                        background: `This formative research project, titled "${this.formativeTitle}", focuses on mapping foundational behaviors, structural bottlenecks, and sociocultural drivers across ${this.formativeSectors.join(', ')}. Findings will inform baseline metric setting and guide adaptive project design using identity-based habit models.`,
                         questions: [
                             `What are the primary cognitive and normative barriers influencing target behaviors in ${this.formativeSectors[0]}?`,
                             `How do gender, equity, and social inclusion (GESI) dynamics affect access and adoption rates across communities?`,
@@ -186,6 +186,127 @@
                     const a = document.createElement('a');
                     a.href = url;
                     a.download = `${this.formativeTitle.replace(/\s+/g, '_')}_Proposal.txt`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                },
+
+                downloadRScript() {
+                    const projName = this.currentProjectName || 'LogPulse_Project';
+                    const scriptContent = `# =====================================================================
+# LogPulse Automated Analysis R Script
+# Project: ${projName}
+# Sectors: ${this.currentSectors.join(', ')}
+# Generated via Cobalt Metrics & Research Suite
+# =====================================================================
+
+library(tidyverse)
+library(janitor)
+library(ggplot2)
+library(scales)
+
+# 1. Load Cleaned Dataset
+# df <- read_csv("data_cleaned.csv") %>% clean_names()
+
+# 2. Indicator Summary & Achievement against Targets
+indicators_df <- tibble(
+  Indicator = c(${this.activeMatrix.map(m => `"${m.statement}"`).join(',\n    ')}),
+  Sector = c(${this.activeMatrix.map(m => `"${m.sector}"`).join(',\n    ')}),
+  Baseline = c(${this.activeMatrix.map(m => m.baseline).join(', ')}),
+  Target = c(${this.activeMatrix.map(m => m.target).join(', ')}),
+  Actual = Target * 0.88 # Simulated tracking metric
+)
+
+print("--- LOGPULSE INDICATOR PERFORMANCE ---")
+print(indicators_df)
+
+# 3. GESI Disaggregation Plot Example
+gesi_data <- tibble(
+  Category = c("Female", "Male", "Other/Non-Binary"),
+  Percentage = c(60, 35, 5)
+)
+
+ggplot(gesi_data, aes(x = "", y = Percentage, fill = Category)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y", start = 0) +
+  theme_minimal() +
+  labs(title = "GESI Participation Breakdown - ${projName}",
+       fill = "Demographic") +
+  scale_fill_brewer(palette = "Set2")
+`;
+
+                    const blob = new Blob([scriptContent], { type: 'text/plain;charset=utf-8;' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${projName.replace(/\s+/g, '_')}_analysis_script.R`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                },
+
+                downloadQuartoReport() {
+                    const projName = this.currentProjectName || 'LogPulse Project';
+                    const quartoContent = `---
+title: "MEAL & Formative Research Report: ${projName}"
+author: "Cobalt Metrics & Research | LogPulse Suite"
+date: "${new Date().toISOString().slice(0, 10)}"
+format: 
+  html:
+    embed-resources: true
+    toc: true
+    code-fold: true
+    theme: cosmo
+---
+
+## 1. Executive Summary
+This report outlines the Monitoring, Evaluation, Accountability, and Learning (MEAL) framework and formative research metrics for **${projName}**. Focussing sectors include: *${this.currentSectors.join(', ')}*.
+
+## 2. Logframe Matrix & Indicator Baseline
+The active logical framework consists of the following tracked indicators:
+
+\`\`\`{r}
+#| echo: false
+#| warning: false
+library(knitr)
+library(tidyverse)
+
+matrix_tbl <- tibble(
+  Sector = c(${this.activeMatrix.map(m => `"${m.sector}"`).join(',\n    ')}),
+  Subcategory = c(${this.activeMatrix.map(m => `"${m.subcat}"`).join(',\n    ')}),
+  Statement = c(${this.activeMatrix.map(m => `"${m.statement}"`).join(',\n    ')}),
+  Baseline = c(${this.activeMatrix.map(m => m.baseline).join(', ')}),
+  Target = c(${this.activeMatrix.map(m => m.target).join(', ')})
+)
+
+kable(matrix_tbl, caption = "Project Logframe & Indicator Targets")
+\`\`\`
+
+## 3. Behavioral Insights & Formative Analysis
+Using identity-based habit formation frameworks and community feedback loops, this project tracks progress against normative shifts and structural bottlenecks. 
+
+## 4. GESI & Equity Breakdown
+\`\`\`{r}
+#| echo: false
+#| fig-cap: "Participant Disaggregation by Gender & Inclusion"
+library(ggplot2)
+
+df_gesi <- data.frame(
+  Group = c("Female", "Male", "Other"),
+  Share = c(60, 35, 5)
+)
+
+ggplot(df_gesi, aes(x = Group, y = Share, fill = Group)) +
+  geom_col(width = 0.6) +
+  theme_minimal() +
+  labs(y = "Percentage (%)", x = "Participant Group") +
+  ylim(0, 100)
+\`\`\`
+`;
+
+                    const blob = new Blob([quartoContent], { type: 'text/markdown;charset=utf-8;' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${projName.replace(/\s+/g, '_')}_report.qmd`;
                     a.click();
                     URL.revokeObjectURL(url);
                 },
@@ -348,11 +469,12 @@
             
             <div class="flex items-center space-x-1 bg-slate-800 p-1 rounded-lg border border-slate-700 text-xs overflow-x-auto">
                 <button @click="activeTab = 'dashboard'" :class="activeTab === 'dashboard' ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:text-white'" class="px-3 py-1.5 rounded-md font-medium transition cursor-pointer">Dashboard</button>
-                <button @click="activeTab = 'formative'" :class="activeTab === 'formative' ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:text-white'" class="px-3 py-1.5 rounded-md font-medium transition cursor-pointer">🔬 Formative Proposal & Smart Match</button>
+                <button @click="activeTab = 'formative'" :class="activeTab === 'formative' ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:text-white'" class="px-3 py-1.5 rounded-md font-medium transition cursor-pointer">🔬 Formative Proposal</button>
                 <button @click="activeTab = 'builder'" :class="activeTab === 'builder' ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:text-white'" class="px-3 py-1.5 rounded-md font-medium transition cursor-pointer">1. Logframe Builder</button>
                 <button @click="activeTab = 'tools'" :class="activeTab === 'tools' ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:text-white'" class="px-3 py-1.5 rounded-md font-medium transition cursor-pointer">2. Tool Design</button>
                 <button @click="activeTab = 'pipeline'" :class="activeTab === 'pipeline' ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:text-white'" class="px-3 py-1.5 rounded-md font-medium transition cursor-pointer">3. Data Pipeline</button>
                 <button @click="activeTab = 'analysis'" :class="activeTab === 'analysis' ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:text-white'" class="px-3 py-1.5 rounded-md font-medium transition cursor-pointer">4. Analysis & Learning</button>
+                <button @click="activeTab = 'r_quarto'" :class="activeTab === 'r_quarto' ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:text-white'" class="px-3 py-1.5 rounded-md font-medium transition cursor-pointer">5. R & Quarto Reports</button>
             </div>
 
             <div class="flex items-center space-x-3 text-xs">
@@ -419,7 +541,7 @@
                 <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-4">
                     <h3 class="font-bold text-slate-800 text-base">Welcome to LogPulse Formative Research & MEAL Suite</h3>
                     <p class="text-xs text-slate-600 leading-relaxed">
-                        Use the new <strong>Formative Proposal & Smart Match</strong> tab to automatically draft research proposals, extract core behavior change objectives, and smartly assign context-specific qualitative and quantitative indicators based on your project title and sectors.
+                        Use the <strong>Formative Proposal & Smart Match</strong> tab to automatically draft research proposals, extract core behavior change objectives, and smartly assign context-specific qualitative and quantitative indicators. Access the new <strong>R & Quarto Reports</strong> tab to instantly build reproducible R scripts and HTML reports.
                     </p>
                     <button @click="activeTab = 'formative'" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 py-2.5 rounded-lg transition shadow cursor-pointer">
                         🔬 Launch Formative Proposal & Smart Indicator Matcher &rarr;
@@ -433,7 +555,7 @@
                     <div>
                         <span class="px-2 py-0.5 bg-indigo-700 text-indigo-200 rounded text-[10px] font-bold uppercase tracking-wider">AI Research Engine</span>
                         <h3 class="font-bold text-base mt-1">Formative Research Proposal Generator & Smart Indicator Matcher</h3>
-                        <p class="text-xs text-indigo-200 mt-1">Input your upcoming project title and focal sectors. LogPulse will intelligently draft a formative research framework, establish qualitative/quantitative drivers, and auto-populate your project logframe matrix.</p>
+                        <p class="text-xs text-indigo-200 mt-1">Input your upcoming project title and focal sectors. LogPulse will intelligently draft a formative research framework and auto-populate your project logframe matrix.</p>
                     </div>
 
                     <div class="bg-white/10 p-4 rounded-xl space-y-3">
@@ -469,182 +591,51 @@
                         </div>
                         <div class="flex gap-2">
                             <button @click="pushToLogframeMatrix()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs px-3 py-2 rounded-lg transition shadow cursor-pointer">
-                                📥 Push Smart Indicators to Logframe Matrix
+                                📥 Push to Logframe Matrix
                             </button>
-                            <button @click="downloadFormativeProposal()" class="bg-slate-800 hover:bg-slate-900 text-white font-semibold text-xs px-3 py-2 rounded-lg transition cursor-pointer">
-                                📄 Download Proposal (.txt)
+                            <button @click="downloadFormativeProposal()" class="bg-slate-800 hover:bg-slate-900 text-white font-semibold text-xs px-3 py-2 rounded-lg transition shadow cursor-pointer">
+                                💾 Download Proposal Text
                             </button>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
-                        <div class="space-y-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
-                            <div>
-                                <h5 class="font-bold text-indigo-900 uppercase text-[11px] mb-1">1. Research Background & Purpose</h5>
-                                <p class="text-slate-600 leading-relaxed" x-text="formativeOutput.background"></p>
-                            </div>
-                            <div>
-                                <h5 class="font-bold text-indigo-900 uppercase text-[11px] mb-1">2. Core Formative Research Questions</h5>
-                                <ul class="list-disc pl-4 space-y-1 text-slate-600">
-                                    <template x-for="q in formativeOutput.questions">
-                                        <li x-text="q"></li>
-                                    </template>
-                                </ul>
-                            </div>
+                    <div class="space-y-4 text-xs text-slate-700">
+                        <div>
+                            <h5 class="font-bold text-slate-900 uppercase tracking-wider text-[11px] mb-1">1. Background & Contextual Rationale</h5>
+                            <p class="bg-slate-50 p-3 rounded-lg border border-slate-200 leading-relaxed" x-text="formativeOutput.background"></p>
                         </div>
-
-                        <div class="space-y-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
-                            <div>
-                                <h5 class="font-bold text-indigo-900 uppercase text-[11px] mb-1">3. Methodology & Data Collection Instruments</h5>
-                                <p class="text-slate-600 leading-relaxed" x-text="formativeOutput.methodology"></p>
-                            </div>
-                            <div>
-                                <h5 class="font-bold text-indigo-900 uppercase text-[11px] mb-1">4. Smarter Behavioral & Equity Focus</h5>
-                                <p class="text-slate-600 leading-relaxed" x-text="formativeOutput.behavioralFocus"></p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="space-y-3 pt-4 border-t border-slate-100">
-                        <h5 class="font-bold text-slate-800 text-xs uppercase tracking-wider">🎯 Smart-Matched Indicators (Ready for Logframe)</h5>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left text-xs">
-                               <thead>
-                                    <tr class="border-b border-slate-200 text-slate-400 uppercase text-[10px]">
-                                        <th class="py-2">Sector</th>
-                                        <th class="py-2">Level</th>
-                                        <th class="py-2">Smart Indicator Statement</th>
-                                        <th class="py-2">Unit</th>
-                                        <th class="py-2">Baseline</th>
-                                        <th class="py-2">Target</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-slate-100">
-                                    <template x-for="ind in formativeMatchedIndicators">
-                                        <tr>
-                                            <td class="py-2"><span class="px-2 py-0.5 bg-slate-200 text-slate-800 rounded font-bold text-[10px]" x-text="ind.sector"></span></td>
-                                            <td class="py-2"><span class="px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded font-bold text-[10px]" x-text="ind.subcat"></span></td>
-                                            <td class="py-2 font-medium text-slate-800" x-text="ind.name"></td>
-                                            <td class="py-2 text-slate-500" x-text="ind.unit"></td>
-                                            <td class="py-2 text-slate-600" x-text="ind.baseline"></td>
-                                            <td class="py-2 text-indigo-600 font-semibold" x-text="ind.target"></td>
-                                        </tr>
-                                    </template>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- VIEW 1: LOGFRAME BUILDER -->
-            <div x-show="activeTab === 'builder'" class="space-y-6" style="display: none;">
-                <div class="bg-indigo-900 text-white rounded-xl p-5 shadow-sm flex justify-between items-center">
-                    <div>
-                        <h3 class="font-bold text-sm">📁 Smart Indicator Repository & Logframe Builder</h3>
-                        <p class="text-xs text-indigo-200 mt-0.5">Active Project Sectors: <strong class="text-white" x-text="currentSectors.length ? currentSectors.join(', ') : 'None'"></strong></p>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                    <div class="lg:col-span-5 bg-white rounded-xl border border-slate-200 p-4 flex flex-col h-[70vh]">
-                        <div class="flex justify-between items-center mb-2">
-                            <h3 class="font-bold text-slate-800 text-xs uppercase tracking-wider">Indicator Library</h3>
-                            <select x-model="librarySectorFilter" class="text-[10px] bg-slate-100 border border-slate-200 rounded px-1.5 py-1 font-semibold text-indigo-700">
-                                <option value="all">All Project Sectors</option>
-                                <template x-for="s in currentSectors">
-                                    <option :value="s" x-text="'Sector: ' + s"></option>
+                        <div>
+                            <h5 class="font-bold text-slate-900 uppercase tracking-wider text-[11px] mb-1">2. Core Formative Research Questions</h5>
+                            <ul class="list-disc pl-5 bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-1">
+                                <template x-for="q in formativeOutput.questions">
+                                    <li x-text="q"></li>
                                 </template>
-                            </select>
+                            </ul>
                         </div>
-                        <div class="flex flex-wrap gap-1 mb-2">
-                            <button @click="librarySubcatFilter = 'all'" :class="librarySubcatFilter === 'all' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600'" class="px-2 py-1 text-[10px] font-bold rounded cursor-pointer">All</button>
-                            <button @click="librarySubcatFilter = 'Input'" :class="librarySubcatFilter === 'Input' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600'" class="px-2 py-1 text-[10px] font-bold rounded cursor-pointer">Input</button>
-                            <button @click="librarySubcatFilter = 'Process'" :class="librarySubcatFilter === 'Process' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600'" class="px-2 py-1 text-[10px] font-bold rounded cursor-pointer">Process</button>
-                            <button @click="librarySubcatFilter = 'Output'" :class="librarySubcatFilter === 'Output' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600'" class="px-2 py-1 text-[10px] font-bold rounded cursor-pointer">Output</button>
-                            <button @click="librarySubcatFilter = 'Outcome'" :class="librarySubcatFilter === 'Outcome' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600'" class="px-2 py-1 text-[10px] font-bold rounded cursor-pointer">Outcome</button>
-                            <button @click="librarySubcatFilter = 'Impact'" :class="librarySubcatFilter === 'Impact' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600'" class="px-2 py-1 text-[10px] font-bold rounded cursor-pointer">Impact</button>
+                        <div>
+                            <h5 class="font-bold text-slate-900 uppercase tracking-wider text-[11px] mb-1">3. Methodology & Behavioral Framework</h5>
+                            <p class="bg-slate-50 p-3 rounded-lg border border-slate-200 leading-relaxed" x-text="formativeOutput.methodology + ' ' + formativeOutput.behavioralFocus"></p>
                         </div>
-                        <div class="overflow-y-auto flex-grow space-y-2 pr-1">
-                            <template x-for="item in filteredLibraryIndicators" :key="item.code">
-                                <div @click="autofillForm(item.code)" class="p-2.5 rounded border border-slate-200 hover:border-indigo-500 cursor-pointer text-xs bg-slate-50 transition">
-                                    <div class="flex justify-between font-bold text-[10px] text-slate-500 mb-0.5">
-                                        <span x-text="item.code + ' (' + item.subcat + ')'"></span>
-                                        <span class="text-indigo-600 px-1.5 py-0.5 bg-indigo-50 rounded" x-text="item.sector"></span>
-                                    </div>
-                                    <p class="font-semibold text-slate-800" x-text="item.name"></p>
-                                </div>
-                            </template>
-                        </div>
-                    </div>
-
-                    <div class="lg:col-span-7 flex flex-col space-y-4">
-                        <div class="bg-white rounded-xl border border-slate-200 p-4">
-                            <h3 class="font-bold text-slate-800 text-xs uppercase tracking-wider mb-3">Add / Edit Indicator Entry</h3>
-                            <form @submit.prevent="addMatrixRow" class="space-y-3 text-xs">
-                                <div class="grid grid-cols-2 gap-3">
-                                    <div>
-                                        <label class="block font-semibold text-slate-600 mb-1">Results Chain Subcategory *</label>
-                                        <select x-model="formSubcat" class="w-full px-2.5 py-1.5 border border-slate-200 rounded bg-slate-50">
-                                            <option value="Input">Input Indicator</option>
-                                            <option value="Process">Process Indicator</option>
-                                            <option value="Output">Output Indicator</option>
-                                            <option value="Outcome">Outcome Indicator</option>
-                                            <option value="Impact">Impact Indicator</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label class="block font-semibold text-slate-600 mb-1">Sector / Domain</label>
-                                        <input type="text" x-model="formSector" readonly placeholder="Auto-populated" class="w-full px-2.5 py-1.5 border border-slate-200 rounded bg-slate-100 text-slate-500">
-                                    </div>
-                                </div>
-                                <div>
-                                    <label class="block font-semibold text-slate-600 mb-1">Indicator Statement *</label>
-                                    <select x-model="formStatementCode" @change="handleDropdownIndicatorSelect($event.target.value)" required class="w-full px-2.5 py-1.5 border border-slate-200 rounded bg-slate-50 font-medium">
-                                        <option value="">-- Select indicator from library --</option>
-                                        <template x-for="i in repositoryForCurrentSectors">
-                                            <option :value="i.code" x-text="'[' + i.sector + ' - ' + i.subcat + '] ' + i.name"></option>
-                                        </template>
-                                    </select>
-                                </div>
-                                <div class="grid grid-cols-3 gap-2">
-                                    <input type="text" x-model="formUnit" placeholder="Unit" class="px-2.5 py-1.5 border border-slate-200 rounded bg-slate-100" readonly>
-                                    <input type="number" x-model="formBaseline" placeholder="Baseline value" class="px-2.5 py-1.5 border border-slate-200 rounded">
-                                    <input type="number" x-model="formTarget" placeholder="Target value" class="px-2.5 py-1.5 border border-slate-200 rounded">
-                                </div>
-                                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded transition cursor-pointer">
-                                    + Add to Active Logframe Matrix
-                                </button>
-                            </form>
-                        </div>
-
-                        <div class="bg-white rounded-xl border border-slate-200 p-4 flex-grow">
-                            <h3 class="font-bold text-slate-800 text-xs uppercase tracking-wider mb-3">Active Logframe Matrix Grid</h3>
-                            <div class="overflow-x-auto">
+                        <div>
+                            <h5 class="font-bold text-slate-900 uppercase tracking-wider text-[11px] mb-1">4. Smart-Matched Indicators</h5>
+                            <div class="border border-slate-200 rounded-lg overflow-hidden">
                                 <table class="w-full text-left text-xs">
-                                    <thead>
-                                        <tr class="border-b border-slate-200 text-slate-400 uppercase text-[10px]">
-                                            <th class="py-2">Sector</th>
-                                            <th class="py-2">Subcategory</th>
-                                            <th class="py-2">Indicator Statement</th>
-                                            <th class="py-2">Baseline</th>
-                                            <th class="py-2">Target</th>
-                                            <th class="py-2 text-right">Action</th>
+                                    <thead class="bg-slate-100 text-slate-600 border-b border-slate-200">
+                                        <tr>
+                                            <th class="p-2.5 font-semibold">Code / Sector</th>
+                                            <th class="p-2.5 font-semibold">Indicator Statement</th>
+                                            <th class="p-2.5 font-semibold">Baseline</th>
+                                            <th class="p-2.5 font-semibold">Target</th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-slate-100">
-                                        <template x-for="r in activeMatrix" :key="r.id">
+                                        <template x-for="ind in formativeMatchedIndicators">
                                             <tr>
-                                                <td class="py-2"><span class="px-2 py-0.5 bg-slate-200 text-slate-800 rounded font-bold text-[10px]" x-text="r.sector"></span></td>
-                                                <td class="py-2"><span class="px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded font-bold text-[10px]" x-text="r.subcat"></span></td>
-                                                <td class="py-2 font-medium text-slate-800" x-text="r.statement"></td>
-                                                <td class="py-2 text-slate-600" x-text="r.baseline"></td>
-                                                <td class="py-2 text-indigo-600 font-semibold" x-text="r.target"></td>
-                                                <td class="py-2 text-right"><button @click="removeMatrixItem(r.id)" class="text-rose-500 hover:underline cursor-pointer">Remove</button></td>
+                                                <td class="p-2.5 font-medium text-indigo-600" x-text="ind.sector + ' (' + ind.subcat + ')'"></td>
+                                                <td class="p-2.5" x-text="ind.name"></td>
+                                                <td class="p-2.5" x-text="ind.baseline !== undefined ? ind.baseline : 15"></td>
+                                                <td class="p-2.5" x-text="ind.target !== undefined ? ind.target : 85"></td>
                                             </tr>
-                                        </template>
-                                        <template x-if="activeMatrix.length === 0">
-                                            <tr><td colspan="6" class="text-center py-6 text-slate-400">No indicators added yet. Use the Smart Matcher or pick from the library.</td></tr>
                                         </template>
                                     </tbody>
                                 </table>
@@ -654,92 +645,237 @@
                 </div>
             </div>
 
-            <!-- VIEW 2: TOOL DESIGN -->
+            <!-- TAB 1: LOGFRAME BUILDER -->
+            <div x-show="activeTab === 'builder'" class="space-y-6" style="display: none;">
+                <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-4">
+                    <div class="flex justify-between items-center border-b border-slate-100 pb-4">
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-sm">Active Logical Framework Matrix</h3>
+                            <p class="text-xs text-slate-500">Project: <span class="font-semibold text-indigo-600" x-text="currentProjectName || 'None Selected'"></span></p>
+                        </div>
+                        <div class="text-xs text-slate-500">
+                            Sectors: <strong class="text-slate-700" x-text="currentSectors.join(', ') || 'None'"></strong>
+                        </div>
+                    </div>
+
+                    <!-- Add Indicator Form -->
+                    <div class="grid grid-cols-1 md:grid-cols-6 gap-3 bg-slate-50 p-4 rounded-xl border border-slate-200 items-end">
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 mb-1">Level / Subcat</label>
+                            <select x-model="formSubcat" class="w-full text-xs p-2 border border-slate-300 rounded-lg bg-white">
+                                <option value="Input">Input</option>
+                                <option value="Process">Process</option>
+                                <option value="Output">Output</option>
+                                <option value="Outcome">Outcome</option>
+                                <option value="Impact">Impact</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 mb-1">Sector</label>
+                            <select x-model="formSector" class="w-full text-xs p-2 border border-slate-300 rounded-lg bg-white">
+                                <option value="">Select Sector</option>
+                                <template x-for="s in (currentSectors.length ? currentSectors : allSectors.map(sec => sec.id))">
+                                    <option :value="s" x-text="s"></option>
+                                </template>
+                            </select>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-[11px] font-bold text-slate-600 mb-1">Indicator Repository Statement</label>
+                            <select x-model="formStatementCode" @change="handleDropdownIndicatorSelect(formStatementCode)" class="w-full text-xs p-2 border border-slate-300 rounded-lg bg-white">
+                                <option value="">-- Choose from Repository --</option>
+                                <template x-for="item in filteredLibraryIndicators" :key="item.code">
+                                    <option :value="item.code" x-text="'[' + item.sector + '] ' + item.name"></option>
+                                </template>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 mb-1">Baseline</label>
+                            <input type="number" x-model="formBaseline" placeholder="0" class="w-full text-xs p-2 border border-slate-300 rounded-lg bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 mb-1">Target</label>
+                            <input type="number" x-model="formTarget" placeholder="100" class="w-full text-xs p-2 border border-slate-300 rounded-lg bg-white">
+                        </div>
+                        <div class="md:col-span-6 flex justify-end pt-2">
+                            <button @click="addMatrixRow()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs px-4 py-2 rounded-lg transition shadow cursor-pointer">
+                                + Add Indicator to Matrix
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Matrix Table -->
+                    <div class="overflow-x-auto border border-slate-200 rounded-lg">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-100 text-slate-600 border-b border-slate-200">
+                                <tr>
+                                    <th class="p-3 font-semibold">Hierarchy</th>
+                                    <th class="p-3 font-semibold">Sector</th>
+                                    <th class="p-3 font-semibold">Indicator Statement</th>
+                                    <th class="p-3 font-semibold">Baseline</th>
+                                    <th class="p-3 font-semibold">Target</th>
+                                    <th class="p-3 font-semibold text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <template x-for="row in activeMatrix" :key="row.id">
+                                    <tr class="hover:bg-slate-50">
+                                        <td class="p-3 font-bold" x-text="row.subcat"></td>
+                                        <td class="p-3 text-indigo-600 font-medium" x-text="row.sector"></td>
+                                        <td class="p-3 text-slate-800" x-text="row.statement"></td>
+                                        <td class="p-3" x-text="row.baseline"></td>
+                                        <td class="p-3 font-semibold text-indigo-600" x-text="row.target"></td>
+                                        <td class="p-3 text-right">
+                                            <button @click="removeMatrixItem(row.id)" class="text-rose-500 hover:text-rose-700 font-bold cursor-pointer">Remove</button>
+                                        </td>
+                                    </tr>
+                                </template>
+                                <template x-if="activeMatrix.length === 0">
+                                    <tr>
+                                        <td colspan="6" class="p-6 text-center text-slate-400">No indicators added to the matrix yet. Use the form above or generate from a formative proposal.</td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: TOOL DESIGN -->
             <div x-show="activeTab === 'tools'" class="space-y-6" style="display: none;">
                 <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-4">
-                    <div>
-                        <h3 class="font-bold text-slate-800 text-sm uppercase tracking-wider">Phase 2: Tool Design & Field Instruments</h3>
-                        <p class="text-xs text-slate-500 mt-0.5">Generate compliant KoboToolbox/ODK XLSForms and qualitative formative research guides.</p>
-                    </div>
-
+                    <h3 class="font-bold text-slate-800 text-sm">MEAL & Formative Research Tool Design Suite</h3>
+                    <p class="text-xs text-slate-500">Automatically compile data collection instruments, XLSForms, and qualitative interview guides based on your active project matrix.</p>
+                    
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
-                        <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-3 flex flex-col justify-between">
+                        <div class="border border-slate-200 rounded-xl p-5 space-y-3 bg-slate-50/50 flex flex-col justify-between">
                             <div>
-                                <span class="text-2xl">📋</span>
-                                <h4 class="font-bold text-xs uppercase text-slate-800 mt-2">Kobo / ODK XLSForm</h4>
-                                <p class="text-[11px] text-slate-600 mt-1">Exports multi-sheet survey schema with embedded formative indicators.</p>
+                                <span class="px-2 py-0.5 bg-indigo-100 text-indigo-800 rounded text-[10px] font-bold">Kobo / ODK</span>
+                                <h4 class="font-bold text-slate-800 text-xs mt-2">Automated XLSForm Generator</h4>
+                                <p class="text-[11px] text-slate-600 mt-1">Export fully structured XLSForm spreadsheets complete with start/end time markers, participant identification, and indicator hooks.</p>
                             </div>
-                            <button @click="downloadToolFile('xlsform')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold py-2 rounded transition cursor-pointer">Download XLSForm (.xlsx)</button>
+                            <button @click="downloadToolFile('xlsform')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs py-2 rounded-lg transition shadow cursor-pointer">
+                                📥 Download XLSForm (.xlsx)
+                            </button>
                         </div>
-                        <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-3 flex flex-col justify-between">
+
+                        <div class="border border-slate-200 rounded-xl p-5 space-y-3 bg-slate-50/50 flex flex-col justify-between">
                             <div>
-                                <span class="text-2xl">🗣️</span>
-                                <h4 class="font-bold text-xs uppercase text-slate-800 mt-2">Qualitative Research Protocols</h4>
-                                <p class="text-[11px] text-slate-600 mt-1">KII & FGD formative research guides tailored to your sectors.</p>
+                                <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded text-[10px] font-bold">Qualitative Protocol</span>
+                                <h4 class="font-bold text-slate-800 text-xs mt-2">Formative KII & FGD Guide</h4>
+                                <p class="text-[11px] text-slate-600 mt-1">Download standardized qualitative interview guides mapping social norms, barriers, and behavioral drivers.</p>
                             </div>
-                            <button @click="downloadToolFile('qualitative')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold py-2 rounded transition cursor-pointer">Download Protocols (.txt)</button>
+                            <button @click="downloadToolFile('qualitative')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs py-2 rounded-lg transition shadow cursor-pointer">
+                                📥 Download Protocol (.txt)
+                            </button>
                         </div>
-                        <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-3 flex flex-col justify-between">
+
+                        <div class="border border-slate-200 rounded-xl p-5 space-y-3 bg-slate-50/50 flex flex-col justify-between">
                             <div>
-                                <span class="text-2xl">👥</span>
-                                <h4 class="font-bold text-xs uppercase text-slate-800 mt-2">Participant Register</h4>
-                                <p class="text-[11px] text-slate-600 mt-1">GESI-compliant attendance and feedback sheet.</p>
+                                <span class="px-2 py-0.5 bg-amber-100 text-amber-800 rounded text-[10px] font-bold">Field Logistics</span>
+                                <h4 class="font-bold text-slate-800 text-xs mt-2">Attendance & Session Register</h4>
+                                <p class="text-[11px] text-slate-600 mt-1">Pre-formatted CSV participant attendance and session tracking template tailored for local field deployment.</p>
                             </div>
-                            <button @click="downloadToolFile('register')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold py-2 rounded transition cursor-pointer">Download Register (.csv)</button>
+                            <button @click="downloadToolFile('register')" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs py-2 rounded-lg transition shadow cursor-pointer">
+                                📥 Download Register (.csv)
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- VIEW 3: DATA PIPELINE -->
+            <!-- TAB 3: DATA PIPELINE -->
             <div x-show="activeTab === 'pipeline'" class="space-y-6" style="display: none;">
-                <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-4">
-                    <div class="flex justify-between items-center">
+                <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-6">
+                    <div class="flex justify-between items-center border-b border-slate-100 pb-4">
                         <div>
-                            <h3 class="font-bold text-slate-800 text-sm uppercase tracking-wider">Phase 3: Data Ingestion & Quality Control</h3>
-                            <p class="text-xs text-slate-500 mt-0.5">Connect to KoboToolbox API or upload raw research datasets.</p>
+                            <h3 class="font-bold text-slate-800 text-sm">Data Ingestion & Cleaning Pipeline</h3>
+                            <p class="text-xs text-slate-500">Connect live KoboToolbox API endpoints or upload raw datasets for automated cleaning and indicator aggregation.</p>
                         </div>
-                        <span :class="pipelineStatusClass" class="px-2.5 py-1 rounded font-bold text-[10px]" x-text="pipelineStatusText">Awaiting Data</span>
+                        <span class="text-xs px-2.5 py-1 rounded-full font-bold" :class="pipelineStatusClass" x-text="pipelineStatusText"></span>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-xl border border-indigo-100 bg-indigo-50/50">
-                        <div class="space-y-2">
-                            <label class="block font-bold text-indigo-900 text-xs">🔗 KoboToolbox API Endpoint</label>
-                            <div class="flex gap-2">
-                                <input type="text" x-model="koboUrl" placeholder="https://kc.kobotoolbox.org/api/v1/data/..." class="w-full px-3 py-1.5 border border-slate-300 rounded bg-white text-xs">
-                                <button @click="connectKoboAPI()" class="bg-indigo-600 text-white text-xs font-semibold px-3 py-1.5 rounded shrink-0 cursor-pointer">Sync</button>
-                            </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="p-5 border border-slate-200 rounded-xl bg-slate-50 space-y-3">
+                            <h4 class="font-bold text-slate-800 text-xs">🔗 KoboToolbox API Integration</h4>
+                            <p class="text-[11px] text-slate-600">Enter your form endpoint URL to auto-sync incoming qualitative and quantitative records.</p>
+                            <input type="text" x-model="koboUrl" placeholder="https://kc.kobotoolbox.org/api/v1/data/..." class="w-full text-xs p-2 border border-slate-300 rounded-lg bg-white">
+                            <button @click="connectKoboAPI()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs py-2 rounded-lg transition shadow cursor-pointer">
+                                Connect & Sync API
+                            </button>
                         </div>
-                        <div class="space-y-2">
-                            <label class="block font-bold text-indigo-900 text-xs">📁 Upload Dataset (Excel / CSV)</label>
-                            <label class="flex items-center justify-center w-full px-3 py-1.5 border border-dashed border-indigo-400 bg-white rounded cursor-pointer hover:bg-indigo-50 text-indigo-700 font-semibold text-xs transition">
-                                <span>Choose File...</span>
-                                <input type="file" @change="handleDatasetUpload" class="hidden">
-                            </label>
+
+                        <div class="p-5 border border-slate-200 rounded-xl bg-slate-50 space-y-3">
+                            <h4 class="font-bold text-slate-800 text-xs">📂 Local Dataset Upload & Cleaning</h4>
+                            <p class="text-[11px] text-slate-600">Upload CSV or XLSX datasets for automated outlier detection, missing value flagging, and standard formatting.</p>
+                            <input type="file" @change="handleDatasetUpload($event)" class="w-full text-xs p-2 border border-slate-300 rounded-lg bg-white file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                            <span class="text-[10px] text-slate-400 block">Supported formats: .csv, .xlsx</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- VIEW 4: ANALYSIS -->
+            <!-- TAB 4: ANALYSIS & LEARNING -->
             <div x-show="activeTab === 'analysis'" class="space-y-6" style="display: none;">
                 <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-6">
-                    <div class="flex justify-between items-center">
+                    <div class="flex justify-between items-center border-b border-slate-100 pb-4">
                         <div>
-                            <h3 class="font-bold text-slate-800 text-sm uppercase tracking-wider">Phase 4 & 5: Visual Analysis & Reporting</h3>
-                            <p class="text-xs text-slate-500 mt-0.5">Synthesizes formative research findings and logframe metrics.</p>
+                            <h3 class="font-bold text-slate-800 text-sm">Analysis, Visualization & Learning Dashboard</h3>
+                            <p class="text-xs text-slate-500">Generate real-time indicator achievement charts and GESI disaggregation splits.</p>
                         </div>
-                        <button @click="runAnalysis()" class="bg-indigo-600 text-white text-xs font-semibold px-4 py-2.5 rounded-lg transition shadow cursor-pointer">⚡ Run Comprehensive Analysis</button>
+                        <button @click="runAnalysis()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs px-4 py-2 rounded-lg transition shadow cursor-pointer">
+                            ▶ Run Real-Time Analysis
+                        </button>
                     </div>
 
-                    <div id="analysis-section" class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2 hidden">
-                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
-                            <h4 class="font-bold text-xs text-slate-700 uppercase mb-3">📊 Baseline vs Target Performance</h4>
-                            <div class="h-64 relative flex items-center justify-center"><canvas id="perfChart"></canvas></div>
+                    <div id="analysis-section" class="space-y-6 hidden">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                                <h4 class="font-bold text-slate-800 text-xs mb-3">Baseline vs Target Performance</h4>
+                                <div class="h-64 relative">
+                                    <canvas id="perfChart"></canvas>
+                                </div>
+                            </div>
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                                <h4 class="font-bold text-slate-800 text-xs mb-3">GESI Participation Disaggregation</h4>
+                                <div class="h-64 relative">
+                                    <canvas id="gesiChart"></canvas>
+                                </div>
+                            </div>
                         </div>
-                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
-                            <h4 class="font-bold text-xs text-slate-700 uppercase mb-3">👥 GESI Disaggregation</h4>
-                            <div class="h-64 relative flex items-center justify-center"><canvas id="gesiChart"></canvas></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 5: R & QUARTO REPORTS -->
+            <div x-show="activeTab === 'r_quarto'" class="space-y-6" style="display: none;">
+                <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-6">
+                    <div>
+                        <span class="px-2 py-0.5 bg-indigo-100 text-indigo-800 rounded text-[10px] font-bold uppercase">Reproducible Research Suite</span>
+                        <h3 class="font-bold text-slate-800 text-base mt-1">R Script & Quarto Report Generators</h3>
+                        <p class="text-xs text-slate-500 mt-1">Instantly generate custom RStudio scripts and Quarto markdown reports pre-configured with your active project name, sectors, and indicator matrix.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="border border-slate-200 rounded-xl p-5 space-y-3 bg-slate-50/50 flex flex-col justify-between">
+                            <div>
+                                <span class="px-2 py-0.5 bg-blue-100 text-blue-800 rounded text-[10px] font-bold">RStudio Analysis Script</span>
+                                <h4 class="font-bold text-slate-800 text-xs mt-2">Automated R Data Pipeline (.R)</h4>
+                                <p class="text-[11px] text-slate-600 mt-1">Downloads a complete R script including tidyverse data loading, clean-names standardization, indicator performance mapping, and ggplot2 visual generation.</p>
+                            </div>
+                            <button @click="downloadRScript()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs py-2 rounded-lg transition shadow cursor-pointer">
+                                📥 Download R Analysis Script (.R)
+                            </button>
+                        </div>
+
+                        <div class="border border-slate-200 rounded-xl p-5 space-y-3 bg-slate-50/50 flex flex-col justify-between">
+                            <div>
+                                <span class="px-2 py-0.5 bg-purple-100 text-purple-800 rounded text-[10px] font-bold">Quarto Report Template</span>
+                                <h4 class="font-bold text-slate-800 text-xs mt-2">Reproducible HTML Report (.qmd)</h4>
+                                <p class="text-[11px] text-slate-600 mt-1">Downloads a Quarto markdown document equipped with embedded R code chunks, table formatting, and executive summary sections tailored to your project.</p>
+                            </div>
+                            <button @click="downloadQuartoReport()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold text-xs py-2 rounded-lg transition shadow cursor-pointer">
+                                📥 Download Quarto Report (.qmd)
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -749,30 +885,27 @@
     </div>
 
     <!-- NEW PROJECT MODAL -->
-    <div x-show="isProjectModalOpen" class="fixed inset-0 bg-slate-900/50 z-50 flex justify-center items-center p-4" style="display: none;" @click.self="isProjectModalOpen = false">
-        <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 space-y-4 text-xs">
-            <div class="flex justify-between items-center border-b pb-2">
-                <h3 class="font-bold text-slate-900 text-sm">Create New Multi-Sector Project Logframe</h3>
-                <button @click="isProjectModalOpen = false" class="text-slate-400 hover:text-slate-600 font-bold text-lg cursor-pointer">&times;</button>
+    <div x-show="isProjectModalOpen" class="fixed inset-0 bg-slate-900/50 flex items-center justify-center z-50 p-4" style="display: none;">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
+            <h3 class="font-bold text-slate-900 text-sm">Create New Project Archive</h3>
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Project Title *</label>
+                <input type="text" x-model="newProjectTitle" placeholder="e.g., Kakamega Adolescent Empowerment Initiative" class="w-full text-xs p-2.5 border border-slate-300 rounded-lg">
             </div>
             <div>
-                <label class="block font-semibold text-slate-600 mb-1">Project Title *</label>
-                <input type="text" x-model="newProjectTitle" placeholder="e.g. Nutrition and Women Empowerment" class="w-full px-3 py-2 border border-slate-200 rounded">
-            </div>
-            <div>
-                <label class="block font-semibold text-slate-600 mb-2">Select Applicable Sectors / Domains *</label>
-                <div class="max-h-48 overflow-y-auto grid grid-cols-2 gap-2 bg-slate-50 p-3 rounded border border-slate-200">
+                <label class="block text-xs font-semibold text-slate-700 mb-2">Focal Sectors *</label>
+                <div class="max-h-48 overflow-y-auto grid grid-cols-2 gap-2 p-3 bg-slate-50 rounded-lg border border-slate-200">
                     <template x-for="sec in allSectors" :key="sec.id">
-                        <label class="flex items-center space-x-2 cursor-pointer p-1">
+                        <label class="flex items-center space-x-2 text-slate-800 text-xs cursor-pointer p-1">
                             <input type="checkbox" :value="sec.id" @change="toggleNewProjectSector(sec.id)" :checked="newProjectSectors.includes(sec.id)" class="rounded text-indigo-600 h-4 w-4">
-                            <span class="font-medium text-slate-700" x-text="sec.label"></span>
+                            <span x-text="sec.label" class="font-medium"></span>
                         </label>
                     </template>
                 </div>
             </div>
             <div class="flex justify-end space-x-2 pt-2">
-                <button @click="isProjectModalOpen = false" class="px-3 py-1.5 text-slate-600 hover:bg-slate-100 rounded cursor-pointer">Cancel</button>
-                <button @click="saveNewProject()" class="px-4 py-1.5 bg-indigo-600 text-white font-semibold rounded hover:bg-indigo-700 cursor-pointer">Create Project</button>
+                <button @click="isProjectModalOpen = false" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg cursor-pointer">Cancel</button>
+                <button @click="saveNewProject()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg cursor-pointer">Create Project</button>
             </div>
         </div>
     </div>
